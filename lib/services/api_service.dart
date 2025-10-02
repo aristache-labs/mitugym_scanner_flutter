@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import '../models/scan_result.dart';
+import '../models/member_data.dart';
 
 /// API Service for MituGym backend
 /// Handles all HTTP requests to the check-in/check-out API
@@ -44,7 +45,34 @@ class ApiService {
       _logger.i('API Response: ${response.statusCode}');
 
       if (response.statusCode == 200) {
-        final result = ScanResult.fromJson(response.data as Map<String, dynamic>);
+        final data = response.data as Map<String, dynamic>;
+        
+        // Check if the response contains membership_status
+        final membershipStatus = data['membership_status'] as String?;
+        
+        // If membership is expired or inactive, create error result with member data
+        if (membershipStatus == 'expired') {
+          _logger.w('Membership expired for: ${data['member_name']}');
+          final memberData = MemberData.fromJson(data);
+          return ScanResult(
+            success: false,
+            message: 'Membership Expired',
+            error: 'Membership expired on ${memberData.formattedExpiryDate}. Please renew to continue.',
+            data: memberData,
+          );
+        } else if (membershipStatus == 'inactive') {
+          _logger.w('Membership inactive for: ${data['member_name']}');
+          final memberData = MemberData.fromJson(data);
+          return ScanResult(
+            success: false,
+            message: 'Membership Inactive',
+            error: 'Membership is inactive. Please contact the gym.',
+            data: memberData,
+          );
+        }
+        
+        // Otherwise, parse as normal success
+        final result = ScanResult.fromJson(data);
         _logger.i('Check-in/out successful: ${result.message}');
         return result;
       } else {

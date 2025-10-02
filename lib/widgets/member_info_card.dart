@@ -82,8 +82,8 @@ class MemberInfoCard extends StatelessWidget {
               ],
             ),
 
-            // Member details (only if success)
-            if (isSuccess && data != null) ...[
+            // Member details (show if we have member data)
+            if (data != null) ...[
               const SizedBox(height: 16),
               const Divider(color: Colors.white54),
               const SizedBox(height: 12),
@@ -145,8 +145,8 @@ class MemberInfoCard extends StatelessWidget {
               ),
             ],
 
-            // Error message (only if failed)
-            if (!isSuccess) ...[
+            // Error message (only if failed and we have an error)
+            if (!isSuccess && scanResult.error != null) ...[
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(12),
