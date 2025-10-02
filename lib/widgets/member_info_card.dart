@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shimmer/shimmer.dart';
 import '../models/scan_result.dart';
+import '../models/member_data.dart';
 import '../config/app_colors.dart';
 
 /// Member info card widget
@@ -53,22 +56,28 @@ class MemberInfoCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Icon and status
+            // Icon, Avatar and status
             Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: (isSuccess ? AppColors.success : AppColors.error).withValues(alpha: 0.2),
-                    shape: BoxShape.circle,
+                // Avatar (if available)
+                if (data != null) ...[
+                  _buildAvatar(data, isSuccess),
+                  const SizedBox(width: 12),
+                ] else ...[
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: (isSuccess ? AppColors.success : AppColors.error).withValues(alpha: 0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      isSuccess ? Icons.check_circle : Icons.error,
+                      color: isSuccess ? AppColors.success : AppColors.error,
+                      size: 24,
+                    ),
                   ),
-                  child: Icon(
-                    isSuccess ? Icons.check_circle : Icons.error,
-                    color: isSuccess ? AppColors.success : AppColors.error,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 12),
+                  const SizedBox(width: 12),
+                ],
                 Expanded(
                   child: Text(
                     scanResult.message,
@@ -173,6 +182,63 @@ class MemberInfoCard extends StatelessWidget {
         .animate()
         .slideY(begin: 0.3, duration: 300.ms, curve: Curves.easeOut)
         .fadeIn(duration: 300.ms);
+  }
+
+  Widget _buildAvatar(MemberData data, bool isSuccess) {
+    final borderColor = isSuccess ? AppColors.success : AppColors.error;
+    
+    if (data.hasAvatar) {
+      return Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: borderColor, width: 3),
+        ),
+        child: CachedNetworkImage(
+          imageUrl: data.avatarUrl!,
+          imageBuilder: (context, imageProvider) => CircleAvatar(
+            radius: 40,
+            backgroundImage: imageProvider,
+          ),
+          placeholder: (context, url) => Shimmer.fromColors(
+            baseColor: AppColors.surface,
+            highlightColor: AppColors.primary.withValues(alpha: 0.3),
+            child: const CircleAvatar(radius: 40),
+          ),
+          errorWidget: (context, url, error) => _buildFallbackAvatar(data, borderColor),
+        ),
+      );
+    } else {
+      return _buildFallbackAvatar(data, borderColor);
+    }
+  }
+
+  Widget _buildFallbackAvatar(MemberData data, Color borderColor) {
+    return Container(
+      width: 80,
+      height: 80,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: LinearGradient(
+          colors: [
+            borderColor,
+            borderColor.withValues(alpha: 0.7),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border.all(color: borderColor, width: 3),
+      ),
+      child: Center(
+        child: Text(
+          data.initials,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildInfoRow({

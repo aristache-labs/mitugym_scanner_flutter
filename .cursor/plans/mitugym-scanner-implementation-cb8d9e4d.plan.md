@@ -1,223 +1,404 @@
-<!-- cb8d9e4d-a914-4e4b-a599-ad3174142d73 f71f3e82-61f2-4fd1-8ca4-cef94afa277f -->
-# MituGym Scanner - Phase-by-Phase Implementation
+<!-- cb8d9e4d-a914-4e4b-a599-ad3174142d73 e912d530-a3f9-4e24-a763-e70085fd4640 -->
+# Premium MituGym Scanner Enhancement Plan
 
-## Overview
+## 📋 Overview
 
-Build a complete QR scanner desktop application for gym member check-in/check-out with Material Design 3 dark theme, real-time scanning, API integration, and activity logging.
-
-## Phase 1: Create Folder Structure
-
-Create the following directory structure:
-
-```
-lib/
-├── config/
-├── models/
-├── services/
-├── providers/
-├── screens/
-└── widgets/
-
-assets/
-├── sounds/
-└── images/
-```
-
-## Phase 2: Configuration & Models (4 files)
-
-### 1. `lib/config/app_config.dart`
-
-- Class to store: API URL, API key, camera index, debounce duration, audio enabled
-- Methods: `loadFromPreferences()`, `saveToPreferences()`
-- Default API URL: `https://mitugym-app-webpanel.vercel.app/`
-- Default API key: `847a6e2605d0674043fd8c6fef6e4f2ffb34fcfe8d5cd772636da8fc4b42bb78`
-- Default debounce: 5 seconds
-
-### 2. `lib/config/theme.dart`
-
-- Material Design 3 dark theme with:
-  - Primary color: `#1e9b71` (green)
-  - Background: `#1a1a1a`
-  - Surface: `#2d2d2d`
-  - Error: `#e74c3c`
-- Export `ThemeData appTheme`
-
-### 3. `lib/models/member_data.dart`
-
-```dart
-class MemberData {
-  final String memberId;
-  final String memberName;
-  final String planName;
-  final String expiresAt;
-  final String membershipStatus;
-  
-  factory MemberData.fromJson(Map<String, dynamic> json)
-}
-```
-
-### 4. `lib/models/scan_result.dart`
-
-```dart
-class ScanResult {
-  final bool success;
-  final String message;
-  final MemberData? data;
-  final String? error;
-  
-  factory ScanResult.fromJson(Map<String, dynamic> json)
-}
-```
-
-### 5. `lib/models/activity_log.dart`
-
-```dart
-class ActivityLog {
-  final String memberName;
-  final String action;
-  final DateTime time;
-  final bool success;
-}
-```
-
-## Phase 3: Services Layer (4 files)
-
-### 1. `lib/services/api_service.dart`
-
-- `Future<ScanResult> checkInOut(String qrCode, String apiKey)`
-- POST to `/api/checkin` with body: `{qr_code, api_key, action: "auto"}`
-- 15 second timeout
-- Error handling for 401, 403, 404, 429, 500
-
-### 2. `lib/services/qr_scanner_service.dart`
-
-- Use `MobileScannerController`
-- Implement debouncing logic (configurable seconds)
-- Stream of detected QR codes
-- Methods: `startScanning()`, `stopScanning()`, `dispose()`
-
-### 3. `lib/services/audio_service.dart`
-
-- `playSuccess()` and `playError()` methods
-- Use `AudioPlayer` from audioplayers package
-- Check if audio is enabled in config
-
-### 4. `lib/services/logger_service.dart`
-
-- Log to files in app documents directory
-- Daily log files with format: `mitugym_YYYY-MM-DD.log`
-- Methods: `logSuccess(memberName, action)`, `logError(error, details)`
-
-## Phase 4: State Management (3 providers)
-
-### 1. `lib/providers/config_provider.dart`
-
-- `StateNotifierProvider<ConfigNotifier, AppConfig>`
-- Load config on init
-- Methods to update and persist config
-
-### 2. `lib/providers/scan_provider.dart`
-
-```dart
-class ScanState {
-  final bool isScanning;
-  final bool cooldownActive;
-  final int cooldownRemaining;
-  final ScanResult? lastResult;
-  final List<ActivityLog> recentActivity;
-}
-```
-
-- Handle QR code scanning workflow
-- Manage cooldown timer
-- Call API service
-- Add to activity log
-
-### 3. `lib/providers/scanner_provider.dart`
-
-- Manage `QRScannerService` lifecycle
-- Listen to QR code stream
-- Trigger scan state updates
-
-## Phase 5: UI Screens (2 files)
-
-### 1. `lib/screens/home_screen.dart`
-
-- AppBar with title "MituGym Scanner" and status indicator
-- Camera preview (Expanded flex: 6)
-- Member info card (shows last scan result)
-- Activity list (Expanded flex: 3, recent 10 scans)
-- Control buttons row: Start/Stop/Settings/Clear Activity
-
-### 2. `lib/screens/settings_screen.dart`
-
-- TextFormField for API URL
-- TextFormField for API Key (obscured with `obscureText: true`)
-- Slider for debounce duration (3-10 seconds)
-- SwitchListTile for audio enable/disable
-- Save button (validates and saves to SharedPreferences)
-
-## Phase 6: UI Widgets (5 files)
-
-### 1. `lib/widgets/camera_preview_widget.dart`
-
-- `MobileScanner` widget
-- Overlay with detection box in center
-- Status text ("Scanning...", "Cooldown active", etc.)
-
-### 2. `lib/widgets/member_info_card.dart`
-
-- `AnimatedContainer` with gradient background
-- Green gradient (#1e9b71 → darker) for success
-- Red gradient (#e74c3c → darker) for error
-- Display: icon, member name, plan name, expiry date
-- Use `flutter_animate` for slide-in animation
-
-### 3. `lib/widgets/activity_list_widget.dart`
-
-- `ListView.builder` with recent activity (max 10)
-- Each `ListTile`: icon (✓ or ✗), member name, action, timestamp
-- Staggered fade-in animations using `flutter_animate`
-
-### 4. `lib/widgets/countdown_timer.dart`
-
-- `LinearProgressIndicator` showing cooldown progress
-- Text showing seconds remaining (5 → 0)
-- Updates every second
-
-### 5. `lib/widgets/control_buttons.dart`
-
-- Start Scanning button (primary green)
-- Stop button (secondary)
-- Settings button (icon button)
-- Clear Activity button (text button)
-
-## Phase 7: Main App Setup
-
-Update `lib/main.dart`:
-
-- Initialize `windowManager` with size 800x900, minimum 600x700
-- Set title "MituGym Scanner"
-- Initialize `ProviderScope` for Riverpod
-- Apply custom theme from `lib/config/theme.dart`
-- Set `HomeScreen` as home
-
-## Phase 8: Assets & Polish
-
-- Add placeholder sound files to `assets/sounds/` (success.mp3, error.mp3)
-- Test all animations
-- Ensure all widgets follow design system (colors, spacing, typography)
-- Add loading states and error boundaries
+Transform the MituGym Scanner into a premium, feature-rich desktop application with modern UI, advanced settings, performance optimizations, and offline capabilities.
 
 ---
 
-**Implementation Approach:**
+## 🎯 Phase 1: Data Models & Core Infrastructure
 
-- Complete each phase fully before moving to the next
-- Test each component as it's built
-- Follow Material Design 3 guidelines
-- Use Riverpod for all state management
-- Keep code modular and maintainable
+### 1.1 Update Member Data Model
+
+**File**: `lib/models/member_data.dart`
+
+- Add `avatarUrl` field to store member profile image URL
+- Update `fromJson` to parse `avatar_url` from API response
+- Add `hasAvatar` getter to check if avatar exists
+
+### 1.2 Expand App Configuration
+
+**File**: `lib/config/app_config.dart`
+
+- Add new settings:
+  - `double fontSize` (default: 14.0, range: 12-20)
+  - `double animationSpeed` (default: 1.0, range: 0.5-2.0)
+  - `double soundVolume` (default: 1.0, range: 0.0-1.0)
+  - `int logRetentionDays` (default: 30)
+  - `String exportFormat` (default: 'csv', options: 'csv', 'txt')
+  - `bool autoStartScanning` (default: false)
+  - `bool minimizeToTray` (default: false)
+  - `bool cameraVisible` (default: true)
+  - `String theme` (default: 'cyan', options: 'cyan', 'green', 'purple', 'blue')
+- Update `loadFromPreferences()` and `saveToPreferences()` methods
+- Update `copyWith()` method with all new fields
+
+### 1.3 Create Offline Storage Service
+
+**New File**: `lib/services/offline_storage_service.dart`
+
+- Use `sqflite` for local database
+- Store member data, check-in history locally
+- Queue failed API calls for retry when online
+- Methods: `saveMemberLocally()`, `getOfflineMembers()`, `queueCheckIn()`, `syncWhenOnline()`
+
+### 1.4 Create Search Service
+
+**New File**: `lib/services/search_service.dart`
+
+- Search members by name, ID, plan
+- Fuzzy search implementation
+- Methods: `searchMembers(query)`, `filterByStatus(status)`, `sortByDate()`
+
+---
+
+## 🎨 Phase 2: Premium UI Redesign
+
+### 2.1 Create New Responsive Layout
+
+**File**: `lib/screens/home_screen.dart`
+
+- **New Layout Structure**:
+  ```
+  ┌─────────────────────────────────────────────┐
+  │  AppBar (Gradient, Logo, Status, Actions)   │
+  ├──────────────┬──────────────────────────────┤
+  │              │                              │
+  │   Sidebar    │    Main Content Area         │
+  │   (Left)     │    - Camera (Collapsible)    │
+  │              │    - Member Card (Enhanced)  │
+  │   - Stats    │    - Countdown               │
+  │   - Activity │                              │
+  │   - Search   │                              │
+  │   - Quick    │                              │
+  │     Actions  │                              │
+  │              │                              │
+  └──────────────┴──────────────────────────────┘
+  ```
+
+- Minimum window width: 1200px (update in `main.dart`)
+- Use `Row` with `Expanded` for responsive sidebar + main area
+- Add floating toggle button to show/hide camera preview
+
+### 2.2 Create Premium Sidebar Widget
+
+**New File**: `lib/widgets/sidebar_widget.dart`
+
+- **Sections**:
+
+  1. **Quick Stats Card** (Today's check-ins, Active now, Total today)
+  2. **Recent Activity** (Scrollable list with avatars)
+  3. **Quick Search** (Search bar with instant results)
+  4. **Quick Actions** (Admin Panel button, Export, Settings)
+
+- Premium card design with gradients, shadows, hover effects
+- Collapsible sections with smooth animations
+
+### 2.3 Enhance Member Info Card with Avatar
+
+**File**: `lib/widgets/member_info_card.dart`
+
+- Add `CircleAvatar` widget with:
+  - Network image from `avatarUrl`
+  - Fallback to gradient icon with member initials
+  - Border with success/error color
+  - Size: 80x80px
+- Add shimmer effect while loading image
+- Position avatar at top-left of card
+- Add dependencies: `cached_network_image`, `shimmer`
+
+### 2.4 Create Collapsible Camera Widget
+
+**File**: `lib/widgets/collapsible_camera_widget.dart`
+
+- Wrap `WindowsCameraPreviewWidget` with `AnimatedContainer`
+- Add toggle button (eye icon) to show/hide camera
+- Smooth height animation (300ms)
+- Persist state in `SharedPreferences`
+- When collapsed: Show small status indicator only
+
+### 2.5 Update Activity List with Avatars
+
+**File**: `lib/widgets/activity_list_widget.dart`
+
+- Add small avatar (32x32) to each activity item
+- Show member name, action, time, status icon
+- Add hover effect for premium feel
+- Limit to 8 items, add "View All" button
+
+### 2.6 Create Theme Customization
+
+**File**: `lib/config/app_themes.dart`
+
+- Define 4 theme presets: Cyan (current), Green, Purple, Blue
+- Each theme has: primary, secondary, accent, success, error colors
+- Export `getThemeColors(themeName)` function
+- Update `theme.dart` to use dynamic colors from config
+
+---
+
+## ⚙️ Phase 3: Advanced Settings Screen
+
+### 3.1 Redesign Settings Screen
+
+**File**: `lib/screens/settings_screen.dart`
+
+- **Tabbed Interface** with 5 tabs:
+
+  1. **General**: API URL, API Key, Camera Index
+  2. **UI Customization**: Font size slider, Animation speed, Theme picker
+  3. **Audio**: Sound volume slider, Enable/disable audio
+  4. **Performance**: Camera frame rate, Log retention days
+  5. **Advanced**: Auto-start scanning, Minimize to tray, Export format
+
+- Use `TabBarView` with premium card layouts
+- Add visual preview for font size changes
+- Theme picker with color swatches
+- Sliders with real-time value display
+- Save button with confirmation animation
+
+---
+
+## 🚀 Phase 4: Performance Optimizations
+
+### 4.1 Optimize QR Scanner Service
+
+**File**: `lib/services/windows_qr_scanner_service.dart`
+
+- Add frame rate control setting (default: 10 fps, configurable 5-30)
+- Skip frames intelligently when not scanning
+- Use `Isolate` for image processing (move QR detection off main thread)
+- Add `compute()` function for heavy operations
+- Cache decoded QR codes for 100ms to prevent duplicates
+
+### 4.2 Optimize Memory Usage
+
+**Files**: All widgets
+
+- Use `const` constructors wherever possible
+- Implement `AutomaticKeepAliveClientMixin` for complex widgets
+- Add image caching with size limits (max 50 avatars in memory)
+- Dispose controllers and streams properly
+- Use `ListView.builder` instead of `ListView` for activity list
+
+### 4.3 Improve Startup Performance
+
+**File**: `lib/main.dart`
+
+- Load config asynchronously during splash screen
+- Preload audio files
+- Initialize camera after UI is displayed
+- Use `FutureBuilder` for async initialization
+
+### 4.4 Optimize Logging Service
+
+**File**: `lib/services/logger_service.dart`
+
+- Implement log rotation (delete logs older than `logRetentionDays`)
+- Write logs in batches instead of immediately
+- Use `isolate` for file I/O operations
+- Add compression for old logs
+
+---
+
+## 🔍 Phase 5: Member Search Feature
+
+### 5.1 Create Search Screen
+
+**New File**: `lib/screens/search_screen.dart`
+
+- Search bar at top
+- Filters: Status (Active/Expired/All), Plan type
+- Results grid with member cards (avatar, name, plan, status)
+- Tap to view full member details
+- Export search results button
+
+### 5.2 Create Member Details Screen
+
+**New File**: `lib/screens/member_details_screen.dart`
+
+- Show full member info with large avatar
+- Check-in history for this member
+- QR code display option
+- Action button: Manual check-in/out
+
+### 5.3 Add Search to Sidebar
+
+**File**: `lib/widgets/sidebar_widget.dart`
+
+- Compact search bar
+- Show first 5 results as dropdown
+- "View All" button to open search screen
+
+---
+
+## 📊 Phase 6: Check-in History & Reports
+
+### 6.1 Enhanced Stats Screen
+
+**File**: `lib/screens/stats_screen.dart`
+
+- Add date range picker
+- Export filtered data
+- Charts: Daily trend, Peak hours, Popular plans
+- Total revenue estimation (if plan prices available)
+
+### 6.2 Create History Screen
+
+**New File**: `lib/screens/history_screen.dart`
+
+- Paginated check-in history (100 per page)
+- Filters: Date range, Member name, Status
+- Export to CSV/PDF
+- Use `DataTable` widget for desktop-optimized display
+
+---
+
+## 🌐 Phase 7: Offline Mode Support
+
+### 7.1 Implement Connectivity Detection
+
+**New File**: `lib/services/connectivity_service.dart`
+
+- Use `connectivity_plus` package
+- Monitor online/offline status
+- Show banner when offline
+
+### 7.2 Update API Service for Offline
+
+**File**: `lib/services/api_service.dart`
+
+- Check connectivity before API calls
+- If offline: Save to queue, return cached data
+- Auto-sync when connection restored
+- Show sync progress indicator
+
+### 7.3 Create Offline Provider
+
+**New File**: `lib/providers/offline_provider.dart`
+
+- Track offline state
+- Count pending sync items
+- Trigger manual sync
+- Show offline badge in UI
+
+---
+
+## 🔗 Phase 8: Admin Dashboard Integration
+
+### 8.1 Add Dashboard Button
+
+**Files**: `lib/widgets/sidebar_widget.dart`, `lib/screens/home_screen.dart`
+
+- Add prominent "Admin Panel" button to sidebar
+- Use `url_launcher` package
+- Open `https://mitugym-app-webpanel.vercel.app/` in default browser
+- Add icon: `Icons.admin_panel_settings`
+
+### 8.2 Add Quick Actions Menu
+
+**New File**: `lib/widgets/quick_actions_widget.dart`
+
+- Floating action menu (bottom-right)
+- Actions: Admin Panel, Export Today, Manual Entry, Refresh
+- Premium circular design with animation
+
+---
+
+## 📦 Phase 9: Dependencies & Packages
+
+### 9.1 Add to `pubspec.yaml`
+
+```yaml
+dependencies:
+  # Existing...
+  cached_network_image: ^3.4.1  # Avatar caching
+  shimmer: ^3.0.0               # Loading effects
+  sqflite: ^2.4.1               # Offline database
+  connectivity_plus: ^6.1.2     # Network detection
+  url_launcher: ^6.3.1          # Open admin panel
+  flutter_staggered_animations: ^1.1.1  # Premium animations
+  syncfusion_flutter_charts: ^28.1.33   # Better charts
+  intl: ^0.19.0                 # Date formatting
+  badges: ^3.1.2                # Notification badges
+```
+
+---
+
+## 🎨 Phase 10: Premium UI Polish
+
+### 10.1 Add Micro-interactions
+
+- Ripple effects on all buttons
+- Hover states for cards
+- Loading skeletons
+- Success/error toast animations
+- Particle effects on successful check-in
+
+### 10.2 Update Color Scheme
+
+**File**: `lib/config/app_colors.dart`
+
+- Add glassmorphism effects
+- Card elevation with subtle shadows
+- Gradient backgrounds for premium feel
+- Add `shimmer` colors for loading states
+
+### 10.3 Typography Enhancement
+
+**File**: `lib/config/theme.dart`
+
+- Use Google Fonts: Inter for UI, Roboto Mono for codes
+- Responsive font scaling based on `fontSize` setting
+- Better text hierarchy (H1-H6, body, caption)
+
+---
+
+## ✅ Final Testing & Optimization
+
+### 11.1 Performance Testing
+
+- Test with 1000+ member records
+- Measure memory usage
+- Test camera performance at different frame rates
+- Optimize based on results
+
+### 11.2 UI/UX Testing
+
+- Test all theme variants
+- Verify responsive layout at different window sizes
+- Test offline mode thoroughly
+- Verify all animations are smooth
+
+---
+
+## 📝 Implementation Order Summary
+
+1. ✅ Update data models (member avatar, expanded config)
+2. ✅ Create offline storage & search services
+3. ✅ Redesign home screen with sidebar layout
+4. ✅ Add member avatars to cards
+5. ✅ Create collapsible camera widget
+6. ✅ Build advanced settings with tabs
+7. ✅ Implement performance optimizations
+8. ✅ Add member search feature
+9. ✅ Enhanced stats & history
+10. ✅ Offline mode support
+11. ✅ Admin dashboard integration
+12. ✅ Premium UI polish & animations
+13. ✅ Testing & final optimizations
+
+---
+
+## 🎯 Expected Outcomes
+
+- **Modern Premium UI**: Sleek, professional design with smooth animations
+- **Better Performance**: 50%+ faster QR detection, lower memory usage
+- **Enhanced Functionality**: Search, offline mode, detailed history
+- **Professional Features**: Admin integration, advanced settings, theming
+- **Improved UX**: Collapsible camera, sidebar layout, avatar display
+- **Enterprise Ready**: Robust offline support, data export, detailed reports
 
 ### To-dos
 
