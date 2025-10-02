@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import '../config/app_colors.dart';
 
-/// Control buttons widget
+/// Control buttons widget - Premium smooth design
 /// Contains Start/Stop, Settings, and Clear Activity buttons
 class ControlButtons extends StatelessWidget {
   final bool isScanning;
@@ -18,69 +19,111 @@ class ControlButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Row(
       children: [
-        // Start/Stop button
+        // Start/Stop button - Premium gradient design
         Expanded(
           flex: 2,
-          child: ElevatedButton.icon(
-            onPressed: onStartStop,
-            icon: Icon(
-              isScanning ? Icons.stop : Icons.play_arrow,
-              size: 24,
-            ),
-            label: Text(
-              isScanning ? 'STOP' : 'START',
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+          child: Container(
+            height: 60,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: isScanning
+                    ? [AppColors.error, AppColors.errorLight]
+                    : [AppColors.success, AppColors.successLight],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
+              borderRadius: BorderRadius.circular(AppColors.radiusMedium),
+              boxShadow: [
+                BoxShadow(
+                  color: (isScanning ? AppColors.error : AppColors.success)
+                      .withValues(alpha: 0.4),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
+                ),
+              ],
             ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: isScanning
-                  ? Colors.red
-                  : theme.colorScheme.primary,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+            child: ElevatedButton.icon(
+              onPressed: onStartStop,
+              icon: Icon(
+                isScanning ? Icons.stop_circle : Icons.play_circle_filled,
+                size: 28,
+              ),
+              label: Text(
+                isScanning ? 'STOP SCANNER' : 'START SCANNER',
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 18),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppColors.radiusMedium),
+                ),
               ),
             ),
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 16),
 
-        // Settings button
+        // Settings button - Premium design
         Container(
+          width: 60,
+          height: 60,
           decoration: BoxDecoration(
-            color: theme.colorScheme.surface,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: theme.colorScheme.primary.withValues(alpha: 0.3),
+            gradient: LinearGradient(
+              colors: [
+                AppColors.card,
+                AppColors.surface,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
+            borderRadius: BorderRadius.circular(AppColors.radiusMedium),
+            border: Border.all(
+              color: AppColors.primary.withValues(alpha: 0.4),
+              width: 2,
+            ),
+            boxShadow: AppColors.cardShadowSubtle,
           ),
           child: IconButton(
             onPressed: onSettings,
-            icon: const Icon(Icons.settings),
+            icon: Icon(Icons.settings, color: AppColors.primary),
             iconSize: 28,
             tooltip: 'Settings',
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 16),
 
-        // Clear activity button
+        // Clear activity button - Premium design
         Container(
+          width: 60,
+          height: 60,
           decoration: BoxDecoration(
-            color: theme.colorScheme.surface,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: theme.colorScheme.primary.withValues(alpha: 0.3),
+            gradient: LinearGradient(
+              colors: [
+                AppColors.card,
+                AppColors.surface,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
+            borderRadius: BorderRadius.circular(AppColors.radiusMedium),
+            border: Border.all(
+              color: AppColors.warning.withValues(alpha: 0.4),
+              width: 2,
+            ),
+            boxShadow: AppColors.cardShadowSubtle,
           ),
           child: IconButton(
             onPressed: onClearActivity,
-            icon: const Icon(Icons.clear_all),
+            icon: Icon(Icons.clear_all, color: AppColors.warning),
             iconSize: 28,
             tooltip: 'Clear Activity',
           ),

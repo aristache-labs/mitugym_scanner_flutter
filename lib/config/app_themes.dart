@@ -1,203 +1,185 @@
 import 'package:flutter/material.dart';
 
-/// Theme color definitions for the application
+/// Premium theme presets for the app
+class AppThemes {
+  // Default theme - Professional Blue
+  static final AppThemeColors blue = AppThemeColors(
+    primary: const Color(0xFF58A6FF),
+    secondary: const Color(0xFF8B949E),
+    accent: const Color(0xFF79C0FF),
+    success: const Color(0xFF3FB950),
+    warning: const Color(0xFFD29922),
+    error: const Color(0xFFDA3633),
+    surface: const Color(0xFF161B22),
+    card: const Color(0xFF1C2128),
+    text: const Color(0xFFC9D1D9),
+    muted: const Color(0xFF8B949E),
+  );
+  
+  // Cyan theme - Softer cyan (original but toned down)
+  static final AppThemeColors cyan = AppThemeColors(
+    primary: const Color(0xFF3DCCC7),
+    secondary: const Color(0xFF8B949E),
+    accent: const Color(0xFF4DE0D9),
+    success: const Color(0xFF3FB950),
+    warning: const Color(0xFFD29922),
+    error: const Color(0xFFDA3633),
+    surface: const Color(0xFF161B22),
+    card: const Color(0xFF1C2128),
+    text: const Color(0xFFC9D1D9),
+    muted: const Color(0xFF8B949E),
+  );
+  
+  // Green theme
+  static final AppThemeColors green = AppThemeColors(
+    primary: const Color(0xFF3FB950),
+    secondary: const Color(0xFF8B949E),
+    accent: const Color(0xFF56D364),
+    success: const Color(0xFF3FB950),
+    warning: const Color(0xFFD29922),
+    error: const Color(0xFFDA3633),
+    surface: const Color(0xFF161B22),
+    card: const Color(0xFF1C2128),
+    text: const Color(0xFFC9D1D9),
+    muted: const Color(0xFF8B949E),
+  );
+  
+  // Purple theme
+  static final AppThemeColors purple = AppThemeColors(
+    primary: const Color(0xFFBC8CFF),
+    secondary: const Color(0xFF8B949E),
+    accent: const Color(0xFFD2A8FF),
+    success: const Color(0xFF3FB950),
+    warning: const Color(0xFFD29922),
+    error: const Color(0xFFDA3633),
+    surface: const Color(0xFF161B22),
+    card: const Color(0xFF1C2128),
+    text: const Color(0xFFC9D1D9),
+    muted: const Color(0xFF8B949E),
+  );
+}
+
+/// Theme color set
 class AppThemeColors {
-  final Color background;
-  final Color surface;
-  final Color card;
   final Color primary;
   final Color secondary;
   final Color accent;
-  final Color text;
-  final Color muted;
   final Color success;
   final Color warning;
   final Color error;
-
+  final Color surface;
+  final Color card;
+  final Color text;
+  final Color muted;
+  
   const AppThemeColors({
-    required this.background,
-    required this.surface,
-    required this.card,
     required this.primary,
     required this.secondary,
     required this.accent,
-    required this.text,
-    required this.muted,
     required this.success,
     required this.warning,
     required this.error,
+    required this.surface,
+    required this.card,
+    required this.text,
+    required this.muted,
   });
-
-  /// Cyan theme (default)
-  static const AppThemeColors cyan = AppThemeColors(
-    background: Color(0xFF0a0f0f),
-    surface: Color(0xFF141a1a),
-    card: Color(0xFF1a2222),
-    primary: Color(0xFF4dd4d4),
-    secondary: Color(0xFF5cdfdf),
-    accent: Color(0xFF44e4e4),
-    text: Color(0xFFf0fefe),
-    muted: Color(0xFFb3d9d9),
-    success: Color(0xFF00e6a6),
-    warning: Color(0xFFffd93d),
-    error: Color(0xFFff6b6b),
-  );
-
-  /// Green theme
-  static const AppThemeColors green = AppThemeColors(
-    background: Color(0xFF0a0f0a),
-    surface: Color(0xFF141a14),
-    card: Color(0xFF1a221a),
-    primary: Color(0xFF1e9b71),
-    secondary: Color(0xFF26b584),
-    accent: Color(0xFF1ed18a),
-    text: Color(0xFFf0fef0),
-    muted: Color(0xFFb3d9c4),
-    success: Color(0xFF00e6a6),
-    warning: Color(0xFFffd93d),
-    error: Color(0xFFff6b6b),
-  );
-
-  /// Purple theme
-  static const AppThemeColors purple = AppThemeColors(
-    background: Color(0xFF0f0a14),
-    surface: Color(0xFF1a1420),
-    card: Color(0xFF221a28),
-    primary: Color(0xFFa855f7),
-    secondary: Color(0xFFc084fc),
-    accent: Color(0xFFd8b4fe),
-    text: Color(0xFFfef0fe),
-    muted: Color(0xFFd9b3d9),
-    success: Color(0xFF00e6a6),
-    warning: Color(0xFFffd93d),
-    error: Color(0xFFff6b6b),
-  );
-
-  /// Blue theme
-  static const AppThemeColors blue = AppThemeColors(
-    background: Color(0xFF0a0e14),
-    surface: Color(0xFF14181f),
-    card: Color(0xFF1a1f2a),
-    primary: Color(0xFF3b82f6),
-    secondary: Color(0xFF60a5fa),
-    accent: Color(0xFF93c5fd),
-    text: Color(0xFFf0f5fe),
-    muted: Color(0xFFb3c5d9),
-    success: Color(0xFF00e6a6),
-    warning: Color(0xFFffd93d),
-    error: Color(0xFFff6b6b),
-  );
-
+  
   /// Get theme colors by name
   static AppThemeColors getThemeColors(String themeName) {
     switch (themeName.toLowerCase()) {
-      case 'green':
-        return green;
-      case 'purple':
-        return purple;
-      case 'blue':
-        return blue;
       case 'cyan':
+        return AppThemes.cyan;
+      case 'green':
+        return AppThemes.green;
+      case 'purple':
+        return AppThemes.purple;
+      case 'blue':
       default:
-        return cyan;
+        return AppThemes.blue;
     }
   }
-
-  /// Get background gradient for the theme
-  LinearGradient getBackgroundGradient() {
-    return LinearGradient(
-      colors: [
-        primary.withValues(alpha: 0.08),
-        Colors.transparent,
-      ],
-      begin: Alignment.topLeft,
-      end: Alignment.center,
-    );
+  
+  /// Get list of available themes
+  List<String> get availableThemes => ['blue', 'cyan', 'green', 'purple'];
+  
+  /// Get theme icon
+  static IconData getThemeIcon(String theme) {
+    switch (theme) {
+      case 'blue':
+        return Icons.water_drop;
+      case 'cyan':
+        return Icons.circle;
+      case 'green':
+        return Icons.eco;
+      case 'purple':
+        return Icons.star;
+      default:
+        return Icons.circle;
+    }
   }
-
-  /// Get background decoration gradient
-  LinearGradient getBackgroundDecoration() {
-    return LinearGradient(
-      colors: [
-        primary.withValues(alpha: 0.08),
-        Colors.transparent,
-        secondary.withValues(alpha: 0.08),
-      ],
-      stops: const [0.0, 0.55, 1.0],
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-    );
-  }
-
-  /// Get success gradient
-  LinearGradient get successGradient => LinearGradient(
-        colors: [success, success.withValues(alpha: 0.7)],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      );
-
-  /// Get error gradient
-  LinearGradient get errorGradient => LinearGradient(
-        colors: [error, error.withValues(alpha: 0.7)],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      );
-
-  /// Get primary gradient
-  LinearGradient get primaryGradient => LinearGradient(
-        colors: [primary, secondary],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      );
-
-  /// Get shimmer base color
-  Color get shimmerBase => surface;
-
-  /// Get shimmer highlight color
-  Color get shimmerHighlight => primary.withValues(alpha: 0.15);
-
-  /// Get glassmorphism color
-  Color get glassBackground => card.withValues(alpha: 0.7);
-
-  /// Get card shadow color
-  Color get cardShadow => primary.withValues(alpha: 0.1);
-}
-
-/// Theme helper class
-class AppThemes {
-  /// Get all available themes
-  static const List<String> availableThemes = ['cyan', 'green', 'purple', 'blue'];
-
+  
   /// Get theme display name
-  static String getThemeDisplayName(String themeName) {
-    switch (themeName.toLowerCase()) {
+  static String getThemeDisplayName(String theme) {
+    switch (theme) {
+      case 'blue':
+        return 'Professional Blue';
       case 'cyan':
         return 'Cyan';
       case 'green':
         return 'Green';
       case 'purple':
         return 'Purple';
-      case 'blue':
-        return 'Blue';
       default:
-        return 'Cyan';
+        return theme[0].toUpperCase() + theme.substring(1);
     }
   }
-
-  /// Get theme icon
-  static IconData getThemeIcon(String themeName) {
-    switch (themeName.toLowerCase()) {
-      case 'cyan':
-        return Icons.water_drop;
-      case 'green':
-        return Icons.eco;
-      case 'purple':
-        return Icons.auto_awesome;
-      case 'blue':
-        return Icons.wb_twilight;
-      default:
-        return Icons.palette;
-    }
+  
+  /// Primary gradient
+  LinearGradient get primaryGradient => LinearGradient(
+    colors: [primary, accent],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+  
+  /// Background decoration
+  BoxDecoration getBackgroundDecoration() {
+    return BoxDecoration(
+      gradient: RadialGradient(
+        center: Alignment.topLeft,
+        radius: 2.0,
+        colors: [
+          surface.withValues(alpha: 0.6),
+          const Color(0xFF0D1117),
+        ],
+      ),
+      color: const Color(0xFF0D1117),
+    );
   }
+  
+  /// Card shadow - Premium smooth shadows
+  List<BoxShadow> get cardShadow => [
+    BoxShadow(
+      color: const Color(0xFF000000).withValues(alpha: 0.4),
+      blurRadius: 24,
+      offset: const Offset(0, 8),
+      spreadRadius: -4,
+    ),
+  ];
+  
+  /// Subtle card shadow
+  List<BoxShadow> get cardShadowSubtle => [
+    BoxShadow(
+      color: const Color(0xFF000000).withValues(alpha: 0.2),
+      blurRadius: 16,
+      offset: const Offset(0, 4),
+      spreadRadius: -2,
+    ),
+  ];
+  
+  /// Premium border radius constants
+  static const double radiusSmall = 12.0;
+  static const double radiusMedium = 16.0;
+  static const double radiusLarge = 24.0;
+  static const double radiusXLarge = 32.0;
 }
-

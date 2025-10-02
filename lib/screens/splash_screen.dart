@@ -1,26 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_colors.dart';
+import '../services/audio_service.dart';
 import 'home_screen.dart';
 
 /// Splash screen with animated logo and loading indicator
-class SplashScreen extends StatefulWidget {
+/// Preloads configuration and services during animation
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends ConsumerState<SplashScreen> {
+  String _loadingText = 'Initializing scanner...';
+  
   @override
   void initState() {
     super.initState();
-    _navigateToHome();
+    _initializeAndNavigate();
   }
 
-  Future<void> _navigateToHome() async {
-    // Wait for splash animation
-    await Future.delayed(const Duration(seconds: 3));
+  Future<void> _initializeAndNavigate() async {
+    try {
+      // Run initialization tasks in parallel during splash animation
+      await Future.wait([
+        _preloadConfiguration(),
+        _initializeServices(),
+        Future.delayed(const Duration(seconds: 3)), // Minimum splash time
+      ]);
+    } catch (e) {
+      // Log error but continue to home screen
+      debugPrint('Initialization error: $e');
+    }
     
     if (mounted) {
       Navigator.pushReplacement(
@@ -33,6 +47,37 @@ class _SplashScreenState extends State<SplashScreen> {
           transitionDuration: const Duration(milliseconds: 500),
         ),
       );
+    }
+  }
+
+  Future<void> _preloadConfiguration() async {
+    if (mounted) {
+      setState(() => _loadingText = 'Loading configuration...');
+    }
+    
+    // Configuration loads automatically via provider
+    // Just give it time to complete
+    await Future.delayed(const Duration(milliseconds: 500));
+  }
+
+  Future<void> _initializeServices() async {
+    if (mounted) {
+      setState(() => _loadingText = 'Preparing services...');
+    }
+    
+    // Preload audio files for instant playback
+    await _preloadAudio();
+  }
+
+  Future<void> _preloadAudio() async {
+    try {
+      // Preload audio files
+      final audioService = AudioService();
+      await audioService.initialize();
+      // Don't dispose - will be reused later
+      debugPrint('Audio service initialized');
+    } catch (e) {
+      debugPrint('Audio preload error: $e');
     }
   }
 
@@ -132,10 +177,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
               const SizedBox(height: 20),
 
-              // Loading text
-              const Text(
-                'Initializing scanner...',
-                style: TextStyle(
+              // Loading text - dynamic based on initialization stage
+              Text(
+                _loadingText,
+                style: const TextStyle(
                   fontSize: 14,
                   color: AppColors.muted,
                 ),

@@ -7,13 +7,28 @@ class ActivityLog {
   final String action;
   final DateTime time;
   final bool success;
+  final String? avatarUrl;
+  final String? memberId;
 
   const ActivityLog({
     required this.memberName,
     required this.action,
     required this.time,
     required this.success,
+    this.avatarUrl,
+    this.memberId,
   });
+
+  /// Get member initials for avatar fallback
+  String get initials {
+    final names = memberName.split(' ');
+    if (names.isEmpty) return '?';
+    if (names.length == 1) return names[0][0].toUpperCase();
+    return '${names[0][0]}${names[names.length - 1][0]}'.toUpperCase();
+  }
+
+  /// Check if member has avatar
+  bool get hasAvatar => avatarUrl != null && avatarUrl!.isNotEmpty;
 
   /// Get formatted time string (HH:mm:ss)
   String get formattedTime {
@@ -31,12 +46,16 @@ class ActivityLog {
     String? action,
     DateTime? time,
     bool? success,
+    String? avatarUrl,
+    String? memberId,
   }) {
     return ActivityLog(
       memberName: memberName ?? this.memberName,
       action: action ?? this.action,
       time: time ?? this.time,
       success: success ?? this.success,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      memberId: memberId ?? this.memberId,
     );
   }
 
@@ -52,12 +71,14 @@ class ActivityLog {
         other.memberName == memberName &&
         other.action == action &&
         other.time == time &&
-        other.success == success;
+        other.success == success &&
+        other.avatarUrl == avatarUrl &&
+        other.memberId == memberId;
   }
 
   @override
   int get hashCode {
-    return Object.hash(memberName, action, time, success);
+    return Object.hash(memberName, action, time, success, avatarUrl, memberId);
   }
 }
 

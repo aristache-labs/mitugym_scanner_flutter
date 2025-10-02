@@ -42,7 +42,10 @@ class WindowsScannerControllerNotifier extends Notifier<WindowsScannerController
   Future<void> initialize() async {
     try {
       final config = ref.read(configProvider);
-      final service = WindowsQRScannerService(debounceDuration: config.debounceDuration);
+      final service = WindowsQRScannerService(
+        debounceDuration: config.debounceDuration,
+        frameRate: config.cameraFrameRate,
+      );
       
       // Initialize camera
       await service.initialize();
@@ -104,6 +107,11 @@ class WindowsScannerControllerNotifier extends Notifier<WindowsScannerController
   /// Update debounce duration
   void updateDebounceDuration(int seconds) {
     state.service?.setDebounceDuration(seconds);
+  }
+
+  /// Update frame rate
+  void updateFrameRate(int fps) {
+    state.service?.setFrameRate(fps);
   }
 
   /// Reset debounce state

@@ -124,6 +124,15 @@ class OfflineNotifier extends Notifier<OfflineState> {
     await syncPendingItems();
   }
 
+  /// Sync now - force sync
+  Future<void> syncNow() async {
+    if (!state.isOnline) {
+      state = state.copyWith(syncError: 'Cannot sync while offline');
+      return;
+    }
+    await syncPendingItems();
+  }
+
   /// Get offline storage service
   OfflineStorageService? get offlineStorage => _offlineStorage;
 

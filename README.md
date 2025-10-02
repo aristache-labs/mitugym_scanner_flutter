@@ -1,33 +1,53 @@
 # MituGym Scanner 🏋️‍♂️📱
 
-A professional Windows desktop QR code scanner application for gym member check-in/check-out management, built with Flutter.
+A **premium** Windows desktop QR code scanner application for gym member check-in/check-out management, built with Flutter. Features a modern sidebar layout, member avatars, 4 theme presets, offline database, and advanced settings.
 
-![Flutter](https://img.shields.io/badge/Flutter-3.35.5-blue.svg)
+![Flutter](https://img.shields.io/badge/Flutter-3.9.2-blue.svg)
 ![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
+![Riverpod](https://img.shields.io/badge/Riverpod-3.0-purple.svg)
 
-## ✨ Features
+## ✨ Premium Features
 
-### Core Functionality
-- 📸 **Real-time QR Code Scanning** - Windows camera integration with ZXing
-- 🔄 **Auto Check-in/Check-out** - Automatic member status detection
-- ⏱️ **Smart Cooldown** - Configurable 3-10 second debounce to prevent duplicate scans
-- 🔊 **Audio Feedback** - Success/error sound notifications
-- 📝 **Activity Logging** - Daily log files with full scan history
+### 🎨 Modern UI
+- **Premium Sidebar Layout** - Professional 320px sidebar + main content area (1400x900 window)
+- **4 Theme Presets** - Cyan (default), Green, Purple, Blue - switch instantly
+- **Member Avatars** - Network images with shimmer loading & gradient fallbacks
+- **Collapsible Camera** - Toggle camera preview with smooth animations
+- **Google Fonts** - Inter typography for modern aesthetics
+- **Gradient Accents** - Beautiful gradients throughout the app
 
-### UI/UX
-- 🎨 **Modern Design** - Cyan/teal color scheme matching admin panel
-- ✨ **Smooth Animations** - Professional transitions and effects
-- 🌙 **Dark Theme** - Eye-friendly Material Design 3
-- 📊 **Statistics Dashboard** - Real-time analytics and success rates
-- 📤 **Export Functionality** - CSV and text format exports
+### 📸 Core Functionality
+- **Real-time QR Scanning** - Windows camera with ZXing (5-30 FPS configurable)
+- **Auto Check-in/Checkout** - Automatic member status detection
+- **Smart Cooldown** - Configurable 2-15 second debounce
+- **Audio Feedback** - Success/error sounds with volume control
+- **Activity Logging** - Daily log files with 7-90 day retention
 
-### Technical Features
-- 🔐 **API Integration** - RESTful backend communication
-- 💾 **Persistent Settings** - SharedPreferences for configuration
-- 🪟 **Window Management** - Customizable window size and position
-- 🎯 **State Management** - Riverpod for reactive updates
-- 📱 **Responsive UI** - Adaptive layouts
+### ⚙️ Advanced Settings (5 Tabs)
+- **General**: API URL, API Key, Camera Index
+- **UI Customization**: Font size (12-20px), Animation speed, Theme picker
+- **Audio**: Volume control, Enable/disable sounds
+- **Performance**: Frame rate, Cooldown duration, Log retention
+- **Advanced**: Auto-start, Default export format, Camera visibility
+
+### 🗄️ Offline & Data
+- **SQLite Database** - Local member data storage
+- **Offline Mode** - Queue scans when offline, auto-sync when online
+- **Search & Filter** - Fuzzy search by name/ID, filter by status/plan
+- **Export** - CSV and Text format exports
+- **Sync Indicator** - Badge shows pending sync count
+
+### 📊 Statistics & Reporting
+- **Quick Stats** - Today's check-ins, success rate, error count
+- **Activity Feed** - Last 8 activities in sidebar with avatars
+- **Dashboard** - Real-time analytics and charts
+- **Export Reports** - Download activity logs
+
+### 🔗 Integrations
+- **Admin Panel** - One-click access to MituGym web dashboard
+- **Connectivity Detection** - Automatic online/offline status
+- **Network Caching** - Cached avatars (max 50 in memory)
 
 ## 🎨 Screenshots
 

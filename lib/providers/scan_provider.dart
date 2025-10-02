@@ -110,6 +110,8 @@ class ScanNotifier extends Notifier<ScanState> {
           action: action,
           time: DateTime.now(),
           success: true,
+          avatarUrl: result.data?.avatarUrl,
+          memberId: result.data?.memberId,
         ));
         
         state = state.copyWith(statusMessage: result.message);
@@ -124,10 +126,12 @@ class ScanNotifier extends Notifier<ScanState> {
         
         // Add to activity log
         _addActivityLog(ActivityLog(
-          memberName: 'Error',
+          memberName: result.data?.memberName ?? 'Error',
           action: result.error ?? result.message,
           time: DateTime.now(),
           success: false,
+          avatarUrl: result.data?.avatarUrl,
+          memberId: result.data?.memberId,
         ));
         
         state = state.copyWith(statusMessage: result.error ?? result.message);

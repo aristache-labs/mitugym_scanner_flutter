@@ -9,9 +9,12 @@ import '../widgets/member_info_card.dart';
 import '../widgets/countdown_timer.dart';
 import '../widgets/control_buttons.dart';
 import '../widgets/sidebar_widget.dart';
+import '../widgets/offline_banner_widget.dart';
 import '../services/export_service.dart';
 import 'settings_screen.dart';
 import 'stats_screen.dart';
+import 'search_screen.dart';
+import 'history_screen.dart';
 
 /// Home screen - Main scanning interface with premium sidebar layout
 class HomeScreen extends ConsumerStatefulWidget {
@@ -48,18 +51,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       appBar: _buildAppBar(context, scannerState, themeColors),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: themeColors.getBackgroundDecoration(),
-        ),
-        child: Row(
-          children: [
-            // Left Sidebar
-            SidebarWidget(
+      body: Column(
+        children: [
+          // Offline banner (appears when offline)
+          const OfflineBannerWidget(),
+          
+          // Main content
+          Expanded(
+            child: Container(
+              decoration: themeColors.getBackgroundDecoration(),
+              child: Row(
+                children: [
+                  // Left Sidebar
+                  SidebarWidget(
               themeColors: themeColors,
               onExport: () => _showExportDialog(context, ref, themeColors),
               onSettings: () => _navigateToSettings(context),
               onStats: () => _navigateToStats(context),
+              onSearch: () => _navigateToSearch(context),
+              onHistory: () => _navigateToHistory(context),
             ),
             
             // Main Content Area
@@ -117,8 +127,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
             ),
-          ],
-        ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -133,24 +146,36 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       flexibleSpace: Container(
         decoration: BoxDecoration(
           gradient: themeColors.primaryGradient,
+          boxShadow: [
+            BoxShadow(
+              color: themeColors.primary.withValues(alpha: 0.3),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
       ),
       title: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(AppThemeColors.radiusSmall),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.3),
+                width: 2,
+              ),
             ),
-            child: const Icon(Icons.qr_code_scanner, size: 24),
+            child: const Icon(Icons.qr_code_scanner, size: 26),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           const Text(
             'MituGym Scanner',
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 20,
+              fontSize: 22,
+              letterSpacing: 0.5,
             ),
           ),
         ],
@@ -158,39 +183,52 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       actions: [
         // Status indicator with pulse animation
         Padding(
-          padding: const EdgeInsets.only(right: 16),
+          padding: const EdgeInsets.only(right: 20),
           child: Center(
-            child: Row(
-              children: [
-                Text(
-                  scannerState.isActive ? 'Active' : 'Inactive',
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.9),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(AppThemeColors.radiusMedium),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.3),
+                  width: 1.5,
                 ),
-                const SizedBox(width: 8),
-                Container(
-                  width: 12,
-                  height: 12,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: scannerState.isActive 
-                        ? themeColors.success 
-                        : themeColors.error,
-                    boxShadow: scannerState.isActive
-                        ? [
-                            BoxShadow(
-                              color: themeColors.success.withValues(alpha: 0.5),
-                              blurRadius: 8,
-                              spreadRadius: 2,
-                            ),
-                          ]
-                        : null,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    scannerState.isActive ? 'Active' : 'Inactive',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.3,
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 10),
+                  Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: scannerState.isActive 
+                          ? themeColors.success 
+                          : themeColors.error,
+                      boxShadow: scannerState.isActive
+                          ? [
+                              BoxShadow(
+                                color: themeColors.success.withValues(alpha: 0.6),
+                                blurRadius: 12,
+                                spreadRadius: 3,
+                              ),
+                            ]
+                          : null,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -211,6 +249,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const StatsScreen()),
+    );
+  }
+
+  /// Navigate to search screen
+  void _navigateToSearch(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SearchScreen()),
+    );
+  }
+
+  /// Navigate to history screen
+  void _navigateToHistory(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const HistoryScreen()),
     );
   }
 

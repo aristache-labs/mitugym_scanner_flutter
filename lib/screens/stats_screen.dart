@@ -1,316 +1,371 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import '../config/app_colors.dart';
 import '../providers/scan_provider.dart';
 
-/// Statistics and dashboard screen
+/// Modern, compact statistics screen
 class StatsScreen extends ConsumerWidget {
   const StatsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final scanState = ref.watch(scanProvider);
-    final activities = scanState.recentActivity;
-
-    // Calculate statistics
-    final totalScans = activities.length;
-    final successfulScans = activities.where((a) => a.success).length;
-    final failedScans = activities.where((a) => a.success == false).length;
+    final totalScans = scanState.recentActivity.length;
+    final successfulScans = scanState.recentActivity.where((log) => log.success).length;
+    final failedScans = totalScans - successfulScans;
     final successRate = totalScans > 0 ? (successfulScans / totalScans * 100) : 0.0;
-
-    // Get today's scans
-    final today = DateTime.now();
-    final todayScans = activities.where((a) {
-      return a.time.year == today.year &&
-          a.time.month == today.month &&
-          a.time.day == today.day;
-    }).length;
+    
+    // Today's stats
+    final now = DateTime.now();
+    final todayScans = scanState.recentActivity.where((log) {
+      return log.time.year == now.year &&
+             log.time.month == now.month &&
+             log.time.day == now.day;
+    }).toList();
+    final todayCount = todayScans.length;
+    final todaySuccess = todayScans.where((log) => log.success).length;
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Statistics'),
+        backgroundColor: AppColors.surface,
+        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
+        title: const Text(
+          'Statistics',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
-      body: Container(
-        decoration: AppColors.getBackgroundDecoration(),
-        child: ListView(
-          padding: const EdgeInsets.all(16),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
-            Text(
-              'Activity Overview',
-              style: Theme.of(context).textTheme.displayMedium,
-            )
-                .animate()
-                .fadeIn(duration: 400.ms)
-                .slideX(begin: -0.1, duration: 400.ms),
-            
-            const SizedBox(height: 8),
-            
-            Text(
-              'Real-time scanning statistics',
-              style: Theme.of(context).textTheme.bodyMedium,
-            )
-                .animate()
-                .fadeIn(duration: 400.ms, delay: 100.ms),
-
-            const SizedBox(height: 24),
-
-            // Stats cards grid
+            // Main stats grid - compact 2x2
             GridView.count(
               crossAxisCount: 2,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childAspectRatio: 1.5,
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              childAspectRatio: 1.4,
               children: [
-                _StatCard(
-                  title: 'Total Scans',
-                  value: totalScans.toString(),
+                _buildStatCard(
                   icon: Icons.qr_code_scanner,
-                  gradient: AppColors.primaryGradient,
-                  index: 0,
+                  label: 'Total Scans',
+                  value: totalScans.toString(),
+                  color: AppColors.primary,
+                  trend: null,
                 ),
-                _StatCard(
-                  title: 'Today',
-                  value: todayScans.toString(),
+                _buildStatCard(
                   icon: Icons.today,
-                  gradient: AppColors.primaryGradient,
-                  index: 1,
+                  label: 'Today',
+                  value: todayCount.toString(),
+                  color: AppColors.accent,
+                  trend: todaySuccess > 0 ? '+$todaySuccess' : null,
                 ),
-                _StatCard(
-                  title: 'Successful',
-                  value: successfulScans.toString(),
+                _buildStatCard(
                   icon: Icons.check_circle,
-                  gradient: AppColors.successGradient,
-                  index: 2,
+                  label: 'Successful',
+                  value: successfulScans.toString(),
+                  color: AppColors.success,
+                  trend: '${successRate.toStringAsFixed(0)}%',
                 ),
-                _StatCard(
-                  title: 'Failed',
-                  value: failedScans.toString(),
+                _buildStatCard(
                   icon: Icons.error,
-                  gradient: AppColors.errorGradient,
-                  index: 3,
+                  label: 'Failed',
+                  value: failedScans.toString(),
+                  color: AppColors.error,
+                  trend: null,
                 ),
               ],
             ),
-
+            
             const SizedBox(height: 24),
-
-            // Success rate card
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.trending_up,
-                          color: AppColors.success,
-                          size: 24,
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          'Success Rate',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    
-                    // Progress bar
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: LinearProgressIndicator(
-                        value: successRate / 100,
-                        minHeight: 12,
-                        backgroundColor: AppColors.surface,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          successRate >= 80 ? AppColors.success : AppColors.warning,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    
-                    Text(
-                      '${successRate.toStringAsFixed(1)}%',
-                      style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                        color: successRate >= 80 ? AppColors.success : AppColors.warning,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            )
-                .animate()
-                .fadeIn(duration: 400.ms, delay: 400.ms)
-                .slideY(begin: 0.1, duration: 400.ms, delay: 400.ms),
-
+            
+            // Success rate bar
+            _buildSuccessRateSection(successRate, successfulScans, failedScans),
+            
             const SizedBox(height: 24),
-
-            // Recent activity header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Recent Activity',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                TextButton.icon(
-                  onPressed: () {
-                    ref.read(scanProvider.notifier).clearActivity();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text('Activity cleared'),
-                        backgroundColor: AppColors.success,
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.clear_all, size: 18),
-                  label: const Text('Clear All'),
-                ),
-              ],
-            )
-                .animate()
-                .fadeIn(duration: 400.ms, delay: 500.ms),
-
-            const SizedBox(height: 12),
-
-            // Activity list
-            if (activities.isEmpty)
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(40),
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.history,
-                        size: 64,
-                        color: AppColors.muted.withValues(alpha: 0.5),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'No activity yet',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: AppColors.muted,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-            else
-              ...activities.asMap().entries.map((entry) {
-                final index = entry.key;
-                final activity = entry.value;
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: activity.success
-                          ? AppColors.success.withValues(alpha: 0.2)
-                          : AppColors.error.withValues(alpha: 0.2),
-                      child: Icon(
-                        activity.success ? Icons.check : Icons.close,
-                        color: activity.success ? AppColors.success : AppColors.error,
-                      ),
-                    ),
-                    title: Text(
-                      activity.memberName,
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    subtitle: Text(
-                      '${activity.action} • ${activity.formattedTime}',
-                      style: TextStyle(color: AppColors.muted),
-                    ),
-                    trailing: Icon(
-                      Icons.chevron_right,
-                      color: AppColors.muted,
-                    ),
-                  ),
-                )
-                    .animate(delay: (index * 50).ms)
-                    .fadeIn(duration: 300.ms)
-                    .slideX(begin: -0.1, duration: 300.ms);
-              }),
+            
+            // Quick insights
+            _buildInsightsSection(todayCount, totalScans, successRate),
           ],
         ),
       ),
     );
   }
-}
 
-/// Individual stat card widget
-class _StatCard extends StatelessWidget {
-  final String title;
-  final String value;
-  final IconData icon;
-  final Gradient gradient;
-  final int index;
-
-  const _StatCard({
-    required this.title,
-    required this.value,
-    required this.icon,
-    required this.gradient,
-    required this.index,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              gradient.colors.first.withValues(alpha: 0.1),
-              gradient.colors.last.withValues(alpha: 0.05),
+  Widget _buildStatCard({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+    String? trend,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border, width: 1),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: color, size: 20),
+              ),
+              if (trend != null)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    trend,
+                    style: TextStyle(
+                      color: color,
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
             ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
           ),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.bodyMedium,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                value,
+                style: const TextStyle(
+                  color: AppColors.textWhite,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  height: 1,
                 ),
-                Icon(
-                  icon,
-                  color: gradient.colors.first,
-                  size: 24,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: AppColors.textMuted,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
                 ),
-              ],
-            ),
-            Text(
-              value,
-              style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                color: gradient.colors.first,
-                fontWeight: FontWeight.bold,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSuccessRateSection(double rate, int success, int failed) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border, width: 1),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Success Rate',
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                '${rate.toStringAsFixed(1)}%',
+                style: const TextStyle(
+                  color: AppColors.textWhite,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          
+          // Progress bar
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LinearProgressIndicator(
+              value: rate / 100,
+              minHeight: 8,
+              backgroundColor: AppColors.surface,
+              valueColor: AlwaysStoppedAnimation<Color>(
+                rate >= 80 ? AppColors.success :
+                rate >= 50 ? AppColors.warning :
+                AppColors.error,
               ),
             ),
-          ],
-        ),
+          ),
+          
+          const SizedBox(height: 12),
+          
+          // Legend
+          Row(
+            children: [
+              _buildLegendItem(AppColors.success, 'Success', success.toString()),
+              const SizedBox(width: 20),
+              _buildLegendItem(AppColors.error, 'Failed', failed.toString()),
+            ],
+          ),
+        ],
       ),
-    )
-        .animate(delay: (index * 100).ms)
-        .fadeIn(duration: 400.ms)
-        .scale(begin: const Offset(0.8, 0.8), duration: 400.ms, curve: Curves.easeOut);
+    );
+  }
+
+  Widget _buildLegendItem(Color color, String label, String value) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(3),
+          ),
+        ),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style: const TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: 13,
+          ),
+        ),
+        const SizedBox(width: 4),
+        Text(
+          value,
+          style: const TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInsightsSection(int todayCount, int totalScans, double successRate) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border, width: 1),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: const Icon(
+                  Icons.insights,
+                  color: AppColors.primary,
+                  size: 18,
+                ),
+              ),
+              const SizedBox(width: 10),
+              const Text(
+                'Quick Insights',
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          
+          _buildInsightRow(
+            Icons.trending_up,
+            'Activity',
+            todayCount > 0 ? 'Active today' : 'No activity today',
+            todayCount > 0 ? AppColors.success : AppColors.textMuted,
+          ),
+          const SizedBox(height: 12),
+          _buildInsightRow(
+            Icons.assessment,
+            'Performance',
+            successRate >= 80 ? 'Excellent' : successRate >= 50 ? 'Good' : 'Needs attention',
+            successRate >= 80 ? AppColors.success : successRate >= 50 ? AppColors.warning : AppColors.error,
+          ),
+          const SizedBox(height: 12),
+          _buildInsightRow(
+            Icons.history,
+            'Total Records',
+            '$totalScans scan${totalScans != 1 ? 's' : ''} recorded',
+            AppColors.primary,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInsightRow(IconData icon, String label, String value, Color color) {
+    return Row(
+      children: [
+        Icon(icon, color: color, size: 18),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(
+                  color: AppColors.textMuted,
+                  fontSize: 12,
+                ),
+              ),
+              Text(
+                value,
+                style: TextStyle(
+                  color: color,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }
-

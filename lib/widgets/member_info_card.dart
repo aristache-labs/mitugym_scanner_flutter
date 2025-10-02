@@ -24,19 +24,21 @@ class MemberInfoCard extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       decoration: BoxDecoration(
-        // More subtle background with dark base
-        color: isSuccess ? AppColors.card : AppColors.card,
+        // Premium card background
+        color: AppColors.card,
         border: Border.all(
           color: isSuccess ? AppColors.success : AppColors.error,
           width: 2,
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppColors.radiusLarge),
         boxShadow: [
           BoxShadow(
-            color: (isSuccess ? AppColors.success : AppColors.error).withValues(alpha: 0.15),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+            color: (isSuccess ? AppColors.success : AppColors.error).withValues(alpha: 0.25),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
+            spreadRadius: -4,
           ),
+          ...AppColors.cardShadow,
         ],
       ),
       child: Container(
@@ -44,15 +46,15 @@ class MemberInfoCard extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              (isSuccess ? AppColors.success : AppColors.error).withValues(alpha: 0.08),
+              (isSuccess ? AppColors.success : AppColors.error).withValues(alpha: 0.1),
               Colors.transparent,
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppColors.radiusLarge),
         ),
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -65,15 +67,22 @@ class MemberInfoCard extends StatelessWidget {
                   const SizedBox(width: 12),
                 ] else ...[
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: (isSuccess ? AppColors.success : AppColors.error).withValues(alpha: 0.2),
                       shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: (isSuccess ? AppColors.success : AppColors.error).withValues(alpha: 0.3),
+                          blurRadius: 12,
+                          spreadRadius: 2,
+                        ),
+                      ],
                     ),
                     child: Icon(
                       isSuccess ? Icons.check_circle : Icons.error,
                       color: isSuccess ? AppColors.success : AppColors.error,
-                      size: 24,
+                      size: 28,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -82,20 +91,32 @@ class MemberInfoCard extends StatelessWidget {
                   child: Text(
                     scanResult.message,
                     style: TextStyle(
-                      color: AppColors.text,
-                      fontSize: 18,
+                      color: AppColors.textWhite,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
+                      letterSpacing: 0.3,
                     ),
                   ),
                 ),
               ],
             ),
 
-            // Member details (show if we have member data)
+              // Member details (show if we have member data)
             if (data != null) ...[
-              const SizedBox(height: 16),
-              const Divider(color: Colors.white54),
-              const SizedBox(height: 12),
+              const SizedBox(height: 20),
+              Container(
+                height: 1,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.transparent,
+                      AppColors.border,
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
 
               // Member name
               _buildInfoRow(
@@ -104,7 +125,7 @@ class MemberInfoCard extends StatelessWidget {
                 value: data.memberName,
                 color: AppColors.primary,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
 
               // Plan name
               _buildInfoRow(
@@ -113,7 +134,7 @@ class MemberInfoCard extends StatelessWidget {
                 value: data.planName,
                 color: AppColors.primary,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
 
               // Expiry date
               _buildInfoRow(
@@ -122,32 +143,50 @@ class MemberInfoCard extends StatelessWidget {
                 value: data.formattedExpiryDate,
                 color: AppColors.primary,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 16),
 
               // Status badge
               Row(
                 children: [
-                  Icon(Icons.info_outline, color: AppColors.muted, size: 18),
-                  const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
-                      color: data.isActive
-                          ? AppColors.success.withValues(alpha: 0.2)
-                          : AppColors.error.withValues(alpha: 0.2),
-                      border: Border.all(
-                        color: data.isActive ? AppColors.success : AppColors.error,
-                        width: 1,
+                      gradient: LinearGradient(
+                        colors: data.isActive
+                            ? [AppColors.success, AppColors.successLight]
+                            : [AppColors.error, AppColors.errorLight],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppColors.radiusMedium),
+                      boxShadow: [
+                        BoxShadow(
+                          color: (data.isActive ? AppColors.success : AppColors.error)
+                              .withValues(alpha: 0.4),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                    child: Text(
-                      data.membershipStatus.toUpperCase(),
-                      style: TextStyle(
-                        color: data.isActive ? AppColors.success : AppColors.error,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          data.isActive ? Icons.check_circle : Icons.error,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          data.membershipStatus.toUpperCase(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -247,28 +286,57 @@ class MemberInfoCard extends StatelessWidget {
     required String value,
     required Color color,
   }) {
-    return Row(
-      children: [
-        Icon(icon, color: color, size: 18),
-        const SizedBox(width: 8),
-        Text(
-          '$label: ',
-          style: TextStyle(
-            color: AppColors.muted,
-            fontSize: 14,
-          ),
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.surface.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(AppColors.radiusSmall),
+        border: Border.all(
+          color: AppColors.border,
+          width: 1,
         ),
-        Expanded(
-          child: Text(
-            value,
-            style: TextStyle(
-              color: AppColors.text,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [color, color.withValues(alpha: 0.7)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: Colors.white, size: 18),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: AppColors.muted,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: TextStyle(
+                    color: AppColors.textWhite,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

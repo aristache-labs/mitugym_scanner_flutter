@@ -13,6 +13,8 @@ class SidebarWidget extends ConsumerStatefulWidget {
   final VoidCallback onExport;
   final VoidCallback onSettings;
   final VoidCallback onStats;
+  final VoidCallback onSearch;
+  final VoidCallback onHistory;
 
   const SidebarWidget({
     super.key,
@@ -20,6 +22,8 @@ class SidebarWidget extends ConsumerStatefulWidget {
     required this.onExport,
     required this.onSettings,
     required this.onStats,
+    required this.onSearch,
+    required this.onHistory,
   });
 
   @override
@@ -78,14 +82,15 @@ class _SidebarWidgetState extends ConsumerState<SidebarWidget> {
   /// Build header with logo and status
   Widget _buildHeader(OfflineState offlineState) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: widget.themeColors.primaryGradient,
         boxShadow: [
           BoxShadow(
-            color: widget.themeColors.cardShadow,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: widget.themeColors.primary.withValues(alpha: 0.4),
+            blurRadius: 20,
+            offset: const Offset(0, 6),
+            spreadRadius: -2,
           ),
         ],
       ),
@@ -93,19 +98,30 @@ class _SidebarWidgetState extends ConsumerState<SidebarWidget> {
         children: [
           // Logo/Icon
           Container(
-            width: 48,
-            height: 48,
+            width: 56,
+            height: 56,
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppThemeColors.radiusMedium),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.3),
+                width: 2,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: const Icon(
               Icons.fitness_center,
               color: Colors.white,
-              size: 28,
+              size: 32,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           
           // Title
           Expanded(
@@ -116,15 +132,60 @@ class _SidebarWidgetState extends ConsumerState<SidebarWidget> {
                   'MituGym',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 20,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
                   ),
                 ),
-                Text(
-                  offlineState.isOnline ? 'Online' : 'Offline',
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.8),
-                    fontSize: 12,
+                const SizedBox(height: 4),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: offlineState.isOnline
+                        ? Colors.green.withValues(alpha: 0.3)
+                        : Colors.red.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: offlineState.isOnline
+                          ? Colors.greenAccent
+                          : Colors.redAccent,
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 6,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: offlineState.isOnline
+                              ? Colors.greenAccent
+                              : Colors.redAccent,
+                          boxShadow: [
+                            BoxShadow(
+                              color: (offlineState.isOnline
+                                      ? Colors.greenAccent
+                                      : Colors.redAccent)
+                                  .withValues(alpha: 0.6),
+                              blurRadius: 8,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        offlineState.isOnline ? 'Online' : 'Offline',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -231,23 +292,37 @@ class _SidebarWidgetState extends ConsumerState<SidebarWidget> {
       child: Column(
         children: [
           _buildActionButton(
+            icon: Icons.search,
+            label: 'Search Members',
+            color: widget.themeColors.primary,
+            onTap: widget.onSearch,
+          ),
+          const SizedBox(height: 8),
+          _buildActionButton(
             icon: Icons.admin_panel_settings,
             label: 'Admin Panel',
-            color: widget.themeColors.primary,
+            color: widget.themeColors.accent,
             onTap: _launchAdminPanel,
+          ),
+          const SizedBox(height: 8),
+          _buildActionButton(
+            icon: Icons.history,
+            label: 'View History',
+            color: widget.themeColors.secondary,
+            onTap: widget.onHistory,
           ),
           const SizedBox(height: 8),
           _buildActionButton(
             icon: Icons.download,
             label: 'Export Logs',
-            color: widget.themeColors.accent,
+            color: widget.themeColors.success,
             onTap: widget.onExport,
           ),
           const SizedBox(height: 8),
           _buildActionButton(
             icon: Icons.bar_chart,
             label: 'Statistics',
-            color: widget.themeColors.secondary,
+            color: widget.themeColors.warning,
             onTap: widget.onStats,
           ),
           const SizedBox(height: 8),
@@ -273,36 +348,47 @@ class _SidebarWidgetState extends ConsumerState<SidebarWidget> {
     return Container(
       decoration: BoxDecoration(
         color: widget.themeColors.card,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppThemeColors.radiusMedium),
         border: Border.all(
-          color: widget.themeColors.primary.withValues(alpha: 0.1),
+          color: widget.themeColors.primary.withValues(alpha: 0.2),
+          width: 1.5,
         ),
+        boxShadow: widget.themeColors.cardShadowSubtle,
       ),
       child: Column(
         children: [
           // Header
           InkWell(
             onTap: onToggle,
-            borderRadius: BorderRadius.circular(12),
-            child: Padding(
-              padding: const EdgeInsets.all(12),
+            borderRadius: BorderRadius.circular(AppThemeColors.radiusMedium),
+            child: Container(
+              padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
-                  Icon(icon, color: widget.themeColors.primary, size: 20),
-                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      gradient: widget.themeColors.primaryGradient,
+                      borderRadius: BorderRadius.circular(AppThemeColors.radiusSmall),
+                    ),
+                    child: Icon(icon, color: Colors.white, size: 18),
+                  ),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       title,
                       style: TextStyle(
                         color: widget.themeColors.text,
                         fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                        fontSize: 15,
+                        letterSpacing: 0.3,
                       ),
                     ),
                   ),
                   Icon(
                     isExpanded ? Icons.expand_less : Icons.expand_more,
                     color: widget.themeColors.muted,
+                    size: 22,
                   ),
                 ],
               ),
@@ -328,15 +414,36 @@ class _SidebarWidgetState extends ConsumerState<SidebarWidget> {
     required Color color,
   }) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
+        gradient: LinearGradient(
+          colors: [
+            color.withValues(alpha: 0.15),
+            color.withValues(alpha: 0.05),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(AppThemeColors.radiusSmall),
+        border: Border.all(color: color.withValues(alpha: 0.4), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         children: [
-          Icon(icon, color: color, size: 20),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: color, size: 20),
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
@@ -344,6 +451,7 @@ class _SidebarWidgetState extends ConsumerState<SidebarWidget> {
               style: TextStyle(
                 color: widget.themeColors.text,
                 fontSize: 13,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -351,7 +459,7 @@ class _SidebarWidgetState extends ConsumerState<SidebarWidget> {
             value,
             style: TextStyle(
               color: color,
-              fontSize: 16,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -447,31 +555,56 @@ class _SidebarWidgetState extends ConsumerState<SidebarWidget> {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(AppThemeColors.radiusSmall),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: color.withValues(alpha: 0.3)),
+          gradient: LinearGradient(
+            colors: [
+              color.withValues(alpha: 0.15),
+              color.withValues(alpha: 0.05),
+            ],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+          borderRadius: BorderRadius.circular(AppThemeColors.radiusSmall),
+          border: Border.all(color: color.withValues(alpha: 0.3), width: 1.5),
+          boxShadow: [
+            BoxShadow(
+              color: color.withValues(alpha: 0.1),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Row(
           children: [
-            Icon(icon, color: color, size: 20),
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [color, color.withValues(alpha: 0.7)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Icon(icon, color: Colors.white, size: 18),
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 label,
                 style: TextStyle(
                   color: widget.themeColors.text,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
             Icon(
               Icons.arrow_forward_ios,
-              color: widget.themeColors.muted,
+              color: color.withValues(alpha: 0.6),
               size: 14,
             ),
           ],
