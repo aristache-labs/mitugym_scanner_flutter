@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
 /// Material Design 3 theme matching MituGym admin panel
@@ -7,6 +8,9 @@ import 'app_colors.dart';
 final ThemeData appTheme = ThemeData(
   useMaterial3: true,
   brightness: Brightness.dark,
+  
+  // Use Google Fonts
+  textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
   
   // Color scheme
   colorScheme: ColorScheme.dark(
@@ -94,17 +98,6 @@ final ThemeData appTheme = ThemeData(
       borderSide: const BorderSide(color: AppColors.error),
     ),
     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-  ),
-  
-  // Text theme
-  textTheme: const TextTheme(
-    displayLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.text),
-    displayMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.text),
-    titleLarge: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.text),
-    titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColors.text),
-    bodyLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: AppColors.text),
-    bodyMedium: TextStyle(fontSize: 12, fontWeight: FontWeight.normal, color: AppColors.muted),
-    labelSmall: TextStyle(fontSize: 10, fontWeight: FontWeight.w300, color: AppColors.muted),
   ),
   
   // Icon theme

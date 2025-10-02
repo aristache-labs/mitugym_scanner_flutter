@@ -11,8 +11,8 @@ void main() async {
   await windowManager.ensureInitialized();
 
   const windowOptions = WindowOptions(
-    size: Size(800, 900),
-    minimumSize: Size(600, 700),
+    size: Size(1400, 900),
+    minimumSize: Size(1200, 700),
     center: true,
     title: 'MituGym Scanner',
     titleBarStyle: TitleBarStyle.normal,
