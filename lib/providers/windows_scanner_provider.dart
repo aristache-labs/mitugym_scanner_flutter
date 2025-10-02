@@ -30,16 +30,18 @@ class WindowsScannerControllerState {
 }
 
 /// Windows Scanner controller notifier
-class WindowsScannerControllerNotifier extends StateNotifier<WindowsScannerControllerState> {
-  final Ref _ref;
+class WindowsScannerControllerNotifier extends Notifier<WindowsScannerControllerState> {
   StreamSubscription<String>? _qrSubscription;
 
-  WindowsScannerControllerNotifier(this._ref) : super(const WindowsScannerControllerState());
+  @override
+  WindowsScannerControllerState build() {
+    return const WindowsScannerControllerState();
+  }
 
   /// Initialize the scanner service
   Future<void> initialize() async {
     try {
-      final config = _ref.read(configProvider);
+      final config = ref.read(configProvider);
       final service = WindowsQRScannerService(debounceDuration: config.debounceDuration);
       
       // Initialize camera
@@ -67,11 +69,11 @@ class WindowsScannerControllerNotifier extends StateNotifier<WindowsScannerContr
       // Subscribe to QR code stream
       _qrSubscription = state.service!.qrCodeStream.listen((qrCode) {
         // Process the scan through scan provider
-        _ref.read(scanProvider.notifier).processScan(qrCode);
+        ref.read(scanProvider.notifier).processScan(qrCode);
       });
 
       // Update scan provider state
-      _ref.read(scanProvider.notifier).startScanning();
+      ref.read(scanProvider.notifier).startScanning();
       
       state = state.copyWith(isActive: true, error: null);
     } catch (e) {
@@ -91,7 +93,7 @@ class WindowsScannerControllerNotifier extends StateNotifier<WindowsScannerContr
       await state.service!.stopScanning();
       
       // Update scan provider state
-      _ref.read(scanProvider.notifier).stopScanning();
+      ref.read(scanProvider.notifier).stopScanning();
       
       state = state.copyWith(isActive: false, error: null);
     } catch (e) {
@@ -109,17 +111,11 @@ class WindowsScannerControllerNotifier extends StateNotifier<WindowsScannerContr
     state.service?.resetDebounce();
   }
 
-  @override
-  void dispose() {
-    _qrSubscription?.cancel();
-    state.service?.dispose();
-    super.dispose();
-  }
 }
 
 /// Provider for Windows scanner controller
 final windowsScannerControllerProvider = 
-    StateNotifierProvider<WindowsScannerControllerNotifier, WindowsScannerControllerState>((ref) {
-  return WindowsScannerControllerNotifier(ref);
+    NotifierProvider<WindowsScannerControllerNotifier, WindowsScannerControllerState>(() {
+  return WindowsScannerControllerNotifier();
 });
 

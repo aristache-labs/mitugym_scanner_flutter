@@ -45,20 +45,17 @@ class ScanState {
 }
 
 /// Scan state notifier
-class ScanNotifier extends StateNotifier<ScanState> {
-  final ApiService _apiService;
-  final AudioService _audioService;
-  final LoggerService _loggerService;
-  final Ref _ref;
-  
+class ScanNotifier extends Notifier<ScanState> {
   Timer? _cooldownTimer;
 
-  ScanNotifier(
-    this._apiService,
-    this._audioService,
-    this._loggerService,
-    this._ref,
-  ) : super(const ScanState());
+  @override
+  ScanState build() {
+    return const ScanState();
+  }
+
+  ApiService get _apiService => ref.read(apiServiceProvider);
+  AudioService get _audioService => ref.read(audioServiceProvider);
+  LoggerService get _loggerService => ref.read(loggerServiceProvider);
 
   /// Start scanning mode
   void startScanning() {
@@ -86,7 +83,7 @@ class ScanNotifier extends StateNotifier<ScanState> {
     }
 
     // Get config
-    final config = _ref.read(configProvider);
+    final config = ref.read(configProvider);
     
     // Update status
     state = state.copyWith(statusMessage: 'Processing...');
@@ -190,11 +187,6 @@ class ScanNotifier extends StateNotifier<ScanState> {
     state = state.copyWith(recentActivity: []);
   }
 
-  @override
-  void dispose() {
-    _cooldownTimer?.cancel();
-    super.dispose();
-  }
 }
 
 /// Provider for API Service
@@ -217,11 +209,7 @@ final loggerServiceProvider = Provider<LoggerService>((ref) {
 });
 
 /// Provider for scan state
-final scanProvider = StateNotifierProvider<ScanNotifier, ScanState>((ref) {
-  final apiService = ref.watch(apiServiceProvider);
-  final audioService = ref.watch(audioServiceProvider);
-  final loggerService = ref.watch(loggerServiceProvider);
-  
-  return ScanNotifier(apiService, audioService, loggerService, ref);
+final scanProvider = NotifierProvider<ScanNotifier, ScanState>(() {
+  return ScanNotifier();
 });
 

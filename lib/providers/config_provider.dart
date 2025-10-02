@@ -2,9 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_config.dart';
 
 /// Config notifier to manage application configuration
-class ConfigNotifier extends StateNotifier<AppConfig> {
-  ConfigNotifier() : super(AppConfig.defaults()) {
+class ConfigNotifier extends Notifier<AppConfig> {
+  @override
+  AppConfig build() {
     _loadConfig();
+    return AppConfig.defaults();
   }
 
   /// Load configuration from SharedPreferences
@@ -57,7 +59,7 @@ class ConfigNotifier extends StateNotifier<AppConfig> {
 }
 
 /// Provider for application configuration
-final configProvider = StateNotifierProvider<ConfigNotifier, AppConfig>((ref) {
+final configProvider = NotifierProvider<ConfigNotifier, AppConfig>(() {
   return ConfigNotifier();
 });
 

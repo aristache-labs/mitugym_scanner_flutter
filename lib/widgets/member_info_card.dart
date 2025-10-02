@@ -21,19 +21,34 @@ class MemberInfoCard extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       decoration: BoxDecoration(
-        gradient: isSuccess
-            ? AppColors.successGradient
-            : AppColors.errorGradient,
+        // More subtle background with dark base
+        color: isSuccess ? AppColors.card : AppColors.card,
+        border: Border.all(
+          color: isSuccess ? AppColors.success : AppColors.error,
+          width: 2,
+        ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: (isSuccess ? AppColors.success : AppColors.error).withValues(alpha: 0.3),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
+            color: (isSuccess ? AppColors.success : AppColors.error).withValues(alpha: 0.15),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Padding(
+      child: Container(
+        // Subtle gradient overlay
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              (isSuccess ? AppColors.success : AppColors.error).withValues(alpha: 0.08),
+              Colors.transparent,
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+        ),
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -41,17 +56,24 @@ class MemberInfoCard extends StatelessWidget {
             // Icon and status
             Row(
               children: [
-                Icon(
-                  isSuccess ? Icons.check_circle : Icons.error,
-                  color: Colors.white,
-                  size: 32,
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: (isSuccess ? AppColors.success : AppColors.error).withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    isSuccess ? Icons.check_circle : Icons.error,
+                    color: isSuccess ? AppColors.success : AppColors.error,
+                    size: 24,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     scanResult.message,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: AppColors.text,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -71,6 +93,7 @@ class MemberInfoCard extends StatelessWidget {
                 icon: Icons.person,
                 label: 'Member',
                 value: data.memberName,
+                color: AppColors.primary,
               ),
               const SizedBox(height: 8),
 
@@ -79,6 +102,7 @@ class MemberInfoCard extends StatelessWidget {
                 icon: Icons.card_membership,
                 label: 'Plan',
                 value: data.planName,
+                color: AppColors.primary,
               ),
               const SizedBox(height: 8),
 
@@ -87,26 +111,31 @@ class MemberInfoCard extends StatelessWidget {
                 icon: Icons.calendar_today,
                 label: 'Expires',
                 value: data.formattedExpiryDate,
+                color: AppColors.primary,
               ),
               const SizedBox(height: 8),
 
               // Status badge
               Row(
                 children: [
-                  const Icon(Icons.info_outline, color: Colors.white, size: 18),
+                  Icon(Icons.info_outline, color: AppColors.muted, size: 18),
                   const SizedBox(width: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
                       color: data.isActive
-                          ? Colors.white.withValues(alpha: 0.2)
-                          : Colors.red.withValues(alpha: 0.3),
+                          ? AppColors.success.withValues(alpha: 0.2)
+                          : AppColors.error.withValues(alpha: 0.2),
+                      border: Border.all(
+                        color: data.isActive ? AppColors.success : AppColors.error,
+                        width: 1,
+                      ),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
                       data.membershipStatus.toUpperCase(),
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: data.isActive ? AppColors.success : AppColors.error,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                       ),
@@ -119,11 +148,21 @@ class MemberInfoCard extends StatelessWidget {
             // Error message (only if failed)
             if (!isSuccess) ...[
               const SizedBox(height: 12),
-              Text(
-                scanResult.error ?? 'Unknown error occurred',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.error.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: AppColors.error.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Text(
+                  scanResult.error ?? 'Unknown error occurred',
+                  style: TextStyle(
+                    color: AppColors.text,
+                    fontSize: 14,
+                  ),
                 ),
               ),
             ],
@@ -140,23 +179,24 @@ class MemberInfoCard extends StatelessWidget {
     required IconData icon,
     required String label,
     required String value,
+    required Color color,
   }) {
     return Row(
       children: [
-        Icon(icon, color: Colors.white, size: 18),
+        Icon(icon, color: color, size: 18),
         const SizedBox(width: 8),
         Text(
           '$label: ',
-          style: const TextStyle(
-            color: Colors.white70,
+          style: TextStyle(
+            color: AppColors.muted,
             fontSize: 14,
           ),
         ),
         Expanded(
           child: Text(
             value,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: AppColors.text,
               fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
@@ -166,4 +206,6 @@ class MemberInfoCard extends StatelessWidget {
     );
   }
 }
+
+
 

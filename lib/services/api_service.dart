@@ -53,6 +53,10 @@ class ApiService {
       }
     } on DioException catch (e) {
       _logger.e('DioException: ${e.type} - ${e.message}');
+      // Log response data if available for debugging
+      if (e.response?.data != null) {
+        _logger.d('Response data: ${e.response!.data}');
+      }
       return _handleDioError(e);
     } catch (e) {
       _logger.e('Unexpected error: $e');
@@ -62,11 +66,45 @@ class ApiService {
 
   /// Handle Dio errors and convert to user-friendly messages
   ScanResult _handleDioError(DioException e) {
+    // Try to extract message from response body
+    String? errorMessage;
+    String? errorDetail;
+    
+    if (e.response?.data != null) {
+      try {
+        final data = e.response!.data;
+        if (data is Map<String, dynamic>) {
+          errorMessage = data['message'] as String?;
+          errorDetail = data['error'] as String?;
+          
+          // Check if it's a membership status issue
+          if (errorMessage?.toLowerCase().contains('inactive') == true ||
+              errorMessage?.toLowerCase().contains('expired') == true ||
+              errorDetail?.toLowerCase().contains('inactive') == true ||
+              errorDetail?.toLowerCase().contains('expired') == true) {
+            return ScanResult.error('Membership Inactive: Please renew your membership');
+          }
+          
+          // Return the server's error message if available
+          if (errorMessage != null && errorMessage.isNotEmpty) {
+            return ScanResult.error(errorMessage);
+          }
+        }
+      } catch (parseError) {
+        _logger.d('Could not parse error response: $parseError');
+      }
+    }
+
+    // Fallback to status code handling
     switch (e.response?.statusCode) {
       case 401:
         return ScanResult.error('Unauthorized: Invalid API key');
       case 403:
-        return ScanResult.error('Forbidden: Access denied');
+        // Check if response has more details
+        if (errorDetail != null && errorDetail.isNotEmpty) {
+          return ScanResult.error(errorDetail);
+        }
+        return ScanResult.error('Access Denied: Membership may be inactive or expired');
       case 404:
         return ScanResult.error('Member not found or invalid QR code');
       case 429:
