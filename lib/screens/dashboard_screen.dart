@@ -215,28 +215,36 @@ class DashboardScreen extends ConsumerWidget {
           // Avatar with status indicator
           Stack(
             children: [
-              // Avatar circle
+              // Avatar circle with image or initials
               Container(
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: AppColors.primaryGradient,
+                  gradient: activity.hasAvatar ? null : AppColors.primaryGradient,
                   border: Border.all(
                     color: AppColors.primary.withValues(alpha: 0.3),
                     width: 2,
                   ),
+                  image: activity.hasAvatar
+                      ? DecorationImage(
+                          image: NetworkImage(activity.avatarUrl!),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
                 ),
-                child: Center(
-                  child: Text(
-                    activity.initials,
-                    style: GoogleFonts.inter(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
+                child: activity.hasAvatar
+                    ? null
+                    : Center(
+                        child: Text(
+                          activity.initials,
+                          style: GoogleFonts.inter(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
               ),
               // Status indicator dot
               Positioned(

@@ -205,12 +205,22 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
 
   /// Build compact stats card
   Widget _buildCompactStatsCard(ScanState scanState) {
-    final todayCheckIns = scanState.recentActivity
-        .where((a) => a.time.day == DateTime.now().day)
+    final todayActivities = scanState.recentActivity
+        .where((a) => a.time.day == DateTime.now().day);
+    
+    final todayCheckIns = todayActivities
+        .where((a) => a.success && a.action.toLowerCase().contains('in'))
         .length;
-    final successfulToday = scanState.recentActivity
-        .where((a) => a.time.day == DateTime.now().day && a.success)
+    
+    final todayCheckOuts = todayActivities
+        .where((a) => a.success && !a.action.toLowerCase().contains('in'))
         .length;
+    
+    final todayDenied = todayActivities
+        .where((a) => !a.success)
+        .length;
+    
+    final totalScans = todayActivities.length;
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -260,16 +270,30 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
           const SizedBox(height: 20),
           
           _buildCompactStatRow(
-            icon: Icons.trending_up_rounded,
+            icon: Icons.login_rounded,
             label: 'Check-ins',
-            value: '$successfulToday',
+            value: '$todayCheckIns',
             color: AppColors.success,
+          ),
+          const SizedBox(height: 12),
+          _buildCompactStatRow(
+            icon: Icons.logout_rounded,
+            label: 'Check-outs',
+            value: '$todayCheckOuts',
+            color: AppColors.warning,
+          ),
+          const SizedBox(height: 12),
+          _buildCompactStatRow(
+            icon: Icons.block_rounded,
+            label: 'Denied',
+            value: '$todayDenied',
+            color: AppColors.error,
           ),
           const SizedBox(height: 12),
           _buildCompactStatRow(
             icon: Icons.qr_code_scanner_rounded,
             label: 'Total Scans',
-            value: '$todayCheckIns',
+            value: '$totalScans',
             color: AppColors.primary,
           ),
         ],
