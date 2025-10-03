@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import '../config/app_colors.dart';
 import '../providers/scan_provider.dart';
 
@@ -165,39 +166,168 @@ class DashboardScreen extends ConsumerWidget {
               ),
             )
           else
-            ...recentActivities.map((activity) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Row(
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: activity.success ? AppColors.success : AppColors.error,
-                    ),
+            ...recentActivities.map((activity) => _buildActivityItem(activity)),
+        ],
+      ),
+    );
+  }
+
+  /// Build activity item with avatar, status, and details
+  Widget _buildActivityItem(dynamic activity) {
+    final isCheckIn = activity.action.toLowerCase().contains('in');
+    final isSuccess = activity.success;
+    final dateFormat = DateFormat('MMM d, yyyy');
+    final timeFormat = DateFormat('HH:mm');
+    
+    // Determine badge type
+    String badgeLabel;
+    Color badgeColor;
+    IconData badgeIcon;
+    
+    if (!isSuccess) {
+      // Failed scan - show as Denied
+      badgeLabel = 'Denied';
+      badgeColor = AppColors.error;
+      badgeIcon = Icons.block_rounded;
+    } else if (isCheckIn) {
+      badgeLabel = 'Check-in';
+      badgeColor = AppColors.primary;
+      badgeIcon = Icons.login_rounded;
+    } else {
+      badgeLabel = 'Check-out';
+      badgeColor = AppColors.warning;
+      badgeIcon = Icons.logout_rounded;
+    }
+    
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.surface.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppColors.border.withValues(alpha: 0.2),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          // Avatar with status indicator
+          Stack(
+            children: [
+              // Avatar circle
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: AppColors.primaryGradient,
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.3),
+                    width: 2,
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      activity.memberName,
-                      style: GoogleFonts.inter(
-                        color: AppColors.textPrimary,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                  Text(
-                    '${activity.time.hour}:${activity.time.minute.toString().padLeft(2, '0')}',
+                ),
+                child: Center(
+                  child: Text(
+                    activity.initials,
                     style: GoogleFonts.inter(
-                      color: AppColors.textMuted,
-                      fontSize: 13,
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ],
+                ),
               ),
-            )),
+              // Status indicator dot
+              Positioned(
+                right: 0,
+                bottom: 0,
+                child: Container(
+                  width: 12,
+                  height: 12,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: activity.success ? AppColors.success : AppColors.error,
+                    border: Border.all(
+                      color: AppColors.surface,
+                      width: 2,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(width: 12),
+          
+          // Member info
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Name
+                Text(
+                  activity.memberName,
+                  style: GoogleFonts.inter(
+                    color: AppColors.textPrimary,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                // Date
+                Text(
+                  dateFormat.format(activity.time),
+                  style: GoogleFonts.inter(
+                    color: AppColors.textMuted,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // Check-in/out/denied badge
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              color: badgeColor.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(
+                color: badgeColor.withValues(alpha: 0.3),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  badgeIcon,
+                  size: 14,
+                  color: badgeColor,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  badgeLabel,
+                  style: GoogleFonts.inter(
+                    color: badgeColor,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          
+          // Time
+          Text(
+            timeFormat.format(activity.time),
+            style: GoogleFonts.inter(
+              color: AppColors.textSecondary,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ],
       ),
     );
