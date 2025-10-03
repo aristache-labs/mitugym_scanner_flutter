@@ -29,90 +29,176 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   Widget _buildStatsOverview(ScanState scanState) {
-    final todayScans = scanState.recentActivity
-        .where((a) => a.time.day == DateTime.now().day)
+    final todayActivities = scanState.recentActivity
+        .where((a) => a.time.day == DateTime.now().day);
+    
+    final totalScans = todayActivities.length;
+    
+    final checkIns = todayActivities
+        .where((a) => a.success && a.action.toLowerCase().contains('in'))
         .length;
-    final todaySuccess = scanState.recentActivity
-        .where((a) => a.time.day == DateTime.now().day && a.success)
+    
+    final checkOuts = todayActivities
+        .where((a) => a.success && !a.action.toLowerCase().contains('in'))
+        .length;
+    
+    final denied = todayActivities
+        .where((a) => !a.success)
         .length;
 
     return Row(
       children: [
         Expanded(
-          child: _buildStatCard(
+          child: _buildPremiumStatCard(
             'Total Scans',
-            '$todayScans',
-            Icons.qr_code_scanner,
+            '$totalScans',
+            Icons.qr_code_scanner_rounded,
             AppColors.primary,
+            'All scans today',
           ),
         ),
         const SizedBox(width: 16),
         Expanded(
-          child: _buildStatCard(
-            'Successful',
-            '$todaySuccess',
-            Icons.check_circle,
+          child: _buildPremiumStatCard(
+            'Check-ins',
+            '$checkIns',
+            Icons.login_rounded,
             AppColors.success,
+            'Successful entries',
           ),
         ),
         const SizedBox(width: 16),
         Expanded(
-          child: _buildStatCard(
-            'Errors',
-            '${todayScans - todaySuccess}',
-            Icons.error,
+          child: _buildPremiumStatCard(
+            'Check-outs',
+            '$checkOuts',
+            Icons.logout_rounded,
+            AppColors.warning,
+            'Successful exits',
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: _buildPremiumStatCard(
+            'Denied',
+            '$denied',
+            Icons.block_rounded,
             AppColors.error,
+            'Failed scans',
           ),
         ),
       ],
     );
   }
 
-  Widget _buildStatCard(String label, String value, IconData icon, Color color) {
+  Widget _buildPremiumStatCard(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+    String subtitle,
+  ) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppColors.card.withValues(alpha: 0.9),
-            AppColors.surface.withValues(alpha: 0.7),
+            AppColors.card.withValues(alpha: 0.95),
+            AppColors.surface.withValues(alpha: 0.8),
           ],
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: color.withValues(alpha: 0.2),
-          width: 1,
+          color: color.withValues(alpha: 0.3),
+          width: 1.5,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+            spreadRadius: -4,
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: color, size: 24),
+          // Icon with gradient background
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      color.withValues(alpha: 0.8),
+                      color,
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: color.withValues(alpha: 0.4),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Icon(icon, color: Colors.white, size: 24),
+              ),
+              // Trend indicator (optional decoration)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.trending_up_rounded,
+                  color: color,
+                  size: 16,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
-          Text(
-            label,
-            style: GoogleFonts.inter(
-              color: AppColors.textSecondary,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 20),
+          
+          // Value
           Text(
             value,
             style: GoogleFonts.inter(
               color: AppColors.textPrimary,
-              fontSize: 32,
+              fontSize: 36,
               fontWeight: FontWeight.bold,
+              height: 1.0,
+              letterSpacing: -0.5,
+            ),
+          ),
+          const SizedBox(height: 6),
+          
+          // Label
+          Text(
+            label,
+            style: GoogleFonts.inter(
+              color: AppColors.textPrimary,
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.2,
+            ),
+          ),
+          const SizedBox(height: 4),
+          
+          // Subtitle
+          Text(
+            subtitle,
+            style: GoogleFonts.inter(
+              color: AppColors.textMuted,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
