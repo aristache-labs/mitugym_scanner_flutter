@@ -1,61 +1,61 @@
 import 'package:flutter/material.dart';
 
-/// Premium theme presets for the app
+/// Premium theme presets for the app - Dashboard inspired
 class AppThemes {
-  // Default theme - Professional Blue
-  static final AppThemeColors blue = AppThemeColors(
-    primary: const Color(0xFF58A6FF),
-    secondary: const Color(0xFF8B949E),
-    accent: const Color(0xFF79C0FF),
-    success: const Color(0xFF3FB950),
-    warning: const Color(0xFFD29922),
-    error: const Color(0xFFDA3633),
-    surface: const Color(0xFF161B22),
-    card: const Color(0xFF1C2128),
-    text: const Color(0xFFC9D1D9),
-    muted: const Color(0xFF8B949E),
-  );
-  
-  // Cyan theme - Softer cyan (original but toned down)
-  static final AppThemeColors cyan = AppThemeColors(
-    primary: const Color(0xFF3DCCC7),
-    secondary: const Color(0xFF8B949E),
-    accent: const Color(0xFF4DE0D9),
-    success: const Color(0xFF3FB950),
-    warning: const Color(0xFFD29922),
-    error: const Color(0xFFDA3633),
-    surface: const Color(0xFF161B22),
-    card: const Color(0xFF1C2128),
-    text: const Color(0xFFC9D1D9),
-    muted: const Color(0xFF8B949E),
-  );
-  
-  // Green theme
-  static final AppThemeColors green = AppThemeColors(
-    primary: const Color(0xFF3FB950),
-    secondary: const Color(0xFF8B949E),
-    accent: const Color(0xFF56D364),
-    success: const Color(0xFF3FB950),
-    warning: const Color(0xFFD29922),
-    error: const Color(0xFFDA3633),
-    surface: const Color(0xFF161B22),
-    card: const Color(0xFF1C2128),
-    text: const Color(0xFFC9D1D9),
-    muted: const Color(0xFF8B949E),
-  );
-  
-  // Purple theme
+  // Default theme - Modern Purple/Indigo (Dashboard style)
   static final AppThemeColors purple = AppThemeColors(
-    primary: const Color(0xFFBC8CFF),
-    secondary: const Color(0xFF8B949E),
-    accent: const Color(0xFFD2A8FF),
-    success: const Color(0xFF3FB950),
-    warning: const Color(0xFFD29922),
-    error: const Color(0xFFDA3633),
-    surface: const Color(0xFF161B22),
-    card: const Color(0xFF1C2128),
-    text: const Color(0xFFC9D1D9),
-    muted: const Color(0xFF8B949E),
+    primary: const Color(0xFF6366F1),    // Indigo
+    secondary: const Color(0xFF64748B),   // Slate
+    accent: const Color(0xFFEC4899),      // Pink
+    success: const Color(0xFF10B981),     // Emerald
+    warning: const Color(0xFFF59E0B),     // Amber
+    error: const Color(0xFFEF4444),       // Red
+    surface: const Color(0xFF161C2D),     // Surface
+    card: const Color(0xFF1E2435),        // Card
+    text: const Color(0xFFF1F5F9),        // Main text
+    muted: const Color(0xFF94A3B8),       // Muted text
+  );
+  
+  // Blue theme - Modern blue variant
+  static final AppThemeColors blue = AppThemeColors(
+    primary: const Color(0xFF3B82F6),    // Blue
+    secondary: const Color(0xFF64748B),   // Slate
+    accent: const Color(0xFF06B6D4),      // Cyan
+    success: const Color(0xFF10B981),     // Emerald
+    warning: const Color(0xFFF59E0B),     // Amber
+    error: const Color(0xFFEF4444),       // Red
+    surface: const Color(0xFF161C2D),     // Surface
+    card: const Color(0xFF1E2435),        // Card
+    text: const Color(0xFFF1F5F9),        // Main text
+    muted: const Color(0xFF94A3B8),       // Muted text
+  );
+  
+  // Green theme - Modern emerald variant
+  static final AppThemeColors green = AppThemeColors(
+    primary: const Color(0xFF10B981),     // Emerald
+    secondary: const Color(0xFF64748B),   // Slate
+    accent: const Color(0xFF34D399),      // Light emerald
+    success: const Color(0xFF10B981),     // Emerald
+    warning: const Color(0xFFF59E0B),     // Amber
+    error: const Color(0xFFEF4444),       // Red
+    surface: const Color(0xFF161C2D),     // Surface
+    card: const Color(0xFF1E2435),        // Card
+    text: const Color(0xFFF1F5F9),        // Main text
+    muted: const Color(0xFF94A3B8),       // Muted text
+  );
+  
+  // Cyan theme - Modern cyan variant
+  static final AppThemeColors cyan = AppThemeColors(
+    primary: const Color(0xFF06B6D4),     // Cyan
+    secondary: const Color(0xFF64748B),   // Slate
+    accent: const Color(0xFF22D3EE),      // Light cyan
+    success: const Color(0xFF10B981),     // Emerald
+    warning: const Color(0xFFF59E0B),     // Amber
+    error: const Color(0xFFEF4444),       // Red
+    surface: const Color(0xFF161C2D),     // Surface
+    card: const Color(0xFF1E2435),        // Card
+    text: const Color(0xFFF1F5F9),        // Main text
+    muted: const Color(0xFF94A3B8),       // Muted text
   );
 }
 
@@ -85,51 +85,51 @@ class AppThemeColors {
     required this.muted,
   });
   
-  /// Get theme colors by name
+  /// Get theme colors by name - Purple is now default
   static AppThemeColors getThemeColors(String themeName) {
     switch (themeName.toLowerCase()) {
+      case 'blue':
+        return AppThemes.blue;
       case 'cyan':
         return AppThemes.cyan;
       case 'green':
         return AppThemes.green;
       case 'purple':
-        return AppThemes.purple;
-      case 'blue':
       default:
-        return AppThemes.blue;
+        return AppThemes.purple; // Purple is now default
     }
   }
   
   /// Get list of available themes
-  List<String> get availableThemes => ['blue', 'cyan', 'green', 'purple'];
+  List<String> get availableThemes => ['purple', 'blue', 'cyan', 'green'];
   
   /// Get theme icon
   static IconData getThemeIcon(String theme) {
     switch (theme) {
+      case 'purple':
+        return Icons.star;
       case 'blue':
         return Icons.water_drop;
       case 'cyan':
         return Icons.circle;
       case 'green':
         return Icons.eco;
-      case 'purple':
-        return Icons.star;
       default:
-        return Icons.circle;
+        return Icons.star;
     }
   }
   
   /// Get theme display name
   static String getThemeDisplayName(String theme) {
     switch (theme) {
+      case 'purple':
+        return 'Modern Purple';
       case 'blue':
-        return 'Professional Blue';
+        return 'Ocean Blue';
       case 'cyan':
         return 'Cyan';
       case 'green':
-        return 'Green';
-      case 'purple':
-        return 'Purple';
+        return 'Emerald';
       default:
         return theme[0].toUpperCase() + theme.substring(1);
     }
@@ -142,18 +142,19 @@ class AppThemeColors {
     end: Alignment.bottomRight,
   );
   
-  /// Background decoration
+  /// Background decoration - Dashboard style gradient
   BoxDecoration getBackgroundDecoration() {
     return BoxDecoration(
       gradient: RadialGradient(
         center: Alignment.topLeft,
-        radius: 2.0,
+        radius: 3.0,
         colors: [
-          surface.withValues(alpha: 0.6),
-          const Color(0xFF0D1117),
+          const Color(0xFF1E293B).withValues(alpha: 0.8),
+          const Color(0xFF0F172A),
+          const Color(0xFF0A0E1A),
         ],
       ),
-      color: const Color(0xFF0D1117),
+      color: const Color(0xFF0A0E1A),
     );
   }
   
