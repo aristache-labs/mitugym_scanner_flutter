@@ -3,7 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_colors.dart';
 import '../services/audio_service.dart';
-import 'home_screen.dart';
+import 'main_layout_screen.dart';
 
 /// Splash screen with animated logo and loading indicator
 /// Preloads configuration and services during animation
@@ -40,7 +40,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       Navigator.pushReplacement(
         context,
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => const HomeScreen(),
+          pageBuilder: (context, animation, secondaryAnimation) => const MainLayoutScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(opacity: animation, child: child);
           },

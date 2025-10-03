@@ -9,20 +9,16 @@ import '../models/activity_log.dart';
 /// Modern dashboard-style sidebar widget
 class ModernSidebarWidget extends ConsumerStatefulWidget {
   final AppThemeColors themeColors;
+  final int selectedIndex;
+  final Function(int) onNavigate;
   final VoidCallback onExport;
-  final VoidCallback onSettings;
-  final VoidCallback onStats;
-  final VoidCallback onSearch;
-  final VoidCallback onHistory;
 
   const ModernSidebarWidget({
     super.key,
     required this.themeColors,
+    required this.selectedIndex,
+    required this.onNavigate,
     required this.onExport,
-    required this.onSettings,
-    required this.onStats,
-    required this.onSearch,
-    required this.onHistory,
   });
 
   @override
@@ -119,38 +115,38 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
           _buildCompactNavItem(
             icon: Icons.dashboard_rounded,
             label: 'Dashboard',
-            isActive: true,
-            onTap: () {},
+            isActive: widget.selectedIndex == 0,
+            onTap: () => widget.onNavigate(0),
+          ),
+          _buildCompactNavItem(
+            icon: Icons.qr_code_scanner_rounded,
+            label: 'QR Scanner',
+            isActive: widget.selectedIndex == 1,
+            onTap: () => widget.onNavigate(1),
           ),
           _buildCompactNavItem(
             icon: Icons.trending_up_rounded,
             label: 'Check-ins',
-            isActive: false,
-            onTap: widget.onStats,
+            isActive: widget.selectedIndex == 2,
+            onTap: () => widget.onNavigate(2),
           ),
           _buildCompactNavItem(
             icon: Icons.history_rounded,
             label: 'History',
-            isActive: false,
-            onTap: widget.onHistory,
-          ),
-          _buildCompactNavItem(
-            icon: Icons.analytics_rounded,
-            label: 'Analytics',
-            isActive: false,
-            onTap: widget.onStats,
+            isActive: widget.selectedIndex == 3,
+            onTap: () => widget.onNavigate(3),
           ),
           _buildCompactNavItem(
             icon: Icons.search_rounded,
             label: 'Search',
-            isActive: false,
-            onTap: widget.onSearch,
+            isActive: widget.selectedIndex == 4,
+            onTap: () => widget.onNavigate(4),
           ),
           _buildCompactNavItem(
             icon: Icons.settings_rounded,
             label: 'Settings',
-            isActive: false,
-            onTap: widget.onSettings,
+            isActive: widget.selectedIndex == 5,
+            onTap: () => widget.onNavigate(5),
           ),
         ],
       ),
