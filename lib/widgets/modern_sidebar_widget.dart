@@ -62,7 +62,17 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
       child: Container(
         width: 280,
         decoration: BoxDecoration(
-          color: const Color(0xFF0F1B2C), // Deep navy like the image
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xFF0A0F0F), // Very dark background
+              const Color(0xFF0D1515).withValues(alpha: 0.95), // Dark with slight green tint
+              const Color(0xFF0F1A1A).withValues(alpha: 0.9), // Subtle cyan/green gradient
+              const Color(0xFF0A0F0F), // Back to dark at bottom
+            ],
+            stops: const [0.0, 0.3, 0.6, 1.0],
+          ),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.3),

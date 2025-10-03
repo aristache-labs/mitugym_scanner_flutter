@@ -1,61 +1,61 @@
 import 'package:flutter/material.dart';
 
-/// Premium theme presets for the app - Dashboard inspired
+/// Premium theme presets for the app - Cyan/Turquoise inspired
 class AppThemes {
-  // Default theme - Modern Purple/Indigo (Dashboard style)
+  // Default theme - Modern Cyan/Turquoise (Admin panel style)
+  static final AppThemeColors cyan = AppThemeColors(
+    primary: const Color(0xFF4DD4D4),     // Primary cyan
+    secondary: const Color(0xFF5CDFDF),   // Secondary cyan
+    accent: const Color(0xFF44E4E4),      // Accent cyan
+    success: const Color(0xFF00E6A6),     // Bright green
+    warning: const Color(0xFFFFD93D),     // Yellow
+    error: const Color(0xFFFF6B6B),       // Red
+    surface: const Color(0xFF141A1A),     // Surface
+    card: const Color(0xFF1A2222),        // Card
+    text: const Color(0xFFF0FEFE),        // Main text
+    muted: const Color(0xFFB3D9D9),       // Muted text
+  );
+  
+  // Purple theme - Alternative
   static final AppThemeColors purple = AppThemeColors(
     primary: const Color(0xFF6366F1),    // Indigo
     secondary: const Color(0xFF64748B),   // Slate
     accent: const Color(0xFFEC4899),      // Pink
-    success: const Color(0xFF10B981),     // Emerald
-    warning: const Color(0xFFF59E0B),     // Amber
-    error: const Color(0xFFEF4444),       // Red
-    surface: const Color(0xFF161C2D),     // Surface
-    card: const Color(0xFF1E2435),        // Card
-    text: const Color(0xFFF1F5F9),        // Main text
-    muted: const Color(0xFF94A3B8),       // Muted text
+    success: const Color(0xFF00E6A6),     // Bright green
+    warning: const Color(0xFFFFD93D),     // Yellow
+    error: const Color(0xFFFF6B6B),       // Red
+    surface: const Color(0xFF141A1A),     // Surface
+    card: const Color(0xFF1A2222),        // Card
+    text: const Color(0xFFF0FEFE),        // Main text
+    muted: const Color(0xFFB3D9D9),       // Muted text
   );
   
   // Blue theme - Modern blue variant
   static final AppThemeColors blue = AppThemeColors(
     primary: const Color(0xFF3B82F6),    // Blue
-    secondary: const Color(0xFF64748B),   // Slate
+    secondary: const Color(0xFF5CDFDF),   // Cyan
     accent: const Color(0xFF06B6D4),      // Cyan
-    success: const Color(0xFF10B981),     // Emerald
-    warning: const Color(0xFFF59E0B),     // Amber
-    error: const Color(0xFFEF4444),       // Red
-    surface: const Color(0xFF161C2D),     // Surface
-    card: const Color(0xFF1E2435),        // Card
-    text: const Color(0xFFF1F5F9),        // Main text
-    muted: const Color(0xFF94A3B8),       // Muted text
+    success: const Color(0xFF00E6A6),     // Bright green
+    warning: const Color(0xFFFFD93D),     // Yellow
+    error: const Color(0xFFFF6B6B),       // Red
+    surface: const Color(0xFF141A1A),     // Surface
+    card: const Color(0xFF1A2222),        // Card
+    text: const Color(0xFFF0FEFE),        // Main text
+    muted: const Color(0xFFB3D9D9),       // Muted text
   );
   
   // Green theme - Modern emerald variant
   static final AppThemeColors green = AppThemeColors(
-    primary: const Color(0xFF10B981),     // Emerald
-    secondary: const Color(0xFF64748B),   // Slate
-    accent: const Color(0xFF34D399),      // Light emerald
-    success: const Color(0xFF10B981),     // Emerald
-    warning: const Color(0xFFF59E0B),     // Amber
-    error: const Color(0xFFEF4444),       // Red
-    surface: const Color(0xFF161C2D),     // Surface
-    card: const Color(0xFF1E2435),        // Card
-    text: const Color(0xFFF1F5F9),        // Main text
-    muted: const Color(0xFF94A3B8),       // Muted text
-  );
-  
-  // Cyan theme - Modern cyan variant
-  static final AppThemeColors cyan = AppThemeColors(
-    primary: const Color(0xFF06B6D4),     // Cyan
-    secondary: const Color(0xFF64748B),   // Slate
-    accent: const Color(0xFF22D3EE),      // Light cyan
-    success: const Color(0xFF10B981),     // Emerald
-    warning: const Color(0xFFF59E0B),     // Amber
-    error: const Color(0xFFEF4444),       // Red
-    surface: const Color(0xFF161C2D),     // Surface
-    card: const Color(0xFF1E2435),        // Card
-    text: const Color(0xFFF1F5F9),        // Main text
-    muted: const Color(0xFF94A3B8),       // Muted text
+    primary: const Color(0xFF00E6A6),     // Bright green
+    secondary: const Color(0xFF33EDB8),   // Light green
+    accent: const Color(0xFF33EDB8),      // Light emerald
+    success: const Color(0xFF00E6A6),     // Bright green
+    warning: const Color(0xFFFFD93D),     // Yellow
+    error: const Color(0xFFFF6B6B),       // Red
+    surface: const Color(0xFF141A1A),     // Surface
+    card: const Color(0xFF1A2222),        // Card
+    text: const Color(0xFFF0FEFE),        // Main text
+    muted: const Color(0xFFB3D9D9),       // Muted text
   );
 }
 
@@ -85,49 +85,49 @@ class AppThemeColors {
     required this.muted,
   });
   
-  /// Get theme colors by name - Purple is now default
+  /// Get theme colors by name - Cyan is now default
   static AppThemeColors getThemeColors(String themeName) {
     switch (themeName.toLowerCase()) {
       case 'blue':
         return AppThemes.blue;
-      case 'cyan':
-        return AppThemes.cyan;
+      case 'purple':
+        return AppThemes.purple;
       case 'green':
         return AppThemes.green;
-      case 'purple':
+      case 'cyan':
       default:
-        return AppThemes.purple; // Purple is now default
+        return AppThemes.cyan; // Cyan is now default
     }
   }
   
   /// Get list of available themes
-  List<String> get availableThemes => ['purple', 'blue', 'cyan', 'green'];
+  List<String> get availableThemes => ['cyan', 'purple', 'blue', 'green'];
   
   /// Get theme icon
   static IconData getThemeIcon(String theme) {
     switch (theme) {
+      case 'cyan':
+        return Icons.water_drop;
       case 'purple':
         return Icons.star;
       case 'blue':
-        return Icons.water_drop;
-      case 'cyan':
         return Icons.circle;
       case 'green':
         return Icons.eco;
       default:
-        return Icons.star;
+        return Icons.water_drop;
     }
   }
   
   /// Get theme display name
   static String getThemeDisplayName(String theme) {
     switch (theme) {
+      case 'cyan':
+        return 'Cyan Turquoise';
       case 'purple':
         return 'Modern Purple';
       case 'blue':
         return 'Ocean Blue';
-      case 'cyan':
-        return 'Cyan';
       case 'green':
         return 'Emerald';
       default:
@@ -142,19 +142,19 @@ class AppThemeColors {
     end: Alignment.bottomRight,
   );
   
-  /// Background decoration - Dashboard style gradient
+  /// Background decoration - Dark cyan gradient
   BoxDecoration getBackgroundDecoration() {
     return BoxDecoration(
       gradient: RadialGradient(
         center: Alignment.topLeft,
         radius: 3.0,
         colors: [
-          const Color(0xFF1E293B).withValues(alpha: 0.8),
-          const Color(0xFF0F172A),
-          const Color(0xFF0A0E1A),
+          const Color(0xFF1A2222).withValues(alpha: 0.8),
+          const Color(0xFF141A1A),
+          const Color(0xFF0A0F0F),
         ],
       ),
-      color: const Color(0xFF0A0E1A),
+      color: const Color(0xFF0A0F0F),
     );
   }
   

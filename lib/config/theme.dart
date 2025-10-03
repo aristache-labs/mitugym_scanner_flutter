@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
-/// Material Design 3 theme matching modern dashboard design
-/// Purple/Indigo color scheme with deep navy background
+/// Material Design 3 theme matching modern admin panel design
+/// Cyan/Turquoise color scheme with very dark background
 
 final ThemeData appTheme = ThemeData(
   useMaterial3: true,
