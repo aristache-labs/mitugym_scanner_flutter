@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import '../config/app_colors.dart';
-import '../config/app_themes.dart';
 import '../providers/config_provider.dart';
 
 /// Modern settings screen - Dashboard style
@@ -33,12 +31,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   late String _exportFormat;
   late bool _autoStartScanning;
   late bool _cameraVisible;
-  late String _selectedTheme;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     
     // Initialize from current config
     final config = ref.read(configProvider);
@@ -55,7 +52,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     _exportFormat = config.exportFormat;
     _autoStartScanning = config.autoStartScanning;
     _cameraVisible = config.cameraVisible;
-    _selectedTheme = config.theme.isEmpty ? 'purple' : config.theme;
   }
 
   @override
@@ -87,10 +83,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                   color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: const Icon(Icons.check, color: Colors.white, size: 16),
+                child: const Icon(Icons.check_rounded, color: Colors.white, size: 16),
               ),
               const SizedBox(width: 12),
-              const Text('Settings saved successfully'),
+              Text(
+                'Settings saved successfully',
+                style: GoogleFonts.inter(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ],
           ),
           backgroundColor: AppColors.success,
@@ -99,136 +101,86 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
           duration: const Duration(seconds: 2),
         ),
       );
-      Navigator.pop(context);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: AppThemeColors.getThemeColors(_selectedTheme).getBackgroundDecoration(),
-        child: Column(
-          children: [
-            // Modern app bar with gradient
-            _buildModernAppBar(),
-            
-            // Content
-            Expanded(
-              child: Form(
-                key: _formKey,
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _buildGeneralTab(),
-                    _buildDisplayTab(),
-                    _buildAudioTab(),
-                    _buildAdvancedTab(),
-                    _buildThemeTab(),
-                  ],
-                ),
-              ),
+    return Column(
+      children: [
+        // Modern header with tabs
+        _buildModernHeader(),
+        
+        // Content
+        Expanded(
+          child: Form(
+            key: _formKey,
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _buildGeneralTab(),
+                _buildDisplayTab(),
+                _buildAudioTab(),
+                _buildAdvancedTab(),
+              ],
             ),
-            
-            // Modern bottom bar
-            _buildBottomActionBar(),
-          ],
+          ),
         ),
-      ),
+        
+        // Modern bottom bar
+        _buildBottomActionBar(),
+      ],
     );
   }
 
-  /// Build modern app bar with gradient
-  Widget _buildModernAppBar() {
+  /// Build modern header with tabs
+  Widget _buildModernHeader() {
     return Container(
-      padding: EdgeInsets.only(
-        top: MediaQuery.of(context).padding.top,
-        left: 16,
-        right: 16,
-        bottom: 16,
-      ),
+      padding: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppColors.primary.withValues(alpha: 0.9),
-            AppColors.accent.withValues(alpha: 0.7),
+            AppColors.card.withValues(alpha: 0.9),
+            AppColors.surface.withValues(alpha: 0.7),
           ],
         ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-            spreadRadius: -4,
-          ),
-        ],
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(24),
+          bottomRight: Radius.circular(24),
+        ),
+        border: Border.all(
+          color: AppColors.border.withValues(alpha: 0.3),
+          width: 1,
+        ),
       ),
       child: Column(
         children: [
-          // Header row
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
-                  onPressed: () => Navigator.pop(context),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Settings',
-                      style: GoogleFonts.inter(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                    Text(
-                      'Customize your experience',
-                      style: GoogleFonts.inter(
-                        color: Colors.white.withValues(alpha: 0.8),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          
-          const SizedBox(height: 20),
-          
           // Tab bar
           Container(
+            margin: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(16),
+              color: AppColors.surface.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(14),
             ),
             child: TabBar(
               controller: _tabController,
               indicator: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(14),
+                gradient: AppColors.primaryGradient,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               indicatorSize: TabBarIndicatorSize.tab,
               dividerColor: Colors.transparent,
               labelColor: Colors.white,
-              unselectedLabelColor: Colors.white.withValues(alpha: 0.6),
+              unselectedLabelColor: AppColors.textMuted,
               labelStyle: GoogleFonts.inter(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
@@ -243,65 +195,80 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 Tab(text: 'DISPLAY'),
                 Tab(text: 'AUDIO'),
                 Tab(text: 'ADVANCED'),
-                Tab(text: 'THEME'),
               ],
             ),
           ),
         ],
       ),
-    ).animate().slideY(begin: -0.3, duration: 400.ms, curve: Curves.easeOut);
+    );
   }
 
   /// Build modern bottom action bar
   Widget _buildBottomActionBar() {
     return Container(
-      padding: EdgeInsets.only(
-        left: 16,
-        right: 16,
-        bottom: MediaQuery.of(context).padding.bottom + 16,
-        top: 16,
-      ),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            AppColors.surface.withValues(alpha: 0.9),
-            AppColors.surface,
+            AppColors.card.withValues(alpha: 0.9),
+            AppColors.surface.withValues(alpha: 0.7),
           ],
         ),
-        border: Border(
-          top: BorderSide(
-            color: AppColors.border.withValues(alpha: 0.5),
-            width: 1,
-          ),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
+        ),
+        border: Border.all(
+          color: AppColors.border.withValues(alpha: 0.3),
+          width: 1,
         ),
       ),
       child: Row(
         children: [
           Expanded(
-            child: Container(
-              height: 48,
-              decoration: BoxDecoration(
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {
+                  // Reset to original values
+                  final config = ref.read(configProvider);
+                  setState(() {
+                    _apiUrlController.text = config.apiUrl;
+                    _apiKeyController.text = config.apiKey;
+                    _cameraIndex = config.cameraIndex;
+                    _debounceDuration = config.debounceDuration;
+                    _audioEnabled = config.audioEnabled;
+                    _fontSize = config.fontSize;
+                    _animationSpeed = config.animationSpeed;
+                    _soundVolume = config.soundVolume;
+                    _cameraFrameRate = config.cameraFrameRate;
+                    _logRetentionDays = config.logRetentionDays;
+                    _exportFormat = config.exportFormat;
+                    _autoStartScanning = config.autoStartScanning;
+                    _cameraVisible = config.cameraVisible;
+                  });
+                },
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: AppColors.border.withValues(alpha: 0.5),
-                  width: 1.5,
-                ),
-              ),
-              child: TextButton(
-                onPressed: () => Navigator.pop(context),
-                style: TextButton.styleFrom(
-                  foregroundColor: AppColors.textSecondary,
-                  shape: RoundedRectangleBorder(
+                child: Container(
+                  height: 48,
+                  decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: AppColors.border,
+                      width: 1.5,
+                    ),
                   ),
-                ),
-                child: Text(
-                  'Cancel',
-                  style: GoogleFonts.inter(
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.3,
+                  child: Center(
+                    child: Text(
+                      'Reset',
+                      style: GoogleFonts.inter(
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -310,42 +277,39 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
           const SizedBox(width: 12),
           Expanded(
             flex: 2,
-            child: Container(
-              height: 48,
-              decoration: BoxDecoration(
-                gradient: AppColors.primaryGradient,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: _saveSettings,
                 borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.3),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: ElevatedButton(
-                onPressed: _saveSettings,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
+                child: Container(
+                  height: 48,
+                  decoration: BoxDecoration(
+                    gradient: AppColors.primaryGradient,
                     borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.save_rounded, size: 18),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Save Settings',
-                      style: GoogleFonts.inter(
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.3,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withValues(alpha: 0.3),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.save_rounded, size: 18, color: Colors.white),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Save Settings',
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -530,185 +494,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     );
   }
 
-  Widget _buildThemeTab() {
-    return ListView(
-      padding: const EdgeInsets.all(20),
-      children: [
-        _buildSection(
-          'Color Theme',
-          Icons.palette,
-          [
-            GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childAspectRatio: 1.2,
-              children: ['purple', 'blue', 'cyan', 'green'].map((themeName) {
-                final isSelected = themeName == _selectedTheme;
-                final colors = AppThemeColors.getThemeColors(themeName);
-                
-                return Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () => setState(() => _selectedTheme = themeName),
-                    borderRadius: BorderRadius.circular(16),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: colors.primaryGradient,
-                        borderRadius: BorderRadius.circular(16),
-                        border: isSelected
-                            ? Border.all(
-                                color: Colors.white,
-                                width: 3,
-                              )
-                            : Border.all(
-                                color: Colors.white.withValues(alpha: 0.3),
-                                width: 1,
-                              ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: colors.primary.withValues(alpha: 0.3),
-                            blurRadius: isSelected ? 20 : 10,
-                            offset: const Offset(0, 8),
-                            spreadRadius: isSelected ? 2 : -2,
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Icon(
-                              AppThemeColors.getThemeIcon(themeName),
-                              color: Colors.white,
-                              size: 32,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            AppThemeColors.getThemeDisplayName(themeName),
-                            style: GoogleFonts.inter(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.3,
-                            ),
-                          ),
-                          if (isSelected) ...[
-                            const SizedBox(height: 8),
-                            Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.3),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: const Icon(
-                                Icons.check,
-                                color: Colors.white,
-                                size: 16,
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ),
-                ).animate().scale(
-                  begin: const Offset(0.8, 0.8),
-                  duration: 200.ms,
-                  curve: Curves.easeOut,
-                );
-              }).toList(),
-            ),
-            
-            const SizedBox(height: 24),
-            
-            // Theme preview
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.surface.withValues(alpha: 0.8),
-                    AppColors.surface.withValues(alpha: 0.6),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: AppColors.border.withValues(alpha: 0.3),
-                  width: 1,
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Theme Preview',
-                    style: GoogleFonts.inter(
-                      color: AppColors.textPrimary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          height: 40,
-                          decoration: BoxDecoration(
-                            gradient: AppThemeColors.getThemeColors(_selectedTheme).primaryGradient,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Primary',
-                              style: GoogleFonts.inter(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Container(
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: AppThemeColors.getThemeColors(_selectedTheme).success,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Success',
-                              style: GoogleFonts.inter(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
 
   Widget _buildSection(String title, IconData icon, List<Widget> children) {
     return Container(
@@ -773,8 +558,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
           ),
         ],
       ),
-    ).animate().slideX(begin: 0.1, duration: 300.ms, curve: Curves.easeOut)
-        .fadeIn(duration: 200.ms);
+    );
   }
 
   Widget _buildTextField({
