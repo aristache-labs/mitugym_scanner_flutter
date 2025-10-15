@@ -816,24 +816,41 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                       ),
                     ],
                   )
-                : Text(
-                    '--',
-                    style: GoogleFonts.inter(
-                      color: AppColors.textMuted,
-                      fontSize: 13,
-                    ),
-                  ),
+                : activity.checkInTime != null
+                    ? Text(
+                        'Still in the GYM',
+                        style: GoogleFonts.inter(
+                          color: AppColors.success,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      )
+                    : Text(
+                        '--',
+                        style: GoogleFonts.inter(
+                          color: AppColors.textMuted,
+                          fontSize: 13,
+                        ),
+                      ),
           ),
           
           // Duration column
           SizedBox(
             width: 120,
-        child: Text(
-              activity.formattedDuration,
+            child: Text(
+              activity.checkInTime != null && activity.checkOutTime == null
+                  ? 'Pending'
+                  : activity.formattedDuration,
               style: GoogleFonts.inter(
-                color: AppColors.primary,
+                color: activity.checkInTime != null && activity.checkOutTime == null
+                    ? AppColors.warning
+                    : AppColors.primary,
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
+                fontStyle: activity.checkInTime != null && activity.checkOutTime == null
+                    ? FontStyle.italic
+                    : FontStyle.normal,
               ),
             ),
           ),

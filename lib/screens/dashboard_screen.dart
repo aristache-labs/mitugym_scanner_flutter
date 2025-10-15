@@ -257,175 +257,282 @@ class DashboardScreen extends ConsumerWidget {
                 ),
               ),
             )
-          else
+          else ...[
+            _buildActivityTableHeader(),
             ...recentActivities.map((activity) => _buildActivityItem(activity)),
+          ],
         ],
       ),
     );
   }
 
-  /// Build activity item with avatar, status, and details
-  Widget _buildActivityItem(dynamic activity) {
-    final isCheckIn = activity.action.toLowerCase().contains('in');
-    final isSuccess = activity.success;
-    final dateFormat = DateFormat('MMM d, yyyy');
-    final timeFormat = DateFormat('HH:mm');
-    
-    // Determine badge type
-    String badgeLabel;
-    Color badgeColor;
-    IconData badgeIcon;
-    
-    if (!isSuccess) {
-      // Failed scan - show as Denied
-      badgeLabel = 'Denied';
-      badgeColor = AppColors.error;
-      badgeIcon = Icons.block_rounded;
-    } else if (isCheckIn) {
-      badgeLabel = 'Check-in';
-      badgeColor = AppColors.primary;
-      badgeIcon = Icons.login_rounded;
-    } else {
-      badgeLabel = 'Check-out';
-      badgeColor = AppColors.warning;
-      badgeIcon = Icons.logout_rounded;
-    }
-    
+  /// Build activity table header (matching history page)
+  Widget _buildActivityTableHeader() {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: AppColors.surface.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(12),
+        color: AppColors.surface.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.2),
+          color: AppColors.border.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
       child: Row(
         children: [
-          // Avatar with status indicator
-          Stack(
-            children: [
-              // Avatar circle with image or initials
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: activity.hasAvatar ? null : AppColors.primaryGradient,
-                  border: Border.all(
-                    color: AppColors.primary.withValues(alpha: 0.3),
-                    width: 2,
-                  ),
-                  image: activity.hasAvatar
-                      ? DecorationImage(
-                          image: NetworkImage(activity.avatarUrl!),
-                          fit: BoxFit.cover,
-                        )
-                      : null,
-                ),
-                child: activity.hasAvatar
-                    ? null
-                    : Center(
-                        child: Text(
-                          activity.initials,
-                          style: GoogleFonts.inter(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
+          // Member column (with avatar space)
+          SizedBox(
+            width: 200,
+            child: Text(
+              'MEMBER',
+              style: GoogleFonts.inter(
+                color: AppColors.textMuted,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.8,
+              ),
+            ),
+          ),
+          
+          // Checked In column
+          Expanded(
+            flex: 2,
+            child: Text(
+              'CHECKED IN',
+              style: GoogleFonts.inter(
+                color: AppColors.textMuted,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.8,
+              ),
+            ),
+          ),
+          
+          // Checked Out column
+          Expanded(
+            flex: 2,
+            child: Text(
+              'CHECKED OUT',
+              style: GoogleFonts.inter(
+                color: AppColors.textMuted,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.8,
+              ),
+            ),
+          ),
+          
+          // Duration column
+          SizedBox(
+            width: 120,
+            child: Text(
+              'DURATION',
+              style: GoogleFonts.inter(
+                color: AppColors.textMuted,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.8,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Build activity item (matching history page layout)
+  Widget _buildActivityItem(dynamic activity) {
+    final isSuccess = activity.success;
+    final statusColor = isSuccess ? AppColors.success : AppColors.error;
+    
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.card.withValues(alpha: 0.7),
+            AppColors.surface.withValues(alpha: 0.5),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: AppColors.border.withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          // Member column (avatar + name)
+          SizedBox(
+            width: 200,
+            child: Row(
+              children: [
+                // Avatar with status indicator
+                Stack(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: activity.hasAvatar ? null : AppColors.primaryGradient,
+                        border: Border.all(
+                          color: AppColors.primary.withValues(alpha: 0.3),
+                          width: 2,
+                        ),
+                        image: activity.hasAvatar
+                            ? DecorationImage(
+                                image: NetworkImage(activity.avatarUrl!),
+                                fit: BoxFit.cover,
+                              )
+                            : null,
+                      ),
+                      child: activity.hasAvatar
+                          ? null
+                          : Center(
+                              child: Text(
+                                activity.initials,
+                                style: GoogleFonts.inter(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                    ),
+                    Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: Container(
+                        width: 12,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: statusColor,
+                          border: Border.all(
+                            color: AppColors.card,
+                            width: 2,
                           ),
                         ),
                       ),
-              ),
-              // Status indicator dot
-              Positioned(
-                right: 0,
-                bottom: 0,
-                child: Container(
-                  width: 12,
-                  height: 12,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: activity.success ? AppColors.success : AppColors.error,
-                    border: Border.all(
-                      color: AppColors.surface,
-                      width: 2,
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    activity.memberName,
+                    style: GoogleFonts.inter(
+                      color: AppColors.textPrimary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // Checked In column
+          Expanded(
+            flex: 2,
+            child: activity.checkInTime != null
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        DateFormat('MMM d, yyyy').format(activity.checkInTime!),
+                        style: GoogleFonts.inter(
+                          color: AppColors.textSecondary,
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        DateFormat('h:mm a').format(activity.checkInTime!),
+                        style: GoogleFonts.inter(
+                          color: AppColors.textPrimary,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  )
+                : Text(
+                    '--',
+                    style: GoogleFonts.inter(
+                      color: AppColors.textMuted,
+                      fontSize: 13,
                     ),
                   ),
-                ),
-              ),
-            ],
           ),
-          const SizedBox(width: 12),
           
-          // Member info
+          // Checked Out column
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Name
-                Text(
-                  activity.memberName,
-                  style: GoogleFonts.inter(
-                    color: AppColors.textPrimary,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                // Date
-                Text(
-                  dateFormat.format(activity.time),
-                  style: GoogleFonts.inter(
-                    color: AppColors.textMuted,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
+            flex: 2,
+            child: activity.checkOutTime != null
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        DateFormat('MMM d, yyyy').format(activity.checkOutTime!),
+                        style: GoogleFonts.inter(
+                          color: AppColors.textSecondary,
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        DateFormat('h:mm a').format(activity.checkOutTime!),
+                        style: GoogleFonts.inter(
+                          color: AppColors.textPrimary,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  )
+                : activity.checkInTime != null
+                    ? Text(
+                        'Still in the GYM',
+                        style: GoogleFonts.inter(
+                          color: AppColors.success,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      )
+                    : Text(
+                        '--',
+                        style: GoogleFonts.inter(
+                          color: AppColors.textMuted,
+                          fontSize: 13,
+                        ),
+                      ),
           ),
           
-          // Check-in/out/denied badge
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(
-              color: badgeColor.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(
-                color: badgeColor.withValues(alpha: 0.3),
-                width: 1,
+          // Duration column
+          SizedBox(
+            width: 120,
+            child: Text(
+              activity.checkInTime != null && activity.checkOutTime == null
+                  ? 'Pending'
+                  : activity.formattedDuration,
+              style: GoogleFonts.inter(
+                color: activity.checkInTime != null && activity.checkOutTime == null
+                    ? AppColors.warning
+                    : AppColors.primary,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                fontStyle: activity.checkInTime != null && activity.checkOutTime == null
+                    ? FontStyle.italic
+                    : FontStyle.normal,
               ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  badgeIcon,
-                  size: 14,
-                  color: badgeColor,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  badgeLabel,
-                  style: GoogleFonts.inter(
-                    color: badgeColor,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 12),
-          
-          // Time
-          Text(
-            timeFormat.format(activity.time),
-            style: GoogleFonts.inter(
-              color: AppColors.textSecondary,
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
             ),
           ),
         ],
