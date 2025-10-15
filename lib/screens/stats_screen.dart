@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../config/app_colors.dart';
-import '../providers/scan_provider.dart';
+import '../providers/history_provider.dart';
 
 /// Check-ins Analytics Screen - Modern design
 class StatsScreen extends ConsumerWidget {
@@ -11,11 +11,15 @@ class StatsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final scanState = ref.watch(scanProvider);
+    final historyState = ref.watch(historyProvider);
     
-    // Calculate all statistics
-    final todayActivities = scanState.recentActivity
-        .where((a) => a.time.day == DateTime.now().day);
+    // Calculate all statistics for today
+    final now = DateTime.now();
+    final todayStart = DateTime(now.year, now.month, now.day);
+    final todayEnd = todayStart.add(const Duration(days: 1));
+    
+    final todayActivities = historyState.items.where((a) => 
+        a.time.isAfter(todayStart) && a.time.isBefore(todayEnd));
     
     final totalScans = todayActivities.length;
     

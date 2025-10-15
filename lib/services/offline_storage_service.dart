@@ -195,10 +195,29 @@ class OfflineStorageService {
     }
   }
   
-  /// Save check-in to history
+  /// Save check-in to history (prevents duplicates)
   Future<void> saveCheckInHistory(ActivityLog activity, {bool synced = true}) async {
     try {
       final db = await database;
+      
+      // Check for duplicate entry (same member, action, and timestamp within 5 seconds)
+      final timestampStart = activity.time.millisecondsSinceEpoch - 5000;
+      final timestampEnd = activity.time.millisecondsSinceEpoch + 5000;
+      
+      final existing = await db.query(
+        'checkin_history',
+        where: 'member_name = ? AND action = ? AND timestamp BETWEEN ? AND ?',
+        whereArgs: [activity.memberName, activity.action, timestampStart, timestampEnd],
+        limit: 1,
+      );
+      
+      // If duplicate exists, skip insertion
+      if (existing.isNotEmpty) {
+        _logger.d('Duplicate entry detected for ${activity.memberName}, skipping');
+        return;
+      }
+      
+      // Insert new record
       await db.insert('checkin_history', {
         'member_id': activity.memberId ?? '',
         'member_name': activity.memberName,
@@ -383,6 +402,55 @@ class OfflineStorageService {
       return deletedCount;
     } catch (e) {
       _logger.e('Failed to delete old history: $e');
+      return 0;
+    }
+  }
+  
+  /// Remove duplicate entries from database
+  Future<int> removeDuplicates() async {
+    try {
+      final db = await database;
+      
+      // Find duplicates (same member_name, action, and timestamp within 5 seconds)
+      final duplicates = await db.rawQuery('''
+        SELECT member_name, action, timestamp, COUNT(*) as count
+        FROM checkin_history
+        GROUP BY member_name, action, timestamp
+        HAVING count > 1
+      ''');
+      
+      int deletedCount = 0;
+      
+      for (final dup in duplicates) {
+        final memberName = dup['member_name'] as String;
+        final action = dup['action'] as String;
+        final timestamp = dup['timestamp'] as int;
+        
+        // Get all duplicates for this entry
+        final entries = await db.query(
+          'checkin_history',
+          where: 'member_name = ? AND action = ? AND timestamp = ?',
+          whereArgs: [memberName, action, timestamp],
+          orderBy: 'id ASC',
+        );
+        
+        // Keep the first one, delete the rest
+        if (entries.length > 1) {
+          for (int i = 1; i < entries.length; i++) {
+            await db.delete(
+              'checkin_history',
+              where: 'id = ?',
+              whereArgs: [entries[i]['id']],
+            );
+            deletedCount++;
+          }
+        }
+      }
+      
+      _logger.i('Removed $deletedCount duplicate entries');
+      return deletedCount;
+    } catch (e) {
+      _logger.e('Failed to remove duplicates: $e');
       return 0;
     }
   }

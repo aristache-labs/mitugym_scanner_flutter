@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../config/app_colors.dart';
-import '../providers/scan_provider.dart';
+import '../providers/history_provider.dart';
 
 /// Dashboard screen - Overview and quick stats
 class DashboardScreen extends ConsumerWidget {
@@ -11,26 +11,31 @@ class DashboardScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final scanState = ref.watch(scanProvider);
+    final historyState = ref.watch(historyProvider);
 
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Stats overview
-          _buildStatsOverview(scanState),
+          _buildStatsOverview(historyState),
           const SizedBox(height: 16),
           
           // Recent activity
-          _buildRecentActivity(scanState),
+          _buildRecentActivity(historyState),
         ],
       ),
     );
   }
 
-  Widget _buildStatsOverview(ScanState scanState) {
-    final todayActivities = scanState.recentActivity
-        .where((a) => a.time.day == DateTime.now().day);
+  Widget _buildStatsOverview(HistoryState historyState) {
+    // Filter for today's activities from the full history
+    final now = DateTime.now();
+    final todayStart = DateTime(now.year, now.month, now.day);
+    final todayEnd = todayStart.add(const Duration(days: 1));
+    
+    final todayActivities = historyState.items.where((a) => 
+        a.time.isAfter(todayStart) && a.time.isBefore(todayEnd));
     
     final totalScans = todayActivities.length;
     
@@ -206,8 +211,9 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildRecentActivity(ScanState scanState) {
-    final recentActivities = scanState.recentActivity.take(10).toList();
+  Widget _buildRecentActivity(HistoryState historyState) {
+    // Get the 10 most recent activities from history
+    final recentActivities = historyState.items.take(10).toList();
 
     return Container(
       padding: const EdgeInsets.all(24),

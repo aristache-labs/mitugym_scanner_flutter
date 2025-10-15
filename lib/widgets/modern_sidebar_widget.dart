@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../config/app_themes.dart';
 import '../config/app_colors.dart';
-import '../providers/scan_provider.dart';
+import '../providers/history_provider.dart';
 import '../models/activity_log.dart';
 
 /// Modern dashboard-style sidebar widget
@@ -51,7 +51,7 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
 
   @override
   Widget build(BuildContext context) {
-    final scanState = ref.watch(scanProvider);
+    final historyState = ref.watch(historyProvider);
 
     return FadeTransition(
       opacity: _fadeAnimation,
@@ -91,11 +91,11 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 children: [
-                  _buildCompactStatsCard(scanState),
+                  _buildCompactStatsCard(historyState),
                   const SizedBox(height: 24),
                   
                   // Recent Activity (compact)
-                  _buildCompactActivityCard(scanState),
+                  _buildCompactActivityCard(historyState),
                 ],
               ),
             ),
@@ -204,9 +204,14 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
   }
 
   /// Build compact stats card
-  Widget _buildCompactStatsCard(ScanState scanState) {
-    final todayActivities = scanState.recentActivity
-        .where((a) => a.time.day == DateTime.now().day);
+  Widget _buildCompactStatsCard(HistoryState historyState) {
+    // Filter for today's activities from the full history
+    final now = DateTime.now();
+    final todayStart = DateTime(now.year, now.month, now.day);
+    final todayEnd = todayStart.add(const Duration(days: 1));
+    
+    final todayActivities = historyState.items.where((a) => 
+        a.time.isAfter(todayStart) && a.time.isBefore(todayEnd));
     
     final todayCheckIns = todayActivities
         .where((a) => a.success && a.action.toLowerCase().contains('in'))
@@ -335,8 +340,8 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
   }
 
   /// Build compact activity card
-  Widget _buildCompactActivityCard(ScanState scanState) {
-    final recentActivities = scanState.recentActivity.take(4).toList();
+  Widget _buildCompactActivityCard(HistoryState historyState) {
+    final recentActivities = historyState.items.take(4).toList();
 
     if (recentActivities.isEmpty) {
       return const SizedBox.shrink();
