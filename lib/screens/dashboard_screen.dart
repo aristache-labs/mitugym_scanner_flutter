@@ -39,12 +39,14 @@ class DashboardScreen extends ConsumerWidget {
     
     final totalScans = todayActivities.length;
     
+    // Count check-ins: activities with checkInTime set and successful
     final checkIns = todayActivities
-        .where((a) => a.success && a.action.toLowerCase().contains('in'))
+        .where((a) => a.success && a.checkInTime != null)
         .length;
     
+    // Count check-outs: activities with checkOutTime set and successful
     final checkOuts = todayActivities
-        .where((a) => a.success && !a.action.toLowerCase().contains('in'))
+        .where((a) => a.success && a.checkOutTime != null)
         .length;
     
     final denied = todayActivities
@@ -212,8 +214,15 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   Widget _buildRecentActivity(HistoryState historyState) {
-    // Get the 10 most recent activities from history
-    final recentActivities = historyState.items.take(10).toList();
+    // Get only today's activities (matching check-ins page)
+    final now = DateTime.now();
+    final todayStart = DateTime(now.year, now.month, now.day);
+    final todayEnd = todayStart.add(const Duration(days: 1));
+    
+    final recentActivities = historyState.items
+        .where((a) => a.time.isAfter(todayStart) && a.time.isBefore(todayEnd))
+        .take(10)
+        .toList();
 
     return Container(
       padding: const EdgeInsets.all(24),
@@ -236,7 +245,7 @@ class DashboardScreen extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Recent Activity',
+            'Today\'s Activity',
             style: GoogleFonts.inter(
               color: AppColors.textPrimary,
               fontSize: 18,
@@ -249,7 +258,7 @@ class DashboardScreen extends ConsumerWidget {
               child: Padding(
                 padding: const EdgeInsets.all(32.0),
                 child: Text(
-                  'No recent activity',
+                  'No activity today',
                   style: GoogleFonts.inter(
                     color: AppColors.textMuted,
                     fontSize: 14,

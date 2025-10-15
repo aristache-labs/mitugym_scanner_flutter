@@ -213,12 +213,14 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
     final todayActivities = historyState.items.where((a) => 
         a.time.isAfter(todayStart) && a.time.isBefore(todayEnd));
     
+    // Count check-ins: activities with checkInTime set and successful
     final todayCheckIns = todayActivities
-        .where((a) => a.success && a.action.toLowerCase().contains('in'))
+        .where((a) => a.success && a.checkInTime != null)
         .length;
     
+    // Count check-outs: activities with checkOutTime set and successful
     final todayCheckOuts = todayActivities
-        .where((a) => a.success && !a.action.toLowerCase().contains('in'))
+        .where((a) => a.success && a.checkOutTime != null)
         .length;
     
     final todayDenied = todayActivities

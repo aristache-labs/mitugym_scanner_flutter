@@ -23,12 +23,14 @@ class StatsScreen extends ConsumerWidget {
     
     final totalScans = todayActivities.length;
     
+    // Count check-ins: activities with checkInTime set and successful
     final checkIns = todayActivities
-        .where((a) => a.success && a.action.toLowerCase().contains('in'))
+        .where((a) => a.success && a.checkInTime != null)
         .length;
     
+    // Count check-outs: activities with checkOutTime set and successful
     final checkOuts = todayActivities
-        .where((a) => a.success && !a.action.toLowerCase().contains('in'))
+        .where((a) => a.success && a.checkOutTime != null)
         .length;
     
     final denied = todayActivities
@@ -376,9 +378,9 @@ class StatsScreen extends ConsumerWidget {
 
   int _getCountByPeriod(List activities, String period) {
     return activities.where((a) {
-      // Only count successful check-ins
+      // Only count successful check-ins (activities with checkInTime)
       if (!a.success) return false;
-      if (!a.action.toLowerCase().contains('in')) return false;
+      if (a.checkInTime == null) return false;
       
       final hour = a.time.hour;
       if (period == 'Morning') return hour >= 6 && hour < 12;
