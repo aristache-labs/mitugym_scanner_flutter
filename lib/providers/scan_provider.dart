@@ -7,6 +7,7 @@ import '../services/audio_service.dart';
 import '../services/logger_service.dart';
 import 'config_provider.dart';
 import 'offline_provider.dart';
+import 'history_provider.dart';
 
 /// Scan state class
 class ScanState {
@@ -111,15 +112,28 @@ class ScanNotifier extends Notifier<ScanState> {
         final action = result.message;
         await _loggerService.logSuccess(memberName, action);
         
-        // Add to activity log
-        _addActivityLog(ActivityLog(
+        // Determine if this is check-in or check-out based on the action message
+        final now = DateTime.now();
+        final isCheckIn = action.toLowerCase().contains('check-in') || 
+                         action.toLowerCase().contains('checked in');
+        
+        // Add to activity log with session data
+        final activityLog = ActivityLog(
           memberName: memberName,
           action: action,
-          time: DateTime.now(),
+          time: now,
           success: true,
           avatarUrl: result.data?.avatarUrl,
           memberId: result.data?.memberId,
-        ));
+          // For immediate display: populate check-in time for check-ins, check-out time for check-outs
+          checkInTime: isCheckIn ? now : null,
+          checkOutTime: !isCheckIn ? now : null,
+          method: 'QR',
+        );
+        _addActivityLog(activityLog);
+        
+        // Also add to history provider for immediate UI update
+        ref.read(historyProvider.notifier).addActivity(activityLog);
         
         state = state.copyWith(statusMessage: result.message);
       } else {
@@ -132,14 +146,18 @@ class ScanNotifier extends Notifier<ScanState> {
         );
         
         // Add to activity log
-        _addActivityLog(ActivityLog(
+        final activityLog = ActivityLog(
           memberName: result.data?.memberName ?? 'Error',
           action: result.error ?? result.message,
           time: DateTime.now(),
           success: false,
           avatarUrl: result.data?.avatarUrl,
           memberId: result.data?.memberId,
-        ));
+        );
+        _addActivityLog(activityLog);
+        
+        // Also add to history provider for immediate UI update
+        ref.read(historyProvider.notifier).addActivity(activityLog);
         
         state = state.copyWith(statusMessage: result.error ?? result.message);
       }

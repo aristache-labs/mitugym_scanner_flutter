@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
 
 /// Activity log model
-/// Represents a single check-in/check-out activity for display
+/// Represents a single check-in/check-out session for display
 class ActivityLog {
   final String memberName;
   final String action;
@@ -9,6 +9,12 @@ class ActivityLog {
   final bool success;
   final String? avatarUrl;
   final String? memberId;
+  
+  // Session data (for history view)
+  final DateTime? checkInTime;
+  final DateTime? checkOutTime;
+  final int? durationMinutes;
+  final String? method;
 
   const ActivityLog({
     required this.memberName,
@@ -17,6 +23,10 @@ class ActivityLog {
     required this.success,
     this.avatarUrl,
     this.memberId,
+    this.checkInTime,
+    this.checkOutTime,
+    this.durationMinutes,
+    this.method,
   });
 
   /// Get member initials for avatar fallback
@@ -40,6 +50,20 @@ class ActivityLog {
     return DateFormat('yyyy-MM-dd HH:mm:ss').format(time);
   }
 
+  /// Check if this is a session entry (has both check-in and check-out times)
+  bool get isSession => checkInTime != null && checkOutTime != null;
+  
+  /// Get formatted duration string
+  String get formattedDuration {
+    if (durationMinutes == null) return '--';
+    final hours = durationMinutes! ~/ 60;
+    final minutes = durationMinutes! % 60;
+    if (hours > 0) {
+      return '${hours}h ${minutes}m';
+    }
+    return '${minutes}m';
+  }
+
   /// Create a copy with updated fields
   ActivityLog copyWith({
     String? memberName,
@@ -48,6 +72,10 @@ class ActivityLog {
     bool? success,
     String? avatarUrl,
     String? memberId,
+    DateTime? checkInTime,
+    DateTime? checkOutTime,
+    int? durationMinutes,
+    String? method,
   }) {
     return ActivityLog(
       memberName: memberName ?? this.memberName,
@@ -56,6 +84,10 @@ class ActivityLog {
       success: success ?? this.success,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       memberId: memberId ?? this.memberId,
+      checkInTime: checkInTime ?? this.checkInTime,
+      checkOutTime: checkOutTime ?? this.checkOutTime,
+      durationMinutes: durationMinutes ?? this.durationMinutes,
+      method: method ?? this.method,
     );
   }
 

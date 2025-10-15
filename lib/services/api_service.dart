@@ -190,22 +190,40 @@ class ApiService {
           
           if (data is List) {
             return data.map((item) {
-              // Parse API log entry to ActivityLog
+              // Parse session entry to ActivityLog
               final responseDataObj = item['response_data'];
               String? avatarUrl;
+              DateTime? checkInTime;
+              DateTime? checkOutTime;
+              int? durationMinutes;
+              String? method;
               
-              // Extract avatar URL from response_data
+              // Extract data from response_data
               if (responseDataObj is Map<String, dynamic>) {
                 avatarUrl = responseDataObj['avatar_url'] as String?;
+                method = responseDataObj['method'] as String?;
+                durationMinutes = responseDataObj['duration_minutes'] as int?;
+                
+                // Parse check-in and check-out times
+                if (responseDataObj['check_in_time'] != null) {
+                  checkInTime = DateTime.parse(responseDataObj['check_in_time'] as String);
+                }
+                if (responseDataObj['check_out_time'] != null) {
+                  checkOutTime = DateTime.parse(responseDataObj['check_out_time'] as String);
+                }
               }
               
               return ActivityLog(
                 memberName: item['member_name'] as String? ?? 'Unknown',
-                action: item['api_action'] as String? ?? 'checkin',
+                action: item['api_action'] as String? ?? 'session',
                 time: DateTime.parse(item['created_at'] as String),
-                success: true, // Records in api_logs are successful by default
+                success: true,
                 memberId: item['member_id'] as String?,
                 avatarUrl: avatarUrl,
+                checkInTime: checkInTime,
+                checkOutTime: checkOutTime,
+                durationMinutes: durationMinutes,
+                method: method,
               );
             }).toList();
           }

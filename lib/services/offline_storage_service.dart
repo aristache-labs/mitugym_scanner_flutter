@@ -28,12 +28,12 @@ class OfflineStorageService {
       
       _logger.i('Initializing offline database at: $path');
       
-      return await openDatabase(
-        path,
-        version: 2,
-        onCreate: _createTables,
-        onUpgrade: _onUpgrade,
-      );
+    return await openDatabase(
+      path,
+      version: 3, // Updated for session columns
+      onCreate: _createTables,
+      onUpgrade: _onUpgrade,
+    );
     } catch (e) {
       _logger.e('Failed to initialize database: $e');
       rethrow;
@@ -65,7 +65,11 @@ class OfflineStorageService {
         timestamp INTEGER NOT NULL,
         success INTEGER NOT NULL,
         synced INTEGER DEFAULT 0,
-        avatar_url TEXT
+        avatar_url TEXT,
+        check_in_time INTEGER,
+        check_out_time INTEGER,
+        duration_minutes INTEGER,
+        method TEXT
       )
     ''');
     
@@ -97,9 +101,10 @@ class OfflineStorageService {
       // Add avatar_url column to checkin_history table
       try {
         await db.execute('ALTER TABLE checkin_history ADD COLUMN avatar_url TEXT');
-        _logger.i('Added avatar_url column to checkin_history table');
+        await db.execute('ALTER TABLE checkin_history ADD COLUMN member_id TEXT');
+        _logger.i('Added avatar_url and member_id columns to checkin_history table');
       } catch (e) {
-        _logger.w('Could not add avatar_url column (may already exist): $e');
+        _logger.w('Could not add columns (may already exist): $e');
       }
       
       // Create index for faster queries
@@ -111,6 +116,19 @@ class OfflineStorageService {
         _logger.i('Created index on timestamp column');
       } catch (e) {
         _logger.w('Could not create index: $e');
+      }
+    }
+    
+    if (oldVersion < 3) {
+      // Add session columns (check_in_time, check_out_time, duration_minutes, method)
+      try {
+        await db.execute('ALTER TABLE checkin_history ADD COLUMN check_in_time INTEGER');
+        await db.execute('ALTER TABLE checkin_history ADD COLUMN check_out_time INTEGER');
+        await db.execute('ALTER TABLE checkin_history ADD COLUMN duration_minutes INTEGER');
+        await db.execute('ALTER TABLE checkin_history ADD COLUMN method TEXT');
+        _logger.i('Added session columns to checkin_history table');
+      } catch (e) {
+        _logger.w('Could not add session columns (may already exist): $e');
       }
     }
   }
@@ -226,6 +244,10 @@ class OfflineStorageService {
         'success': activity.success ? 1 : 0,
         'synced': synced ? 1 : 0,
         'avatar_url': activity.avatarUrl,
+        'check_in_time': activity.checkInTime?.millisecondsSinceEpoch,
+        'check_out_time': activity.checkOutTime?.millisecondsSinceEpoch,
+        'duration_minutes': activity.durationMinutes,
+        'method': activity.method,
       });
       _logger.d('Saved check-in history for ${activity.memberName}');
     } catch (e) {
@@ -276,14 +298,31 @@ class OfflineStorageService {
         offset: offset,
       );
       
-      return results.map((data) => ActivityLog(
-        memberName: data['member_name'] as String,
-        action: data['action'] as String,
-        time: DateTime.fromMillisecondsSinceEpoch(data['timestamp'] as int),
-        success: (data['success'] as int) == 1,
-        memberId: (data['member_id'] as String?)?.isNotEmpty == true ? data['member_id'] as String : null,
-        avatarUrl: data['avatar_url'] as String?,
-      )).toList();
+      return results.map((data) {
+        // Parse session times
+        DateTime? checkInTime;
+        DateTime? checkOutTime;
+        
+        if (data['check_in_time'] != null) {
+          checkInTime = DateTime.fromMillisecondsSinceEpoch(data['check_in_time'] as int);
+        }
+        if (data['check_out_time'] != null) {
+          checkOutTime = DateTime.fromMillisecondsSinceEpoch(data['check_out_time'] as int);
+        }
+        
+        return ActivityLog(
+          memberName: data['member_name'] as String,
+          action: data['action'] as String,
+          time: DateTime.fromMillisecondsSinceEpoch(data['timestamp'] as int),
+          success: (data['success'] as int) == 1,
+          memberId: (data['member_id'] as String?)?.isNotEmpty == true ? data['member_id'] as String : null,
+          avatarUrl: data['avatar_url'] as String?,
+          checkInTime: checkInTime,
+          checkOutTime: checkOutTime,
+          durationMinutes: data['duration_minutes'] as int?,
+          method: data['method'] as String?,
+        );
+      }).toList();
     } catch (e) {
       _logger.e('Failed to get check-in history: $e');
       return [];

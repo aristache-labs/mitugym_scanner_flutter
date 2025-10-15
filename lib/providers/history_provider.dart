@@ -280,6 +280,23 @@ class HistoryNotifier extends Notifier<HistoryState> {
       return 0;
     }
   }
+
+  /// Add activity immediately (for real-time updates from scanner)
+  Future<void> addActivity(ActivityLog activity) async {
+    try {
+      // Add to local storage
+      final storage = ref.read(offlineStorageServiceProvider);
+      await storage.saveCheckInHistory(activity, synced: false);
+
+      // Add to the beginning of the in-memory list for immediate UI update
+      final updatedItems = [activity, ...state.items];
+      state = state.copyWith(items: updatedItems);
+
+      _logger.i('Added activity to history: ${activity.memberName}');
+    } catch (e) {
+      _logger.e('Failed to add activity: $e');
+    }
+  }
 }
 
 /// Provider for history
