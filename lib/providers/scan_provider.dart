@@ -6,6 +6,7 @@ import '../services/api_service.dart';
 import '../services/audio_service.dart';
 import '../services/logger_service.dart';
 import 'config_provider.dart';
+import 'offline_provider.dart';
 
 /// Scan state class
 class ScanState {
@@ -179,6 +180,11 @@ class ScanNotifier extends Notifier<ScanState> {
 
   /// Add activity to log (max 10 items)
   void _addActivityLog(ActivityLog log) {
+    // Save to database for persistent history
+    final storage = ref.read(offlineStorageServiceProvider);
+    storage.saveCheckInHistory(log, synced: true);
+    
+    // Keep in-memory list for dashboard (max 10)
     final newActivity = [log, ...state.recentActivity];
     if (newActivity.length > 10) {
       newActivity.removeLast();
@@ -196,7 +202,7 @@ class ScanNotifier extends Notifier<ScanState> {
 /// Provider for API Service
 final apiServiceProvider = Provider<ApiService>((ref) {
   final config = ref.watch(configProvider);
-  return ApiService(baseUrl: config.apiUrl);
+  return ApiService(apiUrl: config.apiUrl, apiKey: config.apiKey);
 });
 
 /// Provider for Audio Service

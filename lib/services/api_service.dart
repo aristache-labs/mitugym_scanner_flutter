@@ -2,15 +2,20 @@ import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import '../models/scan_result.dart';
 import '../models/member_data.dart';
+import '../models/activity_log.dart';
 
 /// API Service for MituGym backend
 /// Handles all HTTP requests to the check-in/check-out API
 class ApiService {
   final Dio _dio;
   final Logger _logger = Logger();
+  final String apiKey;
 
-  ApiService({String? baseUrl}) : _dio = Dio() {
-    _dio.options.baseUrl = baseUrl ?? 'https://mitugym-app-webpanel.vercel.app';
+  ApiService({
+    String? apiUrl,
+    required this.apiKey,
+  }) : _dio = Dio() {
+    _dio.options.baseUrl = apiUrl ?? 'https://mitugym-app-webpanel.vercel.app';
     _dio.options.connectTimeout = const Duration(seconds: 15);
     _dio.options.receiveTimeout = const Duration(seconds: 15);
     _dio.options.headers = {
@@ -152,9 +157,76 @@ class ApiService {
     }
   }
 
+  /// Fetch history from server (Supabase api_logs table)
+  Future<List<ActivityLog>> fetchHistoryFromServer({
+    DateTime? sinceDate,
+    int limit = 100,
+  }) async {
+    try {
+      _logger.i('Fetching history from server since: $sinceDate');
+
+      // Build query parameters
+      final queryParams = <String, dynamic>{
+        'api_key': apiKey,
+        'limit': limit,
+      };
+
+      if (sinceDate != null) {
+        queryParams['created_at'] = 'gte.${sinceDate.toIso8601String()}';
+      }
+
+      // Fetch from api_logs endpoint
+      final response = await _dio.get(
+        '/api/history',
+        queryParameters: queryParams,
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = response.data;
+        
+        // Handle the new API response format
+        if (responseData is Map<String, dynamic> && responseData['success'] == true) {
+          final data = responseData['data'];
+          
+          if (data is List) {
+            return data.map((item) {
+              // Parse API log entry to ActivityLog
+              final responseDataObj = item['response_data'];
+              String? avatarUrl;
+              
+              // Extract avatar URL from response_data
+              if (responseDataObj is Map<String, dynamic>) {
+                avatarUrl = responseDataObj['avatar_url'] as String?;
+              }
+              
+              return ActivityLog(
+                memberName: item['member_name'] as String? ?? 'Unknown',
+                action: item['api_action'] as String? ?? 'checkin',
+                time: DateTime.parse(item['created_at'] as String),
+                success: true, // Records in api_logs are successful by default
+                memberId: item['member_id'] as String?,
+                avatarUrl: avatarUrl,
+              );
+            }).toList();
+          }
+        }
+      }
+
+      _logger.w('Failed to fetch history: ${response.statusCode}');
+      return [];
+    } on DioException catch (e) {
+      _logger.e('Failed to fetch history from server: ${e.message}');
+      return [];
+    } catch (e) {
+      _logger.e('Unexpected error fetching history: $e');
+      return [];
+    }
+  }
+
   /// Dispose resources
   void dispose() {
     _dio.close();
   }
 }
+
 

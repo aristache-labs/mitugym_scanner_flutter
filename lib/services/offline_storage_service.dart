@@ -30,7 +30,7 @@ class OfflineStorageService {
       
       return await openDatabase(
         path,
-        version: 1,
+        version: 2,
         onCreate: _createTables,
         onUpgrade: _onUpgrade,
       );
@@ -59,13 +59,20 @@ class OfflineStorageService {
     await db.execute('''
       CREATE TABLE checkin_history (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        member_id TEXT NOT NULL,
+        member_id TEXT,
         member_name TEXT NOT NULL,
         action TEXT NOT NULL,
         timestamp INTEGER NOT NULL,
         success INTEGER NOT NULL,
-        synced INTEGER DEFAULT 0
+        synced INTEGER DEFAULT 0,
+        avatar_url TEXT
       )
+    ''');
+    
+    // Create index for faster queries
+    await db.execute('''
+      CREATE INDEX IF NOT EXISTS idx_timestamp 
+      ON checkin_history(timestamp)
     ''');
     
     // Pending sync queue table
@@ -85,7 +92,27 @@ class OfflineStorageService {
   /// Handle database upgrades
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     _logger.i('Upgrading database from v$oldVersion to v$newVersion');
-    // Add migration logic here if needed in future versions
+    
+    if (oldVersion < 2) {
+      // Add avatar_url column to checkin_history table
+      try {
+        await db.execute('ALTER TABLE checkin_history ADD COLUMN avatar_url TEXT');
+        _logger.i('Added avatar_url column to checkin_history table');
+      } catch (e) {
+        _logger.w('Could not add avatar_url column (may already exist): $e');
+      }
+      
+      // Create index for faster queries
+      try {
+        await db.execute('''
+          CREATE INDEX IF NOT EXISTS idx_timestamp 
+          ON checkin_history(timestamp)
+        ''');
+        _logger.i('Created index on timestamp column');
+      } catch (e) {
+        _logger.w('Could not create index: $e');
+      }
+    }
   }
   
   /// Save member data locally
@@ -173,12 +200,13 @@ class OfflineStorageService {
     try {
       final db = await database;
       await db.insert('checkin_history', {
-        'member_id': '', // Will be populated if we have it
+        'member_id': activity.memberId ?? '',
         'member_name': activity.memberName,
         'action': activity.action,
         'timestamp': activity.time.millisecondsSinceEpoch,
         'success': activity.success ? 1 : 0,
         'synced': synced ? 1 : 0,
+        'avatar_url': activity.avatarUrl,
       });
       _logger.d('Saved check-in history for ${activity.memberName}');
     } catch (e) {
@@ -192,25 +220,38 @@ class OfflineStorageService {
     int offset = 0,
     DateTime? startDate,
     DateTime? endDate,
+    String? searchQuery,
+    String? statusFilter,
   }) async {
     try {
       final db = await database;
       
-      String? where;
-      List<dynamic>? whereArgs;
+      final whereConditions = <String>[];
+      final whereArgs = <dynamic>[];
       
       if (startDate != null && endDate != null) {
-        where = 'timestamp BETWEEN ? AND ?';
-        whereArgs = [
-          startDate.millisecondsSinceEpoch,
-          endDate.millisecondsSinceEpoch,
-        ];
+        whereConditions.add('timestamp BETWEEN ? AND ?');
+        whereArgs.add(startDate.millisecondsSinceEpoch);
+        whereArgs.add(endDate.millisecondsSinceEpoch);
+      }
+      
+      if (searchQuery != null && searchQuery.isNotEmpty) {
+        whereConditions.add('member_name LIKE ?');
+        whereArgs.add('%$searchQuery%');
+      }
+      
+      if (statusFilter != null && statusFilter != 'all') {
+        if (statusFilter == 'success') {
+          whereConditions.add('success = 1');
+        } else if (statusFilter == 'failed') {
+          whereConditions.add('success = 0');
+        }
       }
       
       final results = await db.query(
         'checkin_history',
-        where: where,
-        whereArgs: whereArgs,
+        where: whereConditions.isNotEmpty ? whereConditions.join(' AND ') : null,
+        whereArgs: whereArgs.isNotEmpty ? whereArgs : null,
         orderBy: 'timestamp DESC',
         limit: limit,
         offset: offset,
@@ -221,6 +262,8 @@ class OfflineStorageService {
         action: data['action'] as String,
         time: DateTime.fromMillisecondsSinceEpoch(data['timestamp'] as int),
         success: (data['success'] as int) == 1,
+        memberId: (data['member_id'] as String?)?.isNotEmpty == true ? data['member_id'] as String : null,
+        avatarUrl: data['avatar_url'] as String?,
       )).toList();
     } catch (e) {
       _logger.e('Failed to get check-in history: $e');
@@ -304,6 +347,43 @@ class OfflineStorageService {
       _logger.i('Cleared check-in history older than $daysToKeep days');
     } catch (e) {
       _logger.e('Failed to clear old data: $e');
+    }
+  }
+  
+  /// Get total count of check-in history records
+  Future<int> getCheckInHistoryCount() async {
+    try {
+      final db = await database;
+      final result = await db.rawQuery('SELECT COUNT(*) as count FROM checkin_history');
+      if (result.isNotEmpty && result.first['count'] != null) {
+        return result.first['count'] as int;
+      }
+      return 0;
+    } catch (e) {
+      _logger.e('Failed to get check-in history count: $e');
+      return 0;
+    }
+  }
+  
+  /// Delete old history records based on retention days
+  Future<int> deleteOldHistory(int daysToKeep) async {
+    try {
+      final db = await database;
+      final cutoffTime = DateTime.now()
+          .subtract(Duration(days: daysToKeep))
+          .millisecondsSinceEpoch;
+      
+      final deletedCount = await db.delete(
+        'checkin_history',
+        where: 'timestamp < ?',
+        whereArgs: [cutoffTime],
+      );
+      
+      _logger.i('Deleted $deletedCount records older than $daysToKeep days');
+      return deletedCount;
+    } catch (e) {
+      _logger.e('Failed to delete old history: $e');
+      return 0;
     }
   }
   

@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../config/app_colors.dart';
 import '../models/activity_log.dart';
-import '../providers/scan_provider.dart';
+import '../providers/history_provider.dart';
 import '../services/export_service.dart';
 
 /// History screen with filtering and modern design
@@ -17,46 +17,40 @@ class HistoryScreen extends ConsumerStatefulWidget {
 
 class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   final ExportService _exportService = ExportService();
+  final ScrollController _scrollController = ScrollController();
   
   String _filterType = 'all'; // all, success, error
   DateTimeRange? _dateRange;
   final TextEditingController _searchController = TextEditingController();
   
   @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+  
+  @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
     _searchController.dispose();
     super.dispose();
   }
+  
+  /// Handle scroll for pagination
+  void _onScroll() {
+    if (_scrollController.position.pixels >= 
+        _scrollController.position.maxScrollExtent * 0.9) {
+      final historyState = ref.read(historyProvider);
+      if (!historyState.isLoading && historyState.hasMore) {
+        ref.read(historyProvider.notifier).loadMoreHistory();
+      }
+    }
+  }
 
   List<ActivityLog> _getFilteredActivities() {
-    final scanState = ref.watch(scanProvider);
-    var activities = scanState.recentActivity.toList();
-    
-    // Apply search filter
-    if (_searchController.text.isNotEmpty) {
-      final query = _searchController.text.toLowerCase();
-      activities = activities.where((log) {
-        return log.memberName.toLowerCase().contains(query) ||
-               log.action.toLowerCase().contains(query);
-      }).toList();
-    }
-    
-    // Apply status filter
-    if (_filterType == 'success') {
-      activities = activities.where((log) => log.success).toList();
-    } else if (_filterType == 'error') {
-      activities = activities.where((log) => !log.success).toList();
-    }
-    
-    // Apply date range filter
-    if (_dateRange != null) {
-      activities = activities.where((log) {
-        return log.time.isAfter(_dateRange!.start.subtract(const Duration(days: 1))) &&
-               log.time.isBefore(_dateRange!.end.add(const Duration(days: 1)));
-      }).toList();
-    }
-    
-    return activities;
+    final historyState = ref.watch(historyProvider);
+    return historyState.items;
   }
 
   Future<void> _selectDateRange() async {
@@ -82,6 +76,12 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
 
     if (picked != null) {
       setState(() => _dateRange = picked);
+      // Apply filters to history provider
+      ref.read(historyProvider.notifier).applyFilters(
+        searchQuery: _searchController.text,
+        statusFilter: _filterType,
+        dateRange: picked,
+      );
     }
   }
 
@@ -91,6 +91,29 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
       _dateRange = null;
       _searchController.clear();
     });
+    // Clear filters in history provider
+    ref.read(historyProvider.notifier).clearFilters();
+  }
+  
+  /// Apply search filter
+  void _applySearchFilter() {
+    ref.read(historyProvider.notifier).applyFilters(
+      searchQuery: _searchController.text,
+      statusFilter: _filterType,
+      dateRange: _dateRange,
+    );
+  }
+  
+  /// Apply status filter
+  void _applyStatusFilter(String status) {
+    setState(() {
+      _filterType = status;
+    });
+    ref.read(historyProvider.notifier).applyFilters(
+      searchQuery: _searchController.text,
+      statusFilter: status,
+      dateRange: _dateRange,
+    );
   }
 
   Future<void> _exportHistory() async {
@@ -135,7 +158,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   @override
   Widget build(BuildContext context) {
     final activities = _getFilteredActivities();
-    final totalActivities = ref.watch(scanProvider).recentActivity.length;
+    final historyState = ref.watch(historyProvider);
+    final totalActivities = historyState.items.length;
     
     return Column(
       children: [
@@ -228,7 +252,10 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           // Search bar
           TextField(
             controller: _searchController,
-            onChanged: (_) => setState(() {}),
+            onChanged: (_) {
+              setState(() {});
+              _applySearchFilter();
+            },
             style: GoogleFonts.inter(color: AppColors.textPrimary),
             decoration: InputDecoration(
               hintText: 'Search by name...',
@@ -243,6 +270,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                       onPressed: () {
                         _searchController.clear();
                         setState(() {});
+                        _applySearchFilter();
                       },
                     )
                   : null,
@@ -304,7 +332,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     final chipColor = color ?? AppColors.primary;
     
     return InkWell(
-      onTap: () => setState(() => _filterType = value),
+      onTap: () => _applyStatusFilter(value),
       borderRadius: BorderRadius.circular(10),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -456,10 +484,28 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         return dateB.compareTo(dateA);
       });
 
+    final historyState = ref.watch(historyProvider);
+    
     return ListView.builder(
+      controller: _scrollController,
       padding: EdgeInsets.zero,
-      itemCount: sortedDates.length,
+      itemCount: sortedDates.length + (historyState.hasMore ? 1 : 0),
       itemBuilder: (context, index) {
+        // Loading indicator at the end
+        if (index >= sortedDates.length) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: historyState.isLoading
+                  ? const CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation(AppColors.primary),
+                    )
+                  : const SizedBox.shrink(),
+            ),
+          );
+        }
+        
+
         final dateKey = sortedDates[index];
         final dayActivities = grouped[dateKey]!;
         

@@ -20,6 +20,10 @@ class AppConfig {
   final bool cameraVisible;
   final String theme;
   final int cameraFrameRate;
+  
+  // History settings
+  final int historyRetentionDays;
+  final DateTime? lastHistorySync;
 
   const AppConfig({
     required this.apiUrl,
@@ -37,6 +41,8 @@ class AppConfig {
     this.cameraVisible = true,
     this.theme = 'cyan',
     this.cameraFrameRate = 10,
+    this.historyRetentionDays = 90,
+    this.lastHistorySync,
   });
 
   /// Default configuration
@@ -57,12 +63,20 @@ class AppConfig {
       cameraVisible: true,
       theme: 'cyan',
       cameraFrameRate: 10,
+      historyRetentionDays: 90,
+      lastHistorySync: null,
     );
   }
 
   /// Load configuration from SharedPreferences
   static Future<AppConfig> loadFromPreferences() async {
     final prefs = await SharedPreferences.getInstance();
+    
+    // Load last history sync timestamp
+    final lastSyncMillis = prefs.getInt('last_history_sync');
+    final lastHistorySync = lastSyncMillis != null 
+        ? DateTime.fromMillisecondsSinceEpoch(lastSyncMillis)
+        : null;
     
     return AppConfig(
       apiUrl: prefs.getString('apiUrl') ?? 'https://mitugym-app-webpanel.vercel.app',
@@ -80,6 +94,8 @@ class AppConfig {
       cameraVisible: prefs.getBool('cameraVisible') ?? true,
       theme: prefs.getString('theme') ?? 'cyan',
       cameraFrameRate: prefs.getInt('cameraFrameRate') ?? 10,
+      historyRetentionDays: prefs.getInt('history_retention_days') ?? 90,
+      lastHistorySync: lastHistorySync,
     );
   }
 
@@ -102,6 +118,10 @@ class AppConfig {
     await prefs.setBool('cameraVisible', cameraVisible);
     await prefs.setString('theme', theme);
     await prefs.setInt('cameraFrameRate', cameraFrameRate);
+    await prefs.setInt('history_retention_days', historyRetentionDays);
+    if (lastHistorySync != null) {
+      await prefs.setInt('last_history_sync', lastHistorySync!.millisecondsSinceEpoch);
+    }
   }
 
   /// Create a copy with updated fields
@@ -121,6 +141,8 @@ class AppConfig {
     bool? cameraVisible,
     String? theme,
     int? cameraFrameRate,
+    int? historyRetentionDays,
+    DateTime? lastHistorySync,
   }) {
     return AppConfig(
       apiUrl: apiUrl ?? this.apiUrl,
@@ -138,6 +160,8 @@ class AppConfig {
       cameraVisible: cameraVisible ?? this.cameraVisible,
       theme: theme ?? this.theme,
       cameraFrameRate: cameraFrameRate ?? this.cameraFrameRate,
+      historyRetentionDays: historyRetentionDays ?? this.historyRetentionDays,
+      lastHistorySync: lastHistorySync ?? this.lastHistorySync,
     );
   }
 }

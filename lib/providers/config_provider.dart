@@ -45,6 +45,18 @@ class ConfigNotifier extends Notifier<AppConfig> {
     await state.saveToPreferences();
   }
 
+  /// Update history retention days
+  Future<void> updateHistoryRetentionDays(int days) async {
+    state = state.copyWith(historyRetentionDays: days);
+    await state.saveToPreferences();
+  }
+
+  /// Update last history sync timestamp
+  Future<void> updateLastHistorySync(DateTime timestamp) async {
+    state = state.copyWith(lastHistorySync: timestamp);
+    await state.saveToPreferences();
+  }
+
   /// Update entire configuration
   Future<void> updateConfig(AppConfig config) async {
     state = config;

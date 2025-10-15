@@ -7,9 +7,11 @@ import '../providers/config_provider.dart';
 import '../providers/scan_provider.dart';
 import '../providers/windows_scanner_provider.dart';
 import '../providers/offline_provider.dart';
+import '../providers/history_provider.dart';
 import '../widgets/modern_sidebar_widget.dart';
 import '../widgets/offline_banner_widget.dart';
 import '../services/export_service.dart';
+import '../services/history_sync_service.dart';
 import 'dashboard_screen.dart';
 import 'scanner_screen.dart';
 import 'history_screen.dart';
@@ -41,7 +43,20 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
       if (config.autoStartScanning) {
         ref.read(windowsScannerControllerProvider.notifier).startScanner();
       }
+      
+      // Initialize history sync service
+      _initializeHistoryServices();
     });
+  }
+  
+  /// Initialize history services
+  Future<void> _initializeHistoryServices() async {
+    // Start periodic sync service
+    final syncService = ref.read(historySyncServiceProvider);
+    syncService.startPeriodicSync();
+    
+    // Load initial history
+    await ref.read(historyProvider.notifier).loadInitialHistory();
   }
 
   // List of pages/screens

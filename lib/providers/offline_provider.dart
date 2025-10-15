@@ -4,6 +4,11 @@ import '../services/connectivity_service.dart';
 import '../services/api_service.dart';
 import 'config_provider.dart';
 
+/// Provider for offline storage service
+final offlineStorageServiceProvider = Provider<OfflineStorageService>((ref) {
+  return OfflineStorageService();
+});
+
 /// Offline state
 class OfflineState {
   final bool isOnline;
@@ -88,7 +93,7 @@ class OfflineNotifier extends Notifier<OfflineState> {
     try {
       final pending = await _offlineStorage!.getPendingSyncItems();
       final config = ref.read(configProvider);
-      final apiService = ApiService(baseUrl: config.apiUrl);
+      final apiService = ApiService(apiUrl: config.apiUrl, apiKey: config.apiKey);
 
       for (final item in pending) {
         try {

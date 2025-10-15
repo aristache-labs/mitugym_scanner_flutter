@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import '../config/app_colors.dart';
 import '../providers/config_provider.dart';
+import '../providers/history_provider.dart';
 
 /// Modern settings screen - Dashboard style
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -31,6 +33,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   late String _exportFormat;
   late bool _autoStartScanning;
   late bool _cameraVisible;
+  late int _historyRetentionDays;
 
   @override
   void initState() {
@@ -52,6 +55,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     _exportFormat = config.exportFormat;
     _autoStartScanning = config.autoStartScanning;
     _cameraVisible = config.cameraVisible;
+    _historyRetentionDays = config.historyRetentionDays;
   }
 
   @override
@@ -71,6 +75,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     await ref.read(configProvider.notifier).updateCameraIndex(_cameraIndex);
     await ref.read(configProvider.notifier).updateDebounceDuration(_debounceDuration);
     await ref.read(configProvider.notifier).updateAudioEnabled(_audioEnabled);
+    await ref.read(configProvider.notifier).updateHistoryRetentionDays(_historyRetentionDays);
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -490,8 +495,210 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
             ),
           ],
         ),
+        const SizedBox(height: 24),
+        _buildSection(
+          'History Management',
+          Icons.history,
+          [
+            _buildSlider(
+              label: 'History Retention',
+              value: _historyRetentionDays.toDouble(),
+              min: 7,
+              max: 365,
+              divisions: 51,
+              displayValue: '$_historyRetentionDays days',
+              onChanged: (v) => setState(() => _historyRetentionDays = v.toInt()),
+            ),
+            const SizedBox(height: 16),
+            _buildHistoryStatsRow(),
+            const SizedBox(height: 16),
+            _buildCleanupButton(),
+            const SizedBox(height: 12),
+            _buildSyncButton(),
+          ],
+        ),
       ],
     );
+  }
+  
+  /// Build history stats row
+  Widget _buildHistoryStatsRow() {
+    return FutureBuilder<int>(
+      future: ref.read(historyProvider.notifier).getTotalCount(),
+      builder: (context, snapshot) {
+        final count = snapshot.data ?? 0;
+        final config = ref.watch(configProvider);
+        final lastSync = config.lastHistorySync;
+        
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.surface.withValues(alpha: 0.5),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: AppColors.border.withValues(alpha: 0.3),
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.storage_rounded, color: AppColors.primary, size: 18),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Total Records: $count',
+                    style: GoogleFonts.inter(
+                      color: AppColors.textPrimary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+              if (lastSync != null) ...[
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    const Icon(Icons.sync_rounded, color: AppColors.textMuted, size: 16),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Last Synced: ${DateFormat('MMM d, h:mm a').format(lastSync)}',
+                      style: GoogleFonts.inter(
+                        color: AppColors.textMuted,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ],
+          ),
+        );
+      },
+    );
+  }
+  
+  /// Build cleanup button
+  Widget _buildCleanupButton() {
+    return ElevatedButton.icon(
+      onPressed: _performCleanup,
+      icon: const Icon(Icons.delete_sweep_rounded),
+      label: const Text('Cleanup Old History'),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.warning.withValues(alpha: 0.15),
+        foregroundColor: AppColors.warning,
+        minimumSize: const Size(double.infinity, 48),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: AppColors.warning.withValues(alpha: 0.3),
+          ),
+        ),
+      ),
+    );
+  }
+  
+  /// Build sync button
+  Widget _buildSyncButton() {
+    final historyState = ref.watch(historyProvider);
+    
+    return ElevatedButton.icon(
+      onPressed: historyState.isLoading ? null : _performSync,
+      icon: historyState.isLoading
+          ? const SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation(AppColors.primary),
+              ),
+            )
+          : const Icon(Icons.cloud_sync_rounded),
+      label: Text(historyState.isLoading ? 'Syncing...' : 'Sync from Server'),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.primary.withValues(alpha: 0.15),
+        foregroundColor: AppColors.primary,
+        minimumSize: const Size(double.infinity, 48),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: AppColors.primary.withValues(alpha: 0.3),
+          ),
+        ),
+      ),
+    );
+  }
+  
+  /// Perform cleanup
+  Future<void> _performCleanup() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.card,
+        title: Text(
+          'Cleanup Old History',
+          style: GoogleFonts.inter(color: AppColors.textPrimary),
+        ),
+        content: Text(
+          'This will delete all history records older than $_historyRetentionDays days. Continue?',
+          style: GoogleFonts.inter(color: AppColors.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.inter(color: AppColors.textMuted),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(
+              'Cleanup',
+              style: GoogleFonts.inter(color: AppColors.warning),
+            ),
+          ),
+        ],
+      ),
+    );
+    
+    if (confirmed == true) {
+      final deletedCount = await ref.read(historyProvider.notifier).cleanupOldHistory();
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Deleted $deletedCount old records'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      }
+    }
+  }
+  
+  /// Perform sync
+  Future<void> _performSync() async {
+    await ref.read(historyProvider.notifier).syncFromServer();
+    
+    if (mounted) {
+      final historyState = ref.read(historyProvider);
+      if (historyState.error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(historyState.error!),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('History synced successfully'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      }
+    }
   }
 
 
