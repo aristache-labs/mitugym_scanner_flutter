@@ -51,12 +51,12 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
   
   /// Initialize history services
   Future<void> _initializeHistoryServices() async {
-    // Start periodic sync service
+    // Clear and sync fresh history from server on app startup
+    await ref.read(historyProvider.notifier).clearAndSyncFromServer();
+    
+    // Start periodic sync service for incremental updates
     final syncService = ref.read(historySyncServiceProvider);
     syncService.startPeriodicSync();
-    
-    // Load initial history
-    await ref.read(historyProvider.notifier).loadInitialHistory();
   }
 
   // List of pages/screens

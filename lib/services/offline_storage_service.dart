@@ -384,6 +384,17 @@ class OfflineStorageService {
     }
   }
   
+  /// Clear all history (for fresh sync from server)
+  Future<void> clearAllHistory() async {
+    try {
+      final db = await database;
+      await db.delete('checkin_history');
+      _logger.i('Cleared all local history');
+    } catch (e) {
+      _logger.e('Failed to clear all history: $e');
+    }
+  }
+
   /// Delete old history records based on retention days
   Future<int> deleteOldHistory(int daysToKeep) async {
     try {

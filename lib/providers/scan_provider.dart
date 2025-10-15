@@ -186,9 +186,8 @@ class ScanNotifier extends Notifier<ScanState> {
 
   /// Add activity to log (max 10 items)
   void _addActivityLog(ActivityLog log) {
-    // Save to database for persistent history
-    final storage = ref.read(offlineStorageServiceProvider);
-    storage.saveCheckInHistory(log, synced: true);
+    // Don't save to database - history will be synced from server
+    // This prevents duplicate entries when server sync happens
     
     // Keep in-memory list for dashboard (max 10)
     final newActivity = [log, ...state.recentActivity];

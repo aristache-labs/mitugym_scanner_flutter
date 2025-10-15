@@ -151,7 +151,56 @@ class HistoryNotifier extends Notifier<HistoryState> {
     await loadInitialHistory();
   }
 
-  /// Sync from server (fetch from Supabase api_logs)
+  /// Clear local history and sync fresh from server
+  Future<void> clearAndSyncFromServer() async {
+    state = state.copyWith(isLoading: true, error: null);
+
+    try {
+      final config = ref.read(configProvider);
+      final apiService = ApiService(
+        apiUrl: config.apiUrl,
+        apiKey: config.apiKey,
+      );
+      final storage = ref.read(offlineStorageServiceProvider);
+
+      // Clear all local history
+      _logger.i('Clearing local history...');
+      await storage.clearAllHistory();
+
+      // Fetch fresh history from server (last 90 days or retention period)
+      final sinceDate = DateTime.now().subtract(
+        Duration(days: config.historyRetentionDays),
+      );
+
+      _logger.i('Fetching fresh history from server since: $sinceDate');
+      final serverHistory = await apiService.fetchHistoryFromServer(
+        sinceDate: sinceDate,
+        limit: 1000, // Fetch more for initial sync
+      );
+
+      // Save to local database
+      _logger.i('Saving ${serverHistory.length} records to local database...');
+      for (final activity in serverHistory) {
+        await storage.saveCheckInHistory(activity, synced: true);
+      }
+
+      // Update last sync timestamp
+      await ref.read(configProvider.notifier).updateLastHistorySync(DateTime.now());
+
+      // Reload history
+      await loadInitialHistory();
+
+      _logger.i('✅ Synced ${serverHistory.length} fresh records from server');
+    } catch (e) {
+      _logger.e('Failed to clear and sync from server: $e');
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Sync failed: ${e.toString()}',
+      );
+    }
+  }
+
+  /// Sync from server (incremental - fetch only new records)
   Future<void> syncFromServer() async {
     state = state.copyWith(isLoading: true, error: null);
 

@@ -679,7 +679,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   
   /// Perform sync
   Future<void> _performSync() async {
-    await ref.read(historyProvider.notifier).syncFromServer();
+    // Clear and sync fresh history from server
+    await ref.read(historyProvider.notifier).clearAndSyncFromServer();
     
     if (mounted) {
       final historyState = ref.read(historyProvider);
