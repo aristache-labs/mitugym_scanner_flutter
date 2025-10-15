@@ -24,6 +24,22 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     // Initialize SearchService with offline storage
     final offlineStorage = OfflineStorageService();
     _searchService = SearchService(offlineStorage: offlineStorage);
+    
+    // Load all members on init
+    _loadAllMembers();
+  }
+  
+  Future<void> _loadAllMembers() async {
+    setState(() => _isSearching = true);
+    try {
+      final results = await _searchService.searchMembers('');
+      setState(() {
+        _searchResults = results;
+        _isSearching = false;
+      });
+    } catch (e) {
+      setState(() => _isSearching = false);
+    }
   }
   
   List<MemberData> _searchResults = [];
@@ -39,17 +55,21 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   Future<void> _performSearch() async {
     final query = _searchController.text.trim();
-    if (query.isEmpty) {
-      setState(() {
-        _searchResults = [];
-      });
-      return;
-    }
-
+    
     setState(() => _isSearching = true);
 
     try {
-      // Search members (filters will be applied client-side for now)
+      if (query.isEmpty) {
+        // Show all members from local database
+        final results = await _searchService.searchMembers('');
+        setState(() {
+          _searchResults = results;
+          _isSearching = false;
+        });
+        return;
+      }
+
+      // Search members
       final results = await _searchService.searchMembers(query);
 
       setState(() {
@@ -346,6 +366,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   }
 
   Widget _buildSearchResults() {
+    if (_isSearching) {
+      return const Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+        ),
+      );
+    }
+    
     if (_searchController.text.isEmpty && _searchResults.isEmpty) {
       return Center(
         child: Column(
@@ -358,14 +386,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                Icons.person_search_rounded,
+                Icons.qr_code_scanner_rounded,
                 size: 64,
                 color: AppColors.primary.withValues(alpha: 0.5),
               ),
             ),
             const SizedBox(height: 20),
             Text(
-              'Search for Members',
+              'No Members Yet',
               style: GoogleFonts.inter(
                 color: AppColors.textPrimary,
                 fontSize: 18,
@@ -374,18 +402,19 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Enter a name or ID to find members',
+              'Scan member QR codes to build your database',
               style: GoogleFonts.inter(
                 color: AppColors.textMuted,
                 fontSize: 14,
               ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
       );
     }
 
-    if (_searchResults.isEmpty && !_isSearching) {
+    if (_searchResults.isEmpty && _searchController.text.isNotEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

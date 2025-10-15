@@ -96,6 +96,12 @@ class ScanNotifier extends Notifier<ScanState> {
       // Update state with result
       state = state.copyWith(lastResult: result);
 
+      // Save member data to local database for search
+      if (result.data != null) {
+        final storage = ref.read(offlineStorageServiceProvider);
+        await storage.saveMemberLocally(result.data!);
+      }
+      
       // Play audio feedback
       if (result.success) {
         await _audioService.playSuccess();
