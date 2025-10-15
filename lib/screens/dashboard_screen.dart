@@ -507,13 +507,37 @@ class DashboardScreen extends ConsumerWidget {
                     ],
                   )
                 : activity.checkInTime != null
-                    ? Text(
-                        'Still in the GYM',
-                        style: GoogleFonts.inter(
-                          color: AppColors.success,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          fontStyle: FontStyle.italic,
+                    ? Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: AppColors.success.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color: AppColors.success.withValues(alpha: 0.3),
+                              width: 1,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.fitness_center_rounded,
+                                size: 13,
+                                color: AppColors.success,
+                              ),
+                              const SizedBox(width: 5),
+                              Text(
+                                'Active Session',
+                                style: GoogleFonts.inter(
+                                  color: AppColors.success,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       )
                     : Text(
@@ -528,21 +552,48 @@ class DashboardScreen extends ConsumerWidget {
           // Duration column
           SizedBox(
             width: 120,
-            child: Text(
-              activity.checkInTime != null && activity.checkOutTime == null
-                  ? 'Pending'
-                  : activity.formattedDuration,
-              style: GoogleFonts.inter(
-                color: activity.checkInTime != null && activity.checkOutTime == null
-                    ? AppColors.warning
-                    : AppColors.primary,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                fontStyle: activity.checkInTime != null && activity.checkOutTime == null
-                    ? FontStyle.italic
-                    : FontStyle.normal,
-              ),
-            ),
+            child: activity.checkInTime != null && activity.checkOutTime == null
+                ? Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: AppColors.warning.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: AppColors.warning.withValues(alpha: 0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.access_time_rounded,
+                            size: 13,
+                            color: AppColors.warning,
+                          ),
+                          const SizedBox(width: 5),
+                          Text(
+                            'In Progress',
+                            style: GoogleFonts.inter(
+                              color: AppColors.warning,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                : Text(
+                    activity.formattedDuration,
+                    style: GoogleFonts.inter(
+                      color: AppColors.primary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
           ),
         ],
       ),
