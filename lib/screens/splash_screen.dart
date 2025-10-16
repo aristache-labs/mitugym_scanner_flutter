@@ -3,7 +3,10 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_colors.dart';
 import '../services/audio_service.dart';
+import '../providers/auth_provider.dart';
+import '../providers/offline_provider.dart';
 import 'main_layout_screen.dart';
+import 'login_screen.dart';
 
 /// Splash screen with animated logo and loading indicator
 /// Preloads configuration and services during animation
@@ -29,18 +32,43 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       await Future.wait([
         _preloadConfiguration(),
         _initializeServices(),
+        _checkAuthentication(),
         Future.delayed(const Duration(seconds: 3)), // Minimum splash time
       ]);
     } catch (e) {
-      // Log error but continue to home screen
+      // Log error but continue
       debugPrint('Initialization error: $e');
     }
     
     if (mounted) {
+      // Check authentication status
+      final authState = ref.read(authProvider);
+      final isOnline = ref.read(offlineProvider).isOnline;
+      
+      Widget destination;
+      
+      if (!authState.isAuthenticated) {
+        // No session, go to login
+        destination = const LoginScreen();
+        debugPrint('No session found, redirecting to login');
+      } else if (isOnline && authState.session!.needsRevalidation()) {
+        // Online and needs revalidation - validate was already called in _checkAuthentication
+        // Check if still valid after validation
+        final currentAuthState = ref.read(authProvider);
+        destination = currentAuthState.isAuthenticated 
+            ? const MainLayoutScreen() 
+            : const LoginScreen();
+        debugPrint('Session validated: ${currentAuthState.isAuthenticated}');
+      } else {
+        // Has valid session or offline (allow offline use)
+        destination = const MainLayoutScreen();
+        debugPrint('Valid session, proceeding to main app');
+      }
+      
       Navigator.pushReplacement(
         context,
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => const MainLayoutScreen(),
+          pageBuilder: (context, animation, secondaryAnimation) => destination,
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(opacity: animation, child: child);
           },
@@ -78,6 +106,20 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       debugPrint('Audio service initialized');
     } catch (e) {
       debugPrint('Audio preload error: $e');
+    }
+  }
+
+  Future<void> _checkAuthentication() async {
+    if (mounted) {
+      setState(() => _loadingText = 'Checking authentication...');
+    }
+    
+    try {
+      // Validate session on startup (if exists)
+      await ref.read(authProvider.notifier).validateOnStartup();
+      debugPrint('Authentication check completed');
+    } catch (e) {
+      debugPrint('Authentication check error: $e');
     }
   }
 
