@@ -34,16 +34,42 @@ class ExportService {
       final buffer = StringBuffer();
       
       // Header
-      buffer.writeln('Member Name,Action,Date,Time,Status');
+      buffer.writeln('Member Name,Checked In,Checked Out,Duration');
       
       // Data rows
       for (final activity in activities) {
-        final date = DateFormat('yyyy-MM-dd').format(activity.time);
-        final time = DateFormat('HH:mm:ss').format(activity.time);
-        final status = activity.success ? 'Success' : 'Failed';
+        final memberName = activity.memberName;
+        
+        // Format check-in time
+        String checkedIn = '--';
+        if (activity.checkInTime != null) {
+          checkedIn = DateFormat('yyyy-MM-dd HH:mm:ss').format(activity.checkInTime!);
+        } else if (!activity.success) {
+          checkedIn = 'Plan Expired';
+        }
+        
+        // Format check-out time
+        String checkedOut = '--';
+        if (activity.checkOutTime != null) {
+          checkedOut = DateFormat('yyyy-MM-dd HH:mm:ss').format(activity.checkOutTime!);
+        } else if (!activity.success) {
+          checkedOut = 'Access Denied';
+        } else if (activity.checkInTime != null) {
+          checkedOut = 'Active Session';
+        }
+        
+        // Format duration
+        String duration = '--';
+        if (!activity.success) {
+          duration = 'Denied';
+        } else if (activity.checkInTime != null && activity.checkOutTime != null) {
+          duration = activity.formattedDuration;
+        } else if (activity.checkInTime != null) {
+          duration = 'In Progress';
+        }
         
         buffer.writeln(
-          '"${activity.memberName}","${activity.action}","$date","$time","$status"',
+          '"$memberName","$checkedIn","$checkedOut","$duration"',
         );
       }
 
@@ -102,12 +128,41 @@ class ExportService {
 
       // Activity list
       buffer.writeln('ACTIVITY LOG');
-      buffer.writeln('-'.padRight(60, '-'));
+      buffer.writeln('-'.padRight(80, '-'));
+      buffer.writeln('Member Name | Checked In | Checked Out | Duration');
+      buffer.writeln('-'.padRight(80, '-'));
       
       for (final activity in activities) {
-        final status = activity.success ? '✓' : '✗';
+        // Format check-in
+        String checkedIn = '--';
+        if (activity.checkInTime != null) {
+          checkedIn = DateFormat('yyyy-MM-dd HH:mm').format(activity.checkInTime!);
+        } else if (!activity.success) {
+          checkedIn = 'Plan Expired';
+        }
+        
+        // Format check-out
+        String checkedOut = '--';
+        if (activity.checkOutTime != null) {
+          checkedOut = DateFormat('yyyy-MM-dd HH:mm').format(activity.checkOutTime!);
+        } else if (!activity.success) {
+          checkedOut = 'Access Denied';
+        } else if (activity.checkInTime != null) {
+          checkedOut = 'Active Session';
+        }
+        
+        // Format duration
+        String duration = '--';
+        if (!activity.success) {
+          duration = 'Denied';
+        } else if (activity.checkInTime != null && activity.checkOutTime != null) {
+          duration = activity.formattedDuration;
+        } else if (activity.checkInTime != null) {
+          duration = 'In Progress';
+        }
+        
         buffer.writeln(
-          '$status ${activity.formattedDateTime} | ${activity.memberName} | ${activity.action}',
+          '${activity.memberName.padRight(20)} | ${checkedIn.padRight(16)} | ${checkedOut.padRight(16)} | $duration',
         );
       }
 
