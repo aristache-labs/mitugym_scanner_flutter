@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../config/app_colors.dart';
 import '../providers/history_provider.dart';
 import '../widgets/member_avatar_modal.dart';
@@ -68,12 +70,15 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
         ? (successfulSessions / totalScans * 100) 
         : 0.0;
 
+    // Calculate peak occupancy
+    final peakOccupancy = _calculatePeakOccupancy(todayActivities.toList());
+    
     return SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-          // Stats cards
-          _buildStatsCards(totalScans, checkIns, checkOuts, denied),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Today's Traffic Chart
+          _buildTodaysTrafficChart(todayActivities.toList(), peakOccupancy),
           const SizedBox(height: 20),
           
           // Charts and analytics section
@@ -89,14 +94,354 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
               // Peak hours
               Expanded(
                 child: _buildPeakHoursCard(todayActivities.toList()),
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
           const SizedBox(height: 20),
           
           // Recent check-ins list
           _buildRecentCheckIns(todayActivities.toList(), context),
         ],
+      ),
+    );
+  }
+  
+  /// Calculate peak occupancy throughout the day
+  int _calculatePeakOccupancy(List<dynamic> activities) {
+    if (activities.isEmpty) return 0;
+    
+    // Track occupancy for each hour
+    final hourlyOccupancy = <int, int>{};
+    
+    for (var activity in activities) {
+      final hour = activity.time.hour;
+      hourlyOccupancy[hour] = (hourlyOccupancy[hour] ?? 0) + 1;
+    }
+    
+    return hourlyOccupancy.values.isEmpty ? 0 : hourlyOccupancy.values.reduce((a, b) => a > b ? a : b);
+  }
+  
+  /// Build Today's Traffic Chart
+  Widget _buildTodaysTrafficChart(List<dynamic> activities, int peakOccupancy) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.card.withValues(alpha: 0.9),
+            AppColors.surface.withValues(alpha: 0.7),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.15),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Today\'s Traffic',
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Live gym occupancy throughout the day',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        color: AppColors.textMuted,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Peak indicator
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.background,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.2),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Peak: ',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        color: AppColors.textMuted,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Text(
+                      '$peakOccupancy',
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'people',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        color: AppColors.textMuted,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          
+          // Chart
+          SizedBox(
+            height: 200,
+            child: _buildLineChart(activities),
+          ),
+          
+          const SizedBox(height: 20),
+          
+          // Legend
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildLegendItem('Live occupancy', AppColors.primary, true),
+              const SizedBox(width: 24),
+              _buildLegendItem('Future hours', AppColors.textMuted.withValues(alpha: 0.3), false),
+            ],
+          ),
+          
+          const SizedBox(height: 12),
+          
+          // Updates info
+          Center(
+            child: Text(
+              'Updates every hour',
+              style: GoogleFonts.inter(
+                fontSize: 11,
+                color: AppColors.textMuted,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  /// Build legend item
+  Widget _buildLegendItem(String label, Color color, bool filled) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(
+            color: filled ? color : Colors.transparent,
+            shape: BoxShape.circle,
+            border: Border.all(color: color, width: 2),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: GoogleFonts.inter(
+            fontSize: 12,
+            color: AppColors.textMuted,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+  
+  /// Build the line chart
+  Widget _buildLineChart(List<dynamic> activities) {
+    // Calculate occupancy for each hour (0-23)
+    final hourlyData = List.generate(24, (hour) {
+      final hourActivities = activities.where((a) => a.time.hour == hour).length;
+      return FlSpot(hour.toDouble(), hourActivities.toDouble());
+    });
+    
+    final now = DateTime.now();
+    final currentHour = now.hour;
+    
+    // Split data into past (live) and future
+    final liveData = hourlyData.where((spot) => spot.x <= currentHour).toList();
+    final futureData = hourlyData.where((spot) => spot.x > currentHour).toList();
+    
+    // Add connection point
+    if (liveData.isNotEmpty && futureData.isNotEmpty) {
+      futureData.insert(0, liveData.last);
+    }
+    
+    final maxY = hourlyData.map((e) => e.y).reduce((a, b) => a > b ? a : b);
+    final yMax = maxY > 0 ? (maxY + 2).ceilToDouble() : 5.0;
+    
+    return LineChart(
+      LineChartData(
+        gridData: FlGridData(
+          show: true,
+          drawVerticalLine: false,
+          horizontalInterval: 1,
+          getDrawingHorizontalLine: (value) {
+            return FlLine(
+              color: AppColors.textMuted.withValues(alpha: 0.08),
+              strokeWidth: 1,
+            );
+          },
+        ),
+        titlesData: FlTitlesData(
+          show: true,
+          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 35,
+              interval: 1,
+              getTitlesWidget: (value, meta) {
+                return Text(
+                  value.toInt().toString(),
+                  style: GoogleFonts.inter(
+                    color: AppColors.primary.withValues(alpha: 0.6),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                );
+              },
+            ),
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 32,
+              interval: 2,
+              getTitlesWidget: (value, meta) {
+                final hour = value.toInt();
+                if (hour % 2 != 0) return const SizedBox.shrink();
+                return Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    '${hour.toString().padLeft(2, '0')}:00',
+                    style: GoogleFonts.inter(
+                      color: AppColors.primary.withValues(alpha: 0.5),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+        borderData: FlBorderData(show: false),
+        minX: 0,
+        maxX: 23,
+        minY: 0,
+        maxY: yMax,
+        lineBarsData: [
+          // Live data line
+          LineChartBarData(
+            spots: liveData,
+            isCurved: true,
+            curveSmoothness: 0.3,
+            color: AppColors.primary,
+            barWidth: 3,
+            isStrokeCapRound: true,
+            dotData: FlDotData(
+              show: true,
+              getDotPainter: (spot, percent, barData, index) {
+                return FlDotCirclePainter(
+                  radius: 4,
+                  color: AppColors.primary,
+                  strokeWidth: 2,
+                  strokeColor: AppColors.background,
+                );
+              },
+            ),
+            belowBarData: BarAreaData(
+              show: true,
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  AppColors.primary.withValues(alpha: 0.3),
+                  AppColors.primary.withValues(alpha: 0.05),
+                ],
+              ),
+            ),
+          ),
+          // Future data line (greyed out)
+          if (futureData.length > 1)
+            LineChartBarData(
+              spots: futureData,
+              isCurved: true,
+              curveSmoothness: 0.3,
+              color: AppColors.textMuted.withValues(alpha: 0.2),
+              barWidth: 3,
+              isStrokeCapRound: true,
+              dashArray: [5, 5],
+              dotData: FlDotData(
+                show: true,
+                getDotPainter: (spot, percent, barData, index) {
+                  return FlDotCirclePainter(
+                    radius: 3,
+                    color: Colors.transparent,
+                    strokeWidth: 2,
+                    strokeColor: AppColors.textMuted.withValues(alpha: 0.3),
+                  );
+                },
+              ),
+              belowBarData: BarAreaData(show: false),
+            ),
+        ],
+        lineTouchData: LineTouchData(
+          enabled: true,
+          touchTooltipData: LineTouchTooltipData(
+            getTooltipColor: (touchedSpot) => AppColors.surface,
+            tooltipBorder: BorderSide(
+              color: AppColors.primary.withValues(alpha: 0.2),
+            ),
+            tooltipPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            getTooltipItems: (touchedSpots) {
+              return touchedSpots.map((spot) {
+                final hour = spot.x.toInt();
+                final count = spot.y.toInt();
+                return LineTooltipItem(
+                  '${hour.toString().padLeft(2, '0')}:00\n$count ${count == 1 ? 'person' : 'people'}',
+                  GoogleFonts.inter(
+                    color: AppColors.textPrimary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                );
+              }).toList();
+            },
+          ),
+        ),
       ),
     );
   }
