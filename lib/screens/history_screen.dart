@@ -486,10 +486,15 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
 
     final historyState = ref.watch(historyProvider);
 
-    return ListView.builder(
-      controller: _scrollController,
-      padding: EdgeInsets.zero,
-      itemCount: sortedDates.length + (historyState.hasMore ? 1 : 0),
+    return Stack(
+      children: [
+        // Activity list with padding for fixed header
+        Positioned.fill(
+          top: 55, // Height of the header
+          child: ListView.builder(
+            controller: _scrollController,
+            padding: EdgeInsets.zero,
+            itemCount: sortedDates.length + (historyState.hasMore ? 1 : 0),
       itemBuilder: (context, index) {
         // Loading indicator at the end
         if (index >= sortedDates.length) {
@@ -563,14 +568,22 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
               ),
             ),
             
-            // Table header (only for first date group)
-            if (index == 0) _buildTableHeader(),
-            
             // Activities for this date
             ...dayActivities.map((activity) => _buildActivityCard(activity)),
           ],
         );
-      },
+            },
+          ),
+        ),
+        
+        // Fixed table header
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: _buildTableHeader(),
+        ),
+      ],
     );
   }
 
@@ -765,7 +778,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     alignment: Alignment.centerLeft,
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                      decoration: BoxDecoration(
+              decoration: BoxDecoration(
                         color: AppColors.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(
@@ -791,11 +804,11 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                               color: AppColors.primary,
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+              ),
+            ),
+          ],
+        ),
+      ),
                   )
                 : Text(
                     '--',
@@ -851,7 +864,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                         alignment: Alignment.centerLeft,
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          decoration: BoxDecoration(
+      decoration: BoxDecoration(
                             color: AppColors.success.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(6),
                             border: Border.all(
@@ -930,7 +943,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     alignment: Alignment.centerLeft,
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                      decoration: BoxDecoration(
+      decoration: BoxDecoration(
                         color: AppColors.success.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(
@@ -938,7 +951,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                           width: 1,
                         ),
                       ),
-                      child: Text(
+        child: Text(
                         activity.formattedDuration,
                         style: GoogleFonts.inter(
                           color: AppColors.success,
