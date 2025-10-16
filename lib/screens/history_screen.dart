@@ -305,7 +305,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                 const SizedBox(width: 8),
                 _buildFilterChip(
                   label: 'Denied',
-                  value: 'error',
+                  value: 'failed',
                   icon: Icons.block_rounded,
                   color: AppColors.error,
                 ),
