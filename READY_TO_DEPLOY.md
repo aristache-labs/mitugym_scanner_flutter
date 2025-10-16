@@ -79,7 +79,10 @@ Use Vercel CLI or dashboard to deploy manually.
    - Check logs: `Starting sync of 1 actions`, `Attempting check-in/out for QR: bc11ca52-7c25-471e-bd28-5159f58bed10 (offline: true)`
 4. **Verify sync success**
    - Expected: `✅ Synced action: <action_id>`
-   - Check History page: Your check-in/out should appear
+   - Expected: `Refreshing history after successful sync`
+   - **Check Dashboard**: Your check-in should appear in Today's Activity
+   - **Check Check-ins page**: Your check-in should appear in Recent Activity
+   - **Check History page**: Your check-in/out should appear with correct timestamp
 
 ### **Test 2: Manual Sync with "Sync Now" Button**
 
