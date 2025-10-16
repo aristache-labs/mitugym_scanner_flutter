@@ -58,8 +58,14 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
         .where((a) => !a.success)
         .length;
     
+    // Success rate: successful sessions / total sessions
+    // Count unique successful sessions (not double-counting check-ins and check-outs)
+    final successfulSessions = todayActivities
+        .where((a) => a.success)
+        .length;
+    
     final successRate = totalScans > 0 
-        ? ((checkIns + checkOuts) / totalScans * 100) 
+        ? (successfulSessions / totalScans * 100) 
         : 0.0;
 
     return SingleChildScrollView(
