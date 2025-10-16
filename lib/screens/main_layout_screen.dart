@@ -1,7 +1,9 @@
-﻿import 'package:flutter/material.dart';
+﻿import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:intl/intl.dart';
 import '../config/app_themes.dart';
 import '../config/app_colors.dart';
 import '../providers/config_provider.dart';
@@ -34,6 +36,8 @@ class MainLayoutScreen extends ConsumerStatefulWidget {
 class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
   int _selectedIndex = 0;
   final GlobalKey<PopupMenuButtonState<String>> _userMenuKey = GlobalKey();
+  late Timer _timer;
+  DateTime _currentTime = DateTime.now();
 
   @override
   void initState() {
@@ -51,6 +55,19 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
       // Initialize history sync service
       _initializeHistoryServices();
     });
+    
+    // Start timer to update clock every second
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        _currentTime = DateTime.now();
+      });
+    });
+  }
+  
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
   }
   
   /// Initialize history services
@@ -153,6 +170,37 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
     );
   }
 
+  /// Build date and time display
+  Widget _buildDateTimeDisplay() {
+    final dateFormat = DateFormat('EEEE, MMMM d, yyyy');
+    final timeFormat = DateFormat('HH:mm');
+    
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          dateFormat.format(_currentTime),
+          style: GoogleFonts.inter(
+            color: AppColors.textSecondary,
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 0.3,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          timeFormat.format(_currentTime),
+          style: GoogleFonts.inter(
+            color: AppColors.textPrimary,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 1,
+          ),
+        ),
+      ],
+    );
+  }
+
   /// Build online/offline status indicator
   Widget _buildStatusIndicator(OfflineState offlineState) {
     final isOnline = offlineState.isOnline;
@@ -229,8 +277,8 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
       leading: null,
       leadingWidth: 0,
       title: Row(
-        mainAxisSize: MainAxisSize.min,
         children: [
+          // Logo and title on the left
           Padding(
             padding: const EdgeInsets.only(left: 16, right: 12),
             child: Image.asset(
@@ -257,6 +305,13 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
                 letterSpacing: 1.5,
                 height: 1.2,
               ),
+            ),
+          ),
+          
+          // Date and Time in the center
+          Expanded(
+            child: Center(
+              child: _buildDateTimeDisplay(),
             ),
           ),
         ],
