@@ -2,7 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/offline_storage_service.dart';
 import '../services/connectivity_service.dart';
 import '../services/api_service.dart';
+import '../services/logger_service.dart';
 import 'config_provider.dart';
+import 'offline_queue_provider.dart';
 
 /// Provider for offline storage service
 final offlineStorageServiceProvider = Provider<OfflineStorageService>((ref) {
@@ -48,6 +50,7 @@ class OfflineNotifier extends Notifier<OfflineState> {
 
   ConnectivityService? _connectivityService;
   OfflineStorageService? _offlineStorage;
+  final _logger = LoggerService();
 
   /// Initialize offline services
   Future<void> _initialize() async {
@@ -56,11 +59,15 @@ class OfflineNotifier extends Notifier<OfflineState> {
       _connectivityService = ConnectivityService();
       await _connectivityService!.initialize();
 
-      // Listen to connectivity changes
-      _connectivityService!.connectionStatus.listen((isOnline) {
+      // Listen to connectivity changes and trigger auto-sync
+      _connectivityService!.connectionStatus.listen((isOnline) async {
+        final previousState = state.isOnline;
         state = state.copyWith(isOnline: isOnline);
-        if (isOnline) {
-          syncPendingItems();
+        
+        // Auto-sync when connection is restored (offline -> online)
+        if (!previousState && isOnline) {
+          await _logger.logInfo('🔄 Connection restored - triggering auto-sync');
+          await _triggerAutoSync();
         }
       });
 
@@ -73,6 +80,18 @@ class OfflineNotifier extends Notifier<OfflineState> {
       await _updatePendingCount();
     } catch (e) {
       state = state.copyWith(syncError: 'Failed to initialize offline mode: $e');
+    }
+  }
+
+  /// Trigger auto-sync when connection is restored
+  Future<void> _triggerAutoSync() async {
+    try {
+      // Trigger sync via offline queue provider
+      await ref.read(offlineQueueProvider.notifier).syncPendingActions();
+      await _logger.logInfo('✅ Auto-sync completed successfully');
+    } catch (e) {
+      await _logger.logError('Auto-sync failed', e.toString());
+      state = state.copyWith(syncError: 'Auto-sync failed: $e');
     }
   }
 
