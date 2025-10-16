@@ -112,28 +112,22 @@ class ScanNotifier extends Notifier<ScanState> {
         final action = result.message;
         await _loggerService.logSuccess(memberName, action);
         
-        // Determine if this is check-in or check-out based on the action message
-        final now = DateTime.now();
-        final isCheckIn = action.toLowerCase().contains('check-in') || 
-                         action.toLowerCase().contains('checked in');
-        
-        // Add to activity log with session data
+        // Add to in-memory activity log (max 10 for dashboard display)
         final activityLog = ActivityLog(
           memberName: memberName,
           action: action,
-          time: now,
+          time: DateTime.now(),
           success: true,
           avatarUrl: result.data?.avatarUrl,
           memberId: result.data?.memberId,
-          // For immediate display: populate check-in time for check-ins, check-out time for check-outs
-          checkInTime: isCheckIn ? now : null,
-          checkOutTime: !isCheckIn ? now : null,
-          method: 'QR',
         );
         _addActivityLog(activityLog);
         
-        // Also add to history provider for immediate UI update
-        ref.read(historyProvider.notifier).addActivity(activityLog);
+        // Wait a moment for server to process, then sync history
+        // This ensures dashboard/history show correct session data
+        Future.delayed(const Duration(milliseconds: 500), () {
+          ref.read(historyProvider.notifier).clearAndSyncFromServer();
+        });
         
         state = state.copyWith(statusMessage: result.message);
       } else {
@@ -145,7 +139,7 @@ class ScanNotifier extends Notifier<ScanState> {
           'QR Code: $qrCode',
         );
         
-        // Add to activity log
+        // Add to in-memory activity log
         final activityLog = ActivityLog(
           memberName: result.data?.memberName ?? 'Error',
           action: result.error ?? result.message,
@@ -156,8 +150,10 @@ class ScanNotifier extends Notifier<ScanState> {
         );
         _addActivityLog(activityLog);
         
-        // Also add to history provider for immediate UI update
-        ref.read(historyProvider.notifier).addActivity(activityLog);
+        // Wait a moment for server to process, then sync history (includes this denied scan)
+        Future.delayed(const Duration(milliseconds: 500), () {
+          ref.read(historyProvider.notifier).clearAndSyncFromServer();
+        });
         
         state = state.copyWith(statusMessage: result.error ?? result.message);
       }
