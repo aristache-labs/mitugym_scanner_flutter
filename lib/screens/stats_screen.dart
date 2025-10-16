@@ -1,11 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 import '../config/app_colors.dart';
 import '../providers/history_provider.dart';
+import '../providers/gym_schedule_provider.dart';
 import '../widgets/member_avatar_modal.dart';
 import '../widgets/member_details_modal.dart';
 
@@ -20,6 +21,43 @@ class StatsScreen extends ConsumerStatefulWidget {
 class _StatsScreenState extends ConsumerState<StatsScreen> {
   String _sortBy = ''; // No default sorting - clean state
   bool _sortAscending = true;
+  Timer? _syncTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch gym schedule when screen loads
+    _fetchSchedule();
+    // Start hourly sync timer
+    _startHourlySync();
+  }
+
+  @override
+  void dispose() {
+    _syncTimer?.cancel();
+    super.dispose();
+  }
+
+  /// Start hourly sync timer
+  void _startHourlySync() {
+    // Sync every hour (3600 seconds)
+    _syncTimer = Timer.periodic(const Duration(hours: 1), (timer) {
+      _fetchSchedule();
+    });
+  }
+
+  /// Fetch gym schedule
+  void _fetchSchedule() {
+    Future.microtask(() => ref.read(gymScheduleProvider.notifier).fetchSchedule());
+  }
+
+  /// Refresh data (schedule and history)
+  Future<void> _refreshData() async {
+    // Fetch latest gym schedule
+    await ref.read(gymScheduleProvider.notifier).fetchSchedule();
+    // Refresh history
+    await ref.read(historyProvider.notifier).syncFromServer();
+  }
 
   void _toggleSort(String sortKey) {
     setState(() {
@@ -73,35 +111,40 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
     // Calculate peak occupancy
     final peakOccupancy = _calculatePeakOccupancy(todayActivities.toList());
     
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Today's Traffic Chart
-          _buildTodaysTrafficChart(todayActivities.toList(), peakOccupancy),
-          const SizedBox(height: 20),
-          
-          // Charts and analytics section
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Success rate chart
-              Expanded(
-                child: _buildSuccessRateCard(successRate, checkIns, checkOuts, denied),
-              ),
-              const SizedBox(width: 16),
-              
-              // Peak hours
-              Expanded(
-                child: _buildPeakHoursCard(todayActivities.toList()),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          
-          // Recent check-ins list
-          _buildRecentCheckIns(todayActivities.toList(), context),
-        ],
+    return RefreshIndicator(
+      onRefresh: _refreshData,
+      color: AppColors.primary,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Today's Traffic Chart
+            _buildTodaysTrafficChart(todayActivities.toList(), peakOccupancy),
+            const SizedBox(height: 20),
+            
+            // Charts and analytics section
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Success rate chart
+                Expanded(
+                  child: _buildSuccessRateCard(successRate, checkIns, checkOuts, denied),
+                ),
+                const SizedBox(width: 16),
+                
+                // Peak hours
+                Expanded(
+                  child: _buildPeakHoursCard(todayActivities.toList()),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            
+            // Recent check-ins list
+            _buildRecentCheckIns(todayActivities.toList(), context),
+          ],
+        ),
       ),
     );
   }
@@ -279,11 +322,22 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
   
   /// Build the line chart
   Widget _buildLineChart(List<dynamic> activities) {
-    // Calculate occupancy for each hour (0-23)
+    final scheduleNotifier = ref.read(gymScheduleProvider.notifier);
+    
+    // Get gym opening hours (default to 0-23 if no schedule)
+    final openHour = scheduleNotifier.openHour ?? 0;
+    final closeHour = scheduleNotifier.closeHour ?? 23;
+    
+    // Calculate occupancy for each hour (only for opening hours)
     final hourlyData = List.generate(24, (hour) {
+      // Only show data for opening hours
+      if (!scheduleNotifier.isOpenAtHour(hour)) {
+        return FlSpot(hour.toDouble(), double.nan); // NaN will be filtered out
+      }
+      
       final hourActivities = activities.where((a) => a.time.hour == hour).length;
       return FlSpot(hour.toDouble(), hourActivities.toDouble());
-    });
+    }).where((spot) => !spot.y.isNaN).toList(); // Filter out closed hours
     
     final now = DateTime.now();
     final currentHour = now.hour;
@@ -297,8 +351,12 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
       futureData.insert(0, liveData.last);
     }
     
-    final maxY = hourlyData.map((e) => e.y).reduce((a, b) => a > b ? a : b);
+    final maxY = hourlyData.isEmpty ? 5.0 : hourlyData.map((e) => e.y).reduce((a, b) => a > b ? a : b);
     final yMax = maxY > 0 ? (maxY + 2).ceilToDouble() : 5.0;
+    
+    // Use gym opening hours for X-axis range
+    final minX = openHour.toDouble();
+    final maxX = closeHour.toDouble();
     
     return LineChart(
       LineChartData(
@@ -341,6 +399,8 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
               interval: 2,
               getTitlesWidget: (value, meta) {
                 final hour = value.toInt();
+                // Only show labels for opening hours
+                if (hour < openHour || hour > closeHour) return const SizedBox.shrink();
                 if (hour % 2 != 0) return const SizedBox.shrink();
                 return Padding(
                   padding: const EdgeInsets.only(top: 8),
@@ -358,8 +418,8 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
           ),
         ),
         borderData: FlBorderData(show: false),
-        minX: 0,
-        maxX: 23,
+        minX: minX,
+        maxX: maxX,
         minY: 0,
         maxY: yMax,
         lineBarsData: [
@@ -442,115 +502,6 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
             },
           ),
         ),
-      ),
-    );
-  }
-
-  /// Build stats cards row
-  Widget _buildStatsCards(int total, int checkIns, int checkOuts, int denied) {
-    return Row(
-        children: [
-        Expanded(
-          child: _buildCompactStatCard(
-            'Total',
-            '$total',
-            Icons.qr_code_scanner_rounded,
-            AppColors.primary,
-          ),
-        ),
-        const SizedBox(width: 12),
-          Expanded(
-          child: _buildCompactStatCard(
-            'Check-ins',
-            '$checkIns',
-            Icons.login_rounded,
-            AppColors.success,
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildCompactStatCard(
-            'Check-outs',
-            '$checkOuts',
-            Icons.logout_rounded,
-            AppColors.warning,
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildCompactStatCard(
-            'Denied',
-            '$denied',
-            Icons.block_rounded,
-            AppColors.error,
-          ),
-        ),
-      ],
-    );
-  }
-
-  /// Build compact stat card
-  Widget _buildCompactStatCard(
-    String label,
-    String value,
-    IconData icon,
-    Color color,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.card.withValues(alpha: 0.9),
-            AppColors.surface.withValues(alpha: 0.7),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: color.withValues(alpha: 0.3),
-          width: 1,
-        ),
-        ),
-        child: Column(
-              children: [
-                Container(
-            padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [color.withValues(alpha: 0.8), color],
-              ),
-              borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                  color: color.withValues(alpha: 0.3),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-            child: Icon(icon, color: Colors.white, size: 20),
-          ),
-          const SizedBox(height: 12),
-                Text(
-                  value,
-                  style: GoogleFonts.inter(
-                    color: AppColors.textPrimary,
-              fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  label,
-                  style: GoogleFonts.inter(
-                    color: AppColors.textMuted,
-              fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
       ),
     );
   }

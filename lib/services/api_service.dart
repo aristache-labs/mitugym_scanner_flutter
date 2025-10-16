@@ -3,6 +3,7 @@ import 'package:logger/logger.dart';
 import '../models/scan_result.dart';
 import '../models/member_data.dart';
 import '../models/activity_log.dart';
+import '../models/gym_schedule.dart';
 
 /// API Service for MituGym backend
 /// Handles all HTTP requests to the check-in/check-out API
@@ -271,6 +272,48 @@ class ApiService {
     } catch (e) {
       _logger.e('Unexpected error fetching history: $e');
       return [];
+    }
+  }
+
+  /// Fetch gym schedule for today
+  /// Returns the schedule for the current day of the week
+  Future<GymSchedule?> fetchGymSchedule() async {
+    try {
+      final today = GymSchedule.getTodayDayOfWeek();
+      _logger.i('Fetching gym schedule for: $today');
+      _logger.d('Using API key: ${apiKey.substring(0, 10)}...');
+
+      final response = await _dio.get(
+        '/api/gym-schedule',
+        queryParameters: {
+          'api_key': apiKey,
+          'day': today,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data as Map<String, dynamic>;
+        _logger.d('Gym schedule API response: $data');
+
+        if (data['success'] == true && data['schedule'] != null) {
+          final scheduleData = data['schedule'] as Map<String, dynamic>;
+          final schedule = GymSchedule.fromJson(scheduleData);
+          _logger.i('✅ Gym schedule loaded: ${schedule.dayOfWeek} - Open: ${schedule.openTime} to ${schedule.closeTime} (Closed: ${schedule.isClosed})');
+          return schedule;
+        } else {
+          _logger.w('No schedule data in response');
+          return null;
+        }
+      } else {
+        _logger.w('Failed to fetch gym schedule: ${response.statusCode}');
+        return null;
+      }
+    } on DioException catch (e) {
+      _logger.e('Failed to fetch gym schedule: ${e.message}');
+      return null;
+    } catch (e) {
+      _logger.e('Unexpected error fetching gym schedule: $e');
+      return null;
     }
   }
 
