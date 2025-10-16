@@ -7,16 +7,19 @@ import '../models/member_data.dart';
 import '../providers/config_provider.dart';
 import 'member_avatar_modal.dart';
 
-/// Modal bottom sheet to show full member details
+/// Modal dialog to show full member details
 class MemberDetailsModal {
   static void show(BuildContext context, {
     required MemberData member,
   }) {
-    showModalBottomSheet(
+    showDialog(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => _MemberDetailsModalContent(member: member),
+      barrierDismissible: true,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(24),
+        child: _MemberDetailsModalContent(member: member),
+      ),
     );
   }
 }
@@ -33,41 +36,36 @@ class _MemberDetailsModalContent extends ConsumerWidget {
 
     return Container(
       constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.9,
+        maxHeight: MediaQuery.of(context).size.height * 0.85,
+        maxWidth: 600,
       ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppColors.surface.withValues(alpha: 0.95),
-            AppColors.card.withValues(alpha: 0.95),
+            AppColors.surface.withValues(alpha: 0.98),
+            AppColors.card.withValues(alpha: 0.98),
           ],
         ),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: AppColors.border.withValues(alpha: 0.3),
           width: 1,
         ),
-      ),
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 30,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Handle bar
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppColors.border,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 24),
             
             // Avatar (large) with status - Clickable to expand
             GestureDetector(
