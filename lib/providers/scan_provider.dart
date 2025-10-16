@@ -50,9 +50,22 @@ class ScanState {
 /// Scan state notifier
 class ScanNotifier extends Notifier<ScanState> {
   Timer? _cooldownTimer;
+  String? _lastQueuedQrCode; // Store last queued QR for retry when online
 
   @override
   ScanState build() {
+    // Listen to offline queue state to detect when syncing completes
+    ref.listen(offlineQueueProvider, (previous, next) {
+      // If we were syncing and now finished, and we have a queued QR code
+      if (previous?.isSyncing == true && 
+          next.isSyncing == false && 
+          _lastQueuedQrCode != null &&
+          next.pendingActions.isEmpty) {
+        // Retry the last queued scan to get full member details
+        _retryLastQueuedScan();
+      }
+    });
+    
     return const ScanState();
   }
 
@@ -245,6 +258,9 @@ class ScanNotifier extends Notifier<ScanState> {
   /// Handle scan when offline - queue for later sync
   Future<void> _handleOfflineScan(String qrCode, String apiKey) async {
     try {
+      // Store the QR code for retry when online
+      _lastQueuedQrCode = qrCode;
+      
       // Queue the action for later sync
       await ref.read(offlineQueueProvider.notifier).queueAction(
         qrCode: qrCode,
@@ -287,6 +303,35 @@ class ScanNotifier extends Notifier<ScanState> {
         lastResult: ScanResult.error('Failed to queue scan: $e'),
         statusMessage: 'Error queuing scan',
       );
+    }
+  }
+
+  /// Retry the last queued scan after coming online
+  Future<void> _retryLastQueuedScan() async {
+    if (_lastQueuedQrCode == null) return;
+    
+    final qrCode = _lastQueuedQrCode!;
+    _lastQueuedQrCode = null; // Clear to avoid duplicate retries
+    
+    final config = ref.read(configProvider);
+    final locationApiKey = config.apiKey;
+    
+    try {
+      _loggerService.logInfo('Fetching member details after sync: $qrCode');
+      
+      // Call API to get full member details
+      final result = await _apiService.checkInOut(qrCode, locationApiKey);
+      
+      // Update state with full member details
+      if (result.success && result.data != null) {
+        state = state.copyWith(
+          lastResult: result,
+          statusMessage: result.message,
+        );
+        _loggerService.logSuccess('Member details updated', result.data!.memberName);
+      }
+    } catch (e) {
+      _loggerService.logError('Failed to fetch member details after sync', e.toString());
     }
   }
 

@@ -22,17 +22,20 @@ class ScannerScreen extends ConsumerWidget {
         // Left column - Scanner and controls
         Expanded(
           flex: 1,
-          child: Column(
-            children: [
-              // Scanner card with reduced size
-              _buildScannerCard(scannerState, scanState, ref),
-              const SizedBox(height: 20),
-              
-              // Start/Stop scanner button
-              _buildScannerButton(scannerState, ref),
-              
-              const Spacer(),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Scanner card with reduced size
+                _buildScannerCard(scannerState, scanState, ref),
+                const SizedBox(height: 20),
+                
+                // Start/Stop scanner button
+                _buildScannerButton(scannerState, ref),
+                
+                const SizedBox(height: 20),
+              ],
+            ),
           ),
         ),
         
