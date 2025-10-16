@@ -33,6 +33,7 @@ class MainLayoutScreen extends ConsumerStatefulWidget {
 
 class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
   int _selectedIndex = 0;
+  final GlobalKey<PopupMenuButtonState<String>> _userMenuKey = GlobalKey();
 
   @override
   void initState() {
@@ -280,6 +281,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
     return Container(
       margin: const EdgeInsets.only(right: 20, top: 10, bottom: 10),
       child: PopupMenuButton<String>(
+        key: _userMenuKey,
         tooltip: '', // Remove default "Show menu" tooltip
         offset: const Offset(0, 50),
         shape: RoundedRectangleBorder(
@@ -293,7 +295,9 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
           color: Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           child: InkWell(
-            onTap: () {}, // Empty onTap to enable hover/ripple effect
+            onTap: () {
+              _userMenuKey.currentState?.showButtonMenu();
+            },
             borderRadius: BorderRadius.circular(12),
             hoverColor: AppColors.primary.withValues(alpha: 0.1),
             splashColor: AppColors.primary.withValues(alpha: 0.2),
