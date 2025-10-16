@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:logger/logger.dart';
 import '../models/member_data.dart';
@@ -30,7 +31,7 @@ class OfflineStorageService {
       
     return await openDatabase(
       path,
-      version: 3, // Updated for session columns
+      version: 4, // Updated for member_data_json column
       onCreate: _createTables,
       onUpgrade: _onUpgrade,
     );
@@ -129,6 +130,16 @@ class OfflineStorageService {
         _logger.i('Added session columns to checkin_history table');
       } catch (e) {
         _logger.w('Could not add session columns (may already exist): $e');
+      }
+    }
+    
+    if (oldVersion < 4) {
+      // Add member_data_json column for full member details
+      try {
+        await db.execute('ALTER TABLE checkin_history ADD COLUMN member_data_json TEXT');
+        _logger.i('Added member_data_json column to checkin_history table');
+      } catch (e) {
+        _logger.w('Could not add member_data_json column (may already exist): $e');
       }
     }
   }
@@ -235,6 +246,16 @@ class OfflineStorageService {
         return;
       }
       
+      // Serialize member data to JSON if available
+      String? memberDataJson;
+      if (activity.memberData != null) {
+        try {
+          memberDataJson = jsonEncode(activity.memberData!.toJson());
+        } catch (e) {
+          _logger.w('Failed to serialize member data: $e');
+        }
+      }
+      
       // Insert new record
       await db.insert('checkin_history', {
         'member_id': activity.memberId ?? '',
@@ -248,6 +269,7 @@ class OfflineStorageService {
         'check_out_time': activity.checkOutTime?.millisecondsSinceEpoch,
         'duration_minutes': activity.durationMinutes,
         'method': activity.method,
+        'member_data_json': memberDataJson,
       });
       _logger.d('Saved check-in history for ${activity.memberName}');
     } catch (e) {
@@ -310,6 +332,17 @@ class OfflineStorageService {
           checkOutTime = DateTime.fromMillisecondsSinceEpoch(data['check_out_time'] as int);
         }
         
+        // Deserialize member data from JSON if available
+        MemberData? memberData;
+        if (data['member_data_json'] != null) {
+          try {
+            final jsonMap = jsonDecode(data['member_data_json'] as String) as Map<String, dynamic>;
+            memberData = MemberData.fromJson(jsonMap);
+          } catch (e) {
+            _logger.w('Failed to deserialize member data: $e');
+          }
+        }
+        
         return ActivityLog(
           memberName: data['member_name'] as String,
           action: data['action'] as String,
@@ -321,6 +354,7 @@ class OfflineStorageService {
           checkOutTime: checkOutTime,
           durationMinutes: data['duration_minutes'] as int?,
           method: data['method'] as String?,
+          memberData: memberData,
         );
       }).toList();
     } catch (e) {

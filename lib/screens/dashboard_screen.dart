@@ -447,16 +447,9 @@ class DashboardScreen extends ConsumerWidget {
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      print('🔍 Dashboard: Clicked member name: ${activity.memberName}');
-                      print('🔍 Dashboard: memberData is null? ${activity.memberData == null}');
-                      if (activity.memberData != null) {
-                        print('🔍 Dashboard: Opening modal for ${activity.memberData!.memberId}');
-                      }
                       // Show member details modal if member data is available
                       if (activity.memberData != null) {
                         MemberDetailsModal.show(context, member: activity.memberData!);
-                      } else {
-                        print('⚠️ Dashboard: No member data available for ${activity.memberName}');
                       }
                     },
                     child: Text(

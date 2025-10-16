@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../config/app_colors.dart';
 import '../models/member_data.dart';
+import '../providers/config_provider.dart';
 import 'member_avatar_modal.dart';
 
 /// Modal bottom sheet to show full member details
@@ -18,13 +21,13 @@ class MemberDetailsModal {
   }
 }
 
-class _MemberDetailsModalContent extends StatelessWidget {
+class _MemberDetailsModalContent extends ConsumerWidget {
   final MemberData member;
 
   const _MemberDetailsModalContent({required this.member});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final statusColor = _getStatusColor(member.membershipStatus);
     final isActive = member.isActive;
 
@@ -220,86 +223,91 @@ class _MemberDetailsModalContent extends StatelessWidget {
             ),
             const SizedBox(height: 28),
             
-            // Member ID and Plan
-            _buildDetailRow(Icons.badge_rounded, 'Member ID', member.memberId),
-            const SizedBox(height: 12),
-            _buildDetailRow(Icons.card_membership_rounded, 'Plan', member.planName),
-            const SizedBox(height: 12),
-            _buildDetailRow(Icons.calendar_today_rounded, 'Expires', member.formattedExpiryDate),
-            
-            // Birth Date (if available)
-            if (member.dateOfBirth != null) ...[
-              const SizedBox(height: 12),
-              _buildDetailRow(Icons.cake_rounded, 'Birth Date', member.formattedBirthDate ?? member.dateOfBirth!),
-            ],
-            
-            // Contact Information Section
-            if (member.hasContactDetails) ...[
-              const SizedBox(height: 28),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'CONTACT INFORMATION',
-                  style: GoogleFonts.inter(
-                    color: AppColors.textMuted,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1.2,
+            // Two-column layout for details
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // LEFT COLUMN: Membership Details
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'MEMBERSHIP',
+                        style: GoogleFonts.inter(
+                          color: AppColors.textMuted,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      _buildCompactDetailRow(Icons.card_membership_rounded, 'Plan', member.planName),
+                      const SizedBox(height: 8),
+                      _buildCompactDetailRow(Icons.calendar_today_rounded, 'Expires', member.formattedExpiryDate),
+                      if (member.dateOfBirth != null) ...[
+                        const SizedBox(height: 8),
+                        _buildCompactDetailRow(Icons.cake_rounded, 'Birth Date', member.formattedBirthDate ?? member.dateOfBirth!),
+                      ],
+                    ],
                   ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              if (member.email != null)
-                _buildDetailRow(Icons.email_rounded, 'Email', member.email!),
-              if (member.phone != null) ...[
-                const SizedBox(height: 12),
-                _buildDetailRow(Icons.phone_rounded, 'Phone', member.phone!),
-              ],
-            ],
-            
-            // Address Information Section
-            if (member.hasAddressDetails) ...[
-              const SizedBox(height: 28),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'ADDRESS',
-                  style: GoogleFonts.inter(
-                    color: AppColors.textMuted,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1.2,
+                const SizedBox(width: 16),
+                // RIGHT COLUMN: Contact & Address
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'CONTACT & ADDRESS',
+                        style: GoogleFonts.inter(
+                          color: AppColors.textMuted,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      if (member.email != null) ...[
+                        _buildCompactDetailRow(Icons.email_rounded, 'Email', member.email!),
+                        const SizedBox(height: 8),
+                      ],
+                      if (member.phone != null) ...[
+                        _buildCompactDetailRow(Icons.phone_rounded, 'Phone', member.phone!),
+                        const SizedBox(height: 8),
+                      ],
+                      if (member.hasAddressDetails) ...[
+                        _buildCompactDetailRow(
+                          Icons.location_on_rounded, 
+                          'Address', 
+                          _buildAddressString(member),
+                        ),
+                      ],
+                      // Show placeholder if no contact/address info
+                      if (!member.hasContactDetails && !member.hasAddressDetails)
+                        Text(
+                          'No contact information',
+                          style: GoogleFonts.inter(
+                            color: AppColors.textMuted,
+                            fontSize: 12,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                    ],
                   ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              if (member.address != null)
-                _buildDetailRow(Icons.home_rounded, 'Street', member.address!),
-              if (member.city != null) ...[
-                const SizedBox(height: 12),
-                _buildDetailRow(Icons.location_city_rounded, 'City', member.city!),
               ],
-              if (member.county != null) ...[
-                const SizedBox(height: 12),
-                _buildDetailRow(Icons.map_rounded, 'County', member.county!),
-              ],
-            ],
-            
-            // Gender (if available)
-            if (member.gender != null) ...[
-              const SizedBox(height: 12),
-              _buildDetailRow(Icons.person_outline_rounded, 'Gender', member.gender!.toUpperCase()),
-            ],
+            ),
             
             const SizedBox(height: 28),
             
-            // Close button
+            // View Full Profile button
             SizedBox(
               width: double.infinity,
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: () => Navigator.pop(context),
+                  onTap: () => _openMemberProfile(context, ref, member.memberId),
                   borderRadius: BorderRadius.circular(12),
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 14),
@@ -314,11 +322,55 @@ class _MemberDetailsModalContent extends StatelessWidget {
                         ),
                       ],
                     ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.open_in_new_rounded,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'View Full Profile',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.inter(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            
+            // Close button
+            SizedBox(
+              width: double.infinity,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => Navigator.pop(context),
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface.withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: AppColors.border.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
+                    ),
                     child: Text(
                       'Close',
                       textAlign: TextAlign.center,
                       style: GoogleFonts.inter(
-                        color: Colors.white,
+                        color: AppColors.textPrimary,
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                       ),
@@ -333,32 +385,68 @@ class _MemberDetailsModalContent extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow(IconData icon, String label, String value) {
+  void _openMemberProfile(BuildContext context, WidgetRef ref, String memberId) async {
+    // Get the API URL from settings and derive the web panel URL
+    final config = ref.read(configProvider);
+    final apiUrl = config.apiUrl;
+    
+    // Extract base URL from API URL (remove /api/checkin or /api/history etc.)
+    String webPanelUrl;
+    if (apiUrl.contains('/api/')) {
+      // Remove everything from /api/ onwards
+      webPanelUrl = apiUrl.substring(0, apiUrl.indexOf('/api/'));
+    } else {
+      // If no /api/ found, use the URL as is
+      webPanelUrl = apiUrl;
+    }
+    
+    final profileUrl = Uri.parse('$webPanelUrl/members/$memberId/view');
+    
+    try {
+      if (await canLaunchUrl(profileUrl)) {
+        await launchUrl(profileUrl, mode: LaunchMode.externalApplication);
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Could not open profile: $profileUrl'),
+              backgroundColor: AppColors.error,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error opening profile: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
+  }
+
+  Widget _buildCompactDetailRow(IconData icon, String label, String value) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppColors.surface.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(
           color: AppColors.border.withValues(alpha: 0.2),
           width: 1,
         ),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              icon,
-              size: 20,
-              color: AppColors.primary,
-            ),
+          Icon(
+            icon,
+            size: 16,
+            color: AppColors.primary.withValues(alpha: 0.7),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -367,19 +455,19 @@ class _MemberDetailsModalContent extends StatelessWidget {
                   label,
                   style: GoogleFonts.inter(
                     color: AppColors.textMuted,
-                    fontSize: 11,
+                    fontSize: 10,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
                   value,
                   style: GoogleFonts.inter(
                     color: AppColors.textPrimary,
-                    fontSize: 14,
+                    fontSize: 13,
                     fontWeight: FontWeight.w600,
                   ),
-                  maxLines: 2,
+                  maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
@@ -388,6 +476,20 @@ class _MemberDetailsModalContent extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _buildAddressString(MemberData member) {
+    final parts = <String>[];
+    if (member.address != null && member.address!.isNotEmpty) {
+      parts.add(member.address!);
+    }
+    if (member.city != null && member.city!.isNotEmpty) {
+      parts.add(member.city!);
+    }
+    if (member.county != null && member.county!.isNotEmpty) {
+      parts.add(member.county!);
+    }
+    return parts.isEmpty ? 'Not provided' : parts.join(', ');
   }
 
   Color _getStatusColor(String status) {
