@@ -25,8 +25,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   late int _cameraIndex;
   late int _debounceDuration;
   late bool _audioEnabled;
-  late double _fontSize;
-  late double _animationSpeed;
   late double _soundVolume;
   late int _cameraFrameRate;
   late int _logRetentionDays;
@@ -47,8 +45,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     _cameraIndex = config.cameraIndex;
     _debounceDuration = config.debounceDuration;
     _audioEnabled = config.audioEnabled;
-    _fontSize = config.fontSize;
-    _animationSpeed = config.animationSpeed;
     _soundVolume = config.soundVolume;
     _cameraFrameRate = config.cameraFrameRate;
     _logRetentionDays = config.logRetentionDays;
@@ -69,13 +65,25 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   Future<void> _saveSettings() async {
     if (!_formKey.currentState!.validate()) return;
 
-    // Update each setting individually
+    // Update ALL settings individually
     await ref.read(configProvider.notifier).updateApiUrl(_apiUrlController.text);
     await ref.read(configProvider.notifier).updateApiKey(_apiKeyController.text);
     await ref.read(configProvider.notifier).updateCameraIndex(_cameraIndex);
     await ref.read(configProvider.notifier).updateDebounceDuration(_debounceDuration);
     await ref.read(configProvider.notifier).updateAudioEnabled(_audioEnabled);
     await ref.read(configProvider.notifier).updateHistoryRetentionDays(_historyRetentionDays);
+    
+    // Save settings from Display tab
+    await ref.read(configProvider.notifier).updateCameraVisible(_cameraVisible);
+    await ref.read(configProvider.notifier).updateAutoStartScanning(_autoStartScanning);
+    
+    // Save settings from Audio tab
+    await ref.read(configProvider.notifier).updateSoundVolume(_soundVolume);
+    
+    // Save settings from Advanced tab
+    await ref.read(configProvider.notifier).updateCameraFrameRate(_cameraFrameRate);
+    await ref.read(configProvider.notifier).updateLogRetentionDays(_logRetentionDays);
+    await ref.read(configProvider.notifier).updateExportFormat(_exportFormat);
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -245,14 +253,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                     _cameraIndex = config.cameraIndex;
                     _debounceDuration = config.debounceDuration;
                     _audioEnabled = config.audioEnabled;
-                    _fontSize = config.fontSize;
-                    _animationSpeed = config.animationSpeed;
                     _soundVolume = config.soundVolume;
                     _cameraFrameRate = config.cameraFrameRate;
                     _logRetentionDays = config.logRetentionDays;
                     _exportFormat = config.exportFormat;
                     _autoStartScanning = config.autoStartScanning;
                     _cameraVisible = config.cameraVisible;
+                    _historyRetentionDays = config.historyRetentionDays;
                   });
                 },
                 borderRadius: BorderRadius.circular(12),
@@ -382,32 +389,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
-        _buildSection(
-          'Text & Appearance',
-          Icons.text_fields,
-          [
-            _buildSlider(
-              label: 'Font Size',
-              value: _fontSize,
-              min: 12,
-              max: 20,
-              divisions: 8,
-              displayValue: '${_fontSize.toInt()}px',
-              onChanged: (v) => setState(() => _fontSize = v),
-            ),
-            const SizedBox(height: 16),
-            _buildSlider(
-              label: 'Animation Speed',
-              value: _animationSpeed,
-              min: 0.5,
-              max: 2.0,
-              divisions: 15,
-              displayValue: '${_animationSpeed.toStringAsFixed(1)}x',
-              onChanged: (v) => setState(() => _animationSpeed = v),
-            ),
-          ],
-        ),
-        const SizedBox(height: 24),
         _buildSection(
           'Scanner',
           Icons.qr_code_scanner,

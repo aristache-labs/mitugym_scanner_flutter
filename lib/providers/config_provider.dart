@@ -57,6 +57,54 @@ class ConfigNotifier extends Notifier<AppConfig> {
     await state.saveToPreferences();
   }
 
+  /// Update font size
+  Future<void> updateFontSize(double size) async {
+    state = state.copyWith(fontSize: size);
+    await state.saveToPreferences();
+  }
+
+  /// Update animation speed
+  Future<void> updateAnimationSpeed(double speed) async {
+    state = state.copyWith(animationSpeed: speed);
+    await state.saveToPreferences();
+  }
+
+  /// Update camera visible state
+  Future<void> updateCameraVisible(bool visible) async {
+    state = state.copyWith(cameraVisible: visible);
+    await state.saveToPreferences();
+  }
+
+  /// Update auto start scanning state
+  Future<void> updateAutoStartScanning(bool autoStart) async {
+    state = state.copyWith(autoStartScanning: autoStart);
+    await state.saveToPreferences();
+  }
+
+  /// Update sound volume
+  Future<void> updateSoundVolume(double volume) async {
+    state = state.copyWith(soundVolume: volume);
+    await state.saveToPreferences();
+  }
+
+  /// Update camera frame rate
+  Future<void> updateCameraFrameRate(int frameRate) async {
+    state = state.copyWith(cameraFrameRate: frameRate);
+    await state.saveToPreferences();
+  }
+
+  /// Update log retention days
+  Future<void> updateLogRetentionDays(int days) async {
+    state = state.copyWith(logRetentionDays: days);
+    await state.saveToPreferences();
+  }
+
+  /// Update export format
+  Future<void> updateExportFormat(String format) async {
+    state = state.copyWith(exportFormat: format);
+    await state.saveToPreferences();
+  }
+
   /// Update entire configuration
   Future<void> updateConfig(AppConfig config) async {
     state = config;

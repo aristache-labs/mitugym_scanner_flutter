@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../config/app_colors.dart';
 import '../models/activity_log.dart';
 import '../providers/history_provider.dart';
+import '../providers/config_provider.dart';
 import '../services/export_service.dart';
 import '../widgets/member_avatar_modal.dart';
 import '../widgets/member_details_modal.dart';
@@ -195,12 +196,19 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     }
 
     try {
-      final filePath = await _exportService.exportToCSV(activities);
+      // Get export format from config
+      final config = ref.read(configProvider);
+      final format = config.exportFormat.toLowerCase();
+      
+      // Export using selected format
+      final filePath = format == 'csv'
+          ? await _exportService.exportToCSV(activities)
+          : await _exportService.exportToText(activities);
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Exported to: $filePath'),
+            content: Text('Exported ${format.toUpperCase()} to: $filePath'),
             backgroundColor: AppColors.success,
             duration: const Duration(seconds: 4),
           ),
@@ -884,13 +892,13 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                               MemberDetailsModal.show(context, member: activity.memberData!);
                             }
                           },
-                          child: Text(
+                        child: Text(
                             activity.memberName,
                             style: GoogleFonts.inter(
                               color: activity.memberData != null 
                                   ? AppColors.primary 
                                   : AppColors.textPrimary,
-                              fontSize: 14,
+                            fontSize: 14,
                               fontWeight: FontWeight.w600,
                             ),
                             overflow: TextOverflow.ellipsis,
