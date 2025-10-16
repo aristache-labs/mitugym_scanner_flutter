@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../config/app_themes.dart';
 import '../config/app_colors.dart';
 import '../providers/config_provider.dart';
@@ -99,6 +100,26 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
     'Members',
     'Settings',
   ];
+  
+  // Page icons
+  final List<IconData> _pageIcons = const [
+    LucideIcons.layoutDashboard,
+    LucideIcons.qrCode,
+    LucideIcons.activity,
+    LucideIcons.history,
+    LucideIcons.users,
+    LucideIcons.settings,
+  ];
+  
+  // Page subtitles
+  final List<String> _pageSubtitles = const [
+    'Overview of total scans, check-ins, check-outs and gym activity',
+    'Scan QR codes for member check-in and check-out',
+    'View and analyze member activity statistics',
+    'Review all check-in and check-out history',
+    'Search and manage member information',
+    'Configure application settings and preferences',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -139,17 +160,53 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Page title
+                          // Page title with icon and subtitle
                           Padding(
-                            padding: const EdgeInsets.only(left: 4, bottom: 20),
-                            child: Text(
-                              _pageTitles[_selectedIndex],
-                              style: GoogleFonts.inter(
-                                color: AppColors.textPrimary,
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 0.3,
-                              ),
+                            padding: const EdgeInsets.only(left: 4, bottom: 24),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primary.withValues(alpha: 0.12),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: AppColors.primary.withValues(alpha: 0.25),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    _pageIcons[_selectedIndex],
+                                    color: AppColors.primary,
+                                    size: 24,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      _pageTitles[_selectedIndex],
+                                      style: GoogleFonts.inter(
+                                        color: AppColors.textPrimary,
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.w700,
+                                        letterSpacing: 0.3,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      _pageSubtitles[_selectedIndex],
+                                      style: GoogleFonts.inter(
+                                        color: AppColors.textSecondary,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                        letterSpacing: 0.2,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
                           

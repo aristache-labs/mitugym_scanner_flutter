@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../config/app_colors.dart';
 import '../providers/history_provider.dart';
 import '../widgets/member_avatar_modal.dart';
@@ -80,7 +81,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           child: _buildPremiumStatCard(
             'Total Scans',
             '$totalScans',
-            Icons.qr_code_scanner_rounded,
+            LucideIcons.scanLine,
             AppColors.primary,
             'All scans today',
           ),
@@ -90,7 +91,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           child: _buildPremiumStatCard(
             'Check-ins',
             '$checkIns',
-            Icons.login_rounded,
+            LucideIcons.userCheck,
             AppColors.success,
             'Successful entries',
           ),
@@ -100,7 +101,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           child: _buildPremiumStatCard(
             'Check-outs',
             '$checkOuts',
-            Icons.logout_rounded,
+            LucideIcons.userMinus,
             AppColors.warning,
             'Successful exits',
           ),
@@ -110,7 +111,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           child: _buildPremiumStatCard(
             'Denied',
             '$denied',
-            Icons.block_rounded,
+            LucideIcons.userX,
             AppColors.error,
             'Failed scans',
           ),
@@ -127,106 +128,138 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     String subtitle,
   ) {
     return Container(
-      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppColors.card.withValues(alpha: 0.95),
-            AppColors.surface.withValues(alpha: 0.8),
+            AppColors.card.withValues(alpha: 0.85),
+            AppColors.surface.withValues(alpha: 0.65),
           ],
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: color.withValues(alpha: 0.3),
-          width: 1.5,
+          color: color.withValues(alpha: 0.2),
+          width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: color.withValues(alpha: 0.1),
+            color: color.withValues(alpha: 0.12),
             blurRadius: 20,
-            offset: const Offset(0, 8),
-            spreadRadius: -4,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Icon with gradient background
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
+          // Top header with gradient and centered icon
+          Container(
+            height: 72,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  color.withValues(alpha: 0.18),
+                  const Color(0xFF0D0D0D).withValues(alpha: 0.9),
+                ],
+              ),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
+              ),
+              border: Border(
+                bottom: BorderSide(
+                  color: color.withValues(alpha: 0.16),
+                  width: 1,
+                ),
+              ),
+            ),
+            child: Center(
+              child: Container(
+                width: 56,
+                height: 56,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      color.withValues(alpha: 0.8),
-                      color,
-                    ],
+                  color: const Color(0xFF0D0D0D),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: color.withValues(alpha: 0.35),
+                    width: 1,
                   ),
-                  borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: color.withValues(alpha: 0.4),
+                      color: Colors.black.withValues(alpha: 0.45),
+                      blurRadius: 16,
+                      offset: const Offset(0, 6),
+                    ),
+                    BoxShadow(
+                      color: color.withValues(alpha: 0.25),
                       blurRadius: 12,
-                      offset: const Offset(0, 4),
+                      spreadRadius: -2,
                     ),
                   ],
                 ),
-                child: Icon(icon, color: Colors.white, size: 24),
-              ),
-              // Trend indicator (optional decoration)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
                 child: Icon(
-                  Icons.trending_up_rounded,
+                  icon,
                   color: color,
-                  size: 16,
+                  size: 28,
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          
-          // Value
-          Text(
-            value,
-            style: GoogleFonts.inter(
-              color: AppColors.textPrimary,
-              fontSize: 36,
-              fontWeight: FontWeight.bold,
-              height: 1.0,
-              letterSpacing: -0.5,
             ),
           ),
-          const SizedBox(height: 6),
           
-          // Label
-          Text(
-            label,
-            style: GoogleFonts.inter(
-              color: AppColors.textPrimary,
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.2,
-            ),
-          ),
-          const SizedBox(height: 4),
-          
-          // Subtitle
-          Text(
-            subtitle,
-            style: GoogleFonts.inter(
-              color: AppColors.textMuted,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
+          // Body with value and label
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  value,
+                  style: GoogleFonts.firaCode(
+                    color: AppColors.textPrimary,
+                    fontSize: 48,
+                    fontWeight: FontWeight.w700,
+                    height: 1.0,
+                    letterSpacing: 2,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  label.toUpperCase(),
+                  style: GoogleFonts.firaCode(
+                    color: color,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  height: 1,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.transparent,
+                        color.withValues(alpha: 0.22),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  subtitle,
+                  style: GoogleFonts.inter(
+                    color: AppColors.textMuted,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.4,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
           ),
         ],
