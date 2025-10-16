@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../config/app_themes.dart';
 import '../config/app_colors.dart';
 import '../providers/config_provider.dart';
@@ -8,6 +9,7 @@ import '../providers/scan_provider.dart';
 import '../providers/windows_scanner_provider.dart';
 import '../providers/offline_provider.dart';
 import '../providers/history_provider.dart';
+import '../providers/auth_provider.dart';
 import '../widgets/modern_sidebar_widget.dart';
 import '../widgets/offline_banner_widget.dart';
 import '../services/export_service.dart';
@@ -18,6 +20,7 @@ import 'history_screen.dart';
 import 'stats_screen.dart';
 import 'search_screen.dart';
 import 'settings_screen.dart';
+import 'login_screen.dart';
 
 /// Main layout screen with persistent sidebar and top bar
 /// Only the content area changes when navigating
@@ -263,64 +266,293 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
         ),
         const SizedBox(width: 8),
         
-        // User profile section
-        Container(
-          margin: const EdgeInsets.only(right: 20, top: 14, bottom: 14),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: AppColors.surface.withValues(alpha: 0.5),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: AppColors.border.withValues(alpha: 0.3),
-              width: 1,
-            ),
+        // User profile dropdown
+        _buildUserDropdown(context),
+      ],
+    );
+  }
+
+  /// Build user dropdown menu
+  Widget _buildUserDropdown(BuildContext context) {
+    final authState = ref.watch(authProvider);
+    final userName = authState.session?.userName ?? 'User';
+    
+    return PopupMenuButton<String>(
+      tooltip: '', // Remove default "Show menu" tooltip
+      offset: const Offset(0, 50),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: AppColors.border.withValues(alpha: 0.3),
+        ),
+      ),
+      color: AppColors.surface,
+      child: Container(
+        margin: const EdgeInsets.only(right: 20, top: 10, bottom: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        constraints: const BoxConstraints(
+          minHeight: 50,
+        ),
+        decoration: BoxDecoration(
+          color: AppColors.surface.withValues(alpha: 0.5),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: AppColors.border.withValues(alpha: 0.3),
+            width: 1,
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Avatar
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  gradient: AppColors.primaryGradient,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    width: 2,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Avatar
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                gradient: AppColors.primaryGradient,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  width: 2,
+                ),
+              ),
+              child: Center(
+                child: Text(
+                  userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
+                  style: GoogleFonts.inter(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                child: const Icon(
-                  Icons.person,
-                  color: Colors.white,
-                  size: 18,
-                ),
               ),
-              const SizedBox(width: 10),
-              
-              // User name
-              Text(
-                'WELCOME BACK',
-                style: GoogleFonts.inter(
-                  color: AppColors.textSecondary,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: 0.5,
-                ),
+            ),
+            const SizedBox(width: 10),
+            
+            // Welcome text + User name
+            Flexible(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'WELCOME BACK',
+                    style: GoogleFonts.inter(
+                      color: AppColors.textMuted,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 0.5,
+                      height: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    userName,
+                    style: GoogleFonts.inter(
+                      color: AppColors.textPrimary,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.3,
+                      height: 1.2,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                ],
               ),
-              const SizedBox(width: 6),
-              
-              // Dropdown icon
+            ),
+            const SizedBox(width: 8),
+            
+            // Dropdown icon
+            Icon(
+              Icons.keyboard_arrow_down_rounded,
+              color: Colors.white.withValues(alpha: 0.7),
+              size: 18,
+            ),
+          ],
+        ),
+      ),
+      onSelected: (value) async {
+        if (value == 'settings') {
+          await _openWebSettings();
+        } else if (value == 'logout') {
+          await _handleLogout();
+        }
+      },
+      itemBuilder: (context) => [
+        // Settings option
+        PopupMenuItem<String>(
+          value: 'settings',
+          height: 48,
+          child: Row(
+            children: [
               Icon(
-                Icons.keyboard_arrow_down_rounded,
-                color: Colors.white.withValues(alpha: 0.7),
+                Icons.settings_outlined,
                 size: 18,
+                color: AppColors.primary,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Settings',
+                style: GoogleFonts.inter(
+                  color: AppColors.textPrimary,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const Spacer(),
+              Icon(
+                Icons.open_in_new,
+                size: 14,
+                color: AppColors.textMuted,
+              ),
+            ],
+          ),
+        ),
+        
+        // Divider
+        PopupMenuItem<String>(
+          enabled: false,
+          height: 1,
+          child: Divider(
+            color: AppColors.border.withValues(alpha: 0.2),
+            height: 1,
+          ),
+        ),
+        
+        // Logout option
+        PopupMenuItem<String>(
+          value: 'logout',
+          height: 48,
+          child: Row(
+            children: [
+              Icon(
+                Icons.logout_outlined,
+                size: 18,
+                color: AppColors.error,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Logout',
+                style: GoogleFonts.inter(
+                  color: AppColors.error,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ],
           ),
         ),
       ],
     );
+  }
+
+  /// Open web panel settings page
+  Future<void> _openWebSettings() async {
+    final config = ref.read(configProvider);
+    final apiUrl = config.apiUrl;
+    
+    if (apiUrl.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('API URL not configured'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+      return;
+    }
+    
+    // Extract base URL and construct settings URL
+    final uri = Uri.parse(apiUrl);
+    final baseUrl = '${uri.scheme}://${uri.host}';
+    final settingsUrl = '$baseUrl/settings';
+    
+    final url = Uri.parse(settingsUrl);
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Could not open: $settingsUrl'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
+  }
+
+  /// Handle user logout
+  Future<void> _handleLogout() async {
+    // Show confirmation dialog
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Text(
+          'Logout',
+          style: GoogleFonts.inter(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Text(
+          'Are you sure you want to logout? You will need to login again to use the app.',
+          style: GoogleFonts.inter(
+            color: AppColors.textSecondary,
+            fontSize: 14,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.inter(
+                color: AppColors.textMuted,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: Text(
+              'Logout',
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+    
+    if (confirmed == true && mounted) {
+      // Perform logout
+      await ref.read(authProvider.notifier).logout();
+      
+      // Navigate to login screen
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const LoginScreen(),
+          ),
+        );
+      }
+    }
   }
 
   /// Show export dialog with format options
