@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../config/app_themes.dart';
 import '../config/app_colors.dart';
 import '../providers/history_provider.dart';
@@ -113,37 +114,37 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
       child: Column(
         children: [
           _buildCompactNavItem(
-            icon: Icons.dashboard_rounded,
+            icon: LucideIcons.home,
             label: 'Dashboard',
             isActive: widget.selectedIndex == 0,
             onTap: () => widget.onNavigate(0),
           ),
           _buildCompactNavItem(
-            icon: Icons.qr_code_scanner_rounded,
+            icon: LucideIcons.qrCode,
             label: 'QR Scanner',
             isActive: widget.selectedIndex == 1,
             onTap: () => widget.onNavigate(1),
           ),
           _buildCompactNavItem(
-            icon: Icons.trending_up_rounded,
+            icon: LucideIcons.activity,
             label: 'Check-ins',
             isActive: widget.selectedIndex == 2,
             onTap: () => widget.onNavigate(2),
           ),
           _buildCompactNavItem(
-            icon: Icons.history_rounded,
+            icon: LucideIcons.history,
             label: 'History',
             isActive: widget.selectedIndex == 3,
             onTap: () => widget.onNavigate(3),
           ),
           _buildCompactNavItem(
-            icon: Icons.people_rounded,
+            icon: LucideIcons.users,
             label: 'Members',
             isActive: widget.selectedIndex == 4,
             onTap: () => widget.onNavigate(4),
           ),
           _buildCompactNavItem(
-            icon: Icons.settings_rounded,
+            icon: LucideIcons.settings,
             label: 'Settings',
             isActive: widget.selectedIndex == 5,
             onTap: () => widget.onNavigate(5),

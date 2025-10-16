@@ -19,6 +19,7 @@ dependencies:
 
   # UI & Icons
   cupertino_icons: ^1.0.8
+  lucide_icons: ^0.257.0
   
   # QR Scanning - Windows compatible
   camera_windows: ^0.2.3
