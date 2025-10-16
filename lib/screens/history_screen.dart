@@ -572,7 +572,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             ...dayActivities.map((activity) => _buildActivityCard(activity)),
           ],
         );
-            },
+      },
           ),
         ),
         
@@ -778,7 +778,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     alignment: Alignment.centerLeft,
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              decoration: BoxDecoration(
+                      decoration: BoxDecoration(
                         color: AppColors.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(
@@ -804,19 +804,53 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                               color: AppColors.primary,
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                : !activity.success
+                    ? Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                            color: AppColors.error.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color: AppColors.error.withValues(alpha: 0.3),
+                              width: 1,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.cancel_outlined,
+                                size: 13,
+                                color: AppColors.error,
+                              ),
+                              const SizedBox(width: 5),
+                              Text(
+                                'Plan Expired',
+                                style: GoogleFonts.inter(
+                                  color: AppColors.error,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
               ),
             ),
           ],
         ),
       ),
-                  )
-                : Text(
-                    '--',
-                    style: GoogleFonts.inter(
-                      color: AppColors.textMuted,
-                      fontSize: 13,
-                    ),
-                  ),
+                      )
+                    : Text(
+                        '--',
+                        style: GoogleFonts.inter(
+                          color: AppColors.textMuted,
+                          fontSize: 13,
+                        ),
+                      ),
           ),
           
           // Checked Out column
@@ -859,16 +893,16 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                       ),
                     ),
                   )
-                : activity.checkInTime != null
+                : !activity.success
                     ? Align(
                         alignment: Alignment.centerLeft,
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-                            color: AppColors.success.withValues(alpha: 0.15),
+                          decoration: BoxDecoration(
+                            color: AppColors.error.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(6),
                             border: Border.all(
-                              color: AppColors.success.withValues(alpha: 0.3),
+                              color: AppColors.error.withValues(alpha: 0.3),
                               width: 1,
                             ),
                           ),
@@ -876,15 +910,15 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                Icons.fitness_center_rounded,
+                                Icons.block_rounded,
                                 size: 13,
-                                color: AppColors.success,
+                                color: AppColors.error,
                               ),
                               const SizedBox(width: 5),
                               Text(
-                                'Active Session',
+                                'Access Denied',
                                 style: GoogleFonts.inter(
-                                  color: AppColors.success,
+                                  color: AppColors.error,
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -893,28 +927,62 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                           ),
                         ),
                       )
-                    : Text(
-                        '--',
-                        style: GoogleFonts.inter(
-                          color: AppColors.textMuted,
-                          fontSize: 13,
-                        ),
-                      ),
+                    : activity.checkInTime != null
+                        ? Align(
+                            alignment: Alignment.centerLeft,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+                                color: AppColors.success.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(
+                                  color: AppColors.success.withValues(alpha: 0.3),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.fitness_center_rounded,
+                                    size: 13,
+                                    color: AppColors.success,
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    'Active Session',
+                                    style: GoogleFonts.inter(
+                                      color: AppColors.success,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        : Text(
+                            '--',
+                            style: GoogleFonts.inter(
+                              color: AppColors.textMuted,
+                              fontSize: 13,
+                            ),
+                          ),
           ),
           
           // Duration column
           SizedBox(
             width: 120,
-            child: activity.checkInTime != null && activity.checkOutTime == null
+            child: !activity.success
                 ? Align(
                     alignment: Alignment.centerLeft,
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
-                        color: AppColors.warning.withValues(alpha: 0.15),
+                        color: AppColors.error.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(
-                          color: AppColors.warning.withValues(alpha: 0.3),
+                          color: AppColors.error.withValues(alpha: 0.3),
                           width: 1,
                         ),
                       ),
@@ -922,15 +990,15 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            Icons.access_time_rounded,
+                            Icons.error_outline,
                             size: 13,
-                            color: AppColors.warning,
+                            color: AppColors.error,
                           ),
                           const SizedBox(width: 5),
                           Text(
-                            'In Progress',
+                            'Denied',
                             style: GoogleFonts.inter(
-                              color: AppColors.warning,
+                              color: AppColors.error,
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                             ),
@@ -939,28 +1007,62 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                       ),
                     ),
                   )
-                : Align(
-                    alignment: Alignment.centerLeft,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                : activity.checkInTime != null && activity.checkOutTime == null
+                    ? Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: AppColors.warning.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color: AppColors.warning.withValues(alpha: 0.3),
+                              width: 1,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.access_time_rounded,
+                                size: 13,
+                                color: AppColors.warning,
+                              ),
+                              const SizedBox(width: 5),
+                              Text(
+                                'In Progress',
+                                style: GoogleFonts.inter(
+                                  color: AppColors.warning,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-                        color: AppColors.success.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(
-                          color: AppColors.success.withValues(alpha: 0.2),
-                          width: 1,
-                        ),
-                      ),
+                            color: AppColors.success.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color: AppColors.success.withValues(alpha: 0.2),
+                              width: 1,
+                            ),
+                          ),
         child: Text(
-                        activity.formattedDuration,
-                        style: GoogleFonts.inter(
-                          color: AppColors.success,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
+                            activity.formattedDuration,
+                            style: GoogleFonts.inter(
+                              color: AppColors.success,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
           ),
         ],
       ),
