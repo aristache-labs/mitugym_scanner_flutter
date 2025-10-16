@@ -1,76 +1,206 @@
 # MituGym Scanner 🏋️‍♂️📱
 
-A **premium** Windows desktop QR code scanner application for gym member check-in/check-out management, built with Flutter. Features a modern sidebar layout, member avatars, 4 theme presets, offline database, and advanced settings.
+A **premium** Windows desktop QR code scanner application for gym member check-in/check-out management, built with Flutter. Features a modern Material Design 3 UI, real-time member tracking, offline-first architecture, persistent history database, and comprehensive analytics.
 
-![Flutter](https://img.shields.io/badge/Flutter-3.9.2-blue.svg)
+![Flutter](https://img.shields.io/badge/Flutter-3.35.5-blue.svg)
 ![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
-![Riverpod](https://img.shields.io/badge/Riverpod-3.0-purple.svg)
+![Riverpod](https://img.shields.io/badge/Riverpod-3.0.1-purple.svg)
 
-## ✨ Premium Features
+## 📋 Table of Contents
+- [Key Features](#-key-features)
+- [Application Screens](#-application-screens)
+- [Getting Started](#-getting-started)
+- [Configuration](#-configuration)
+- [Dependencies & Technologies](#-dependencies--technologies)
+- [Design System](#-design-system)
+- [Export Formats](#-export-formats)
+- [Logs & Data Storage](#-logs)
+- [Project Architecture](#-project-architecture)
+- [Core Functionalities](#-core-functionalities)
+- [Technical Implementation](#-technical-implementation)
+- [Contributing](#-contributing)
+- [License](#-license)
+- [Author](#-author)
+- [Project Status](#-project-status)
 
-### 🎨 Modern UI
-- **Premium Sidebar Layout** - Professional 320px sidebar + main content area (1400x900 window)
-- **4 Theme Presets** - Cyan (default), Green, Purple, Blue - switch instantly
-- **Member Avatars** - Network images with shimmer loading & gradient fallbacks
+## ✨ Key Features
+
+### 🎨 Modern UI & UX
+- **Material Design 3** - Clean, modern interface with Google Fonts (Inter)
+- **Modern Sidebar Navigation** - 320px sidebar with 5 main sections + settings
+- **Member Avatars** - Network images with gradient fallbacks and initials
+- **Responsive Layout** - 1400x900 window, minimum 1200x700
+- **Gradient Accents** - Beautiful gradients and smooth animations throughout
+- **Theme Colors** - Primary green (#1e9b71) with dark mode theme
 - **Collapsible Camera** - Toggle camera preview with smooth animations
-- **Google Fonts** - Inter typography for modern aesthetics
-- **Gradient Accents** - Beautiful gradients throughout the app
+- **Animated Splash Screen** - Professional branding intro
 
-### 📸 Core Functionality
-- **Real-time QR Scanning** - Windows camera with ZXing (5-30 FPS configurable)
-- **Auto Check-in/Checkout** - Automatic member status detection
-- **Smart Cooldown** - Configurable 2-15 second debounce
-- **Audio Feedback** - Success/error sounds with volume control
-- **Activity Logging** - Daily log files with 7-90 day retention
+### 📸 QR Code Scanning
+- **Real-time QR Scanning** - Windows camera support with ZXing decoder
+- **Configurable Frame Rate** - 5-30 FPS for optimal performance
+- **Smart Cooldown** - 2-15 second configurable debounce to prevent double scans
+- **Auto Check-in/Checkout** - Automatic detection based on member status
+- **TOTP Verification** - Time-based one-time password validation
+- **Visual Feedback** - Real-time scan status and member information display
+- **Audio Feedback** - Success/error sounds with volume control (0-100%)
 
-### ⚙️ Advanced Settings (5 Tabs)
-- **General**: API URL, API Key, Camera Index
-- **UI Customization**: Font size (12-20px), Animation speed, Theme picker
-- **Audio**: Volume control, Enable/disable sounds
-- **Performance**: Frame rate, Cooldown duration, Log retention
-- **Advanced**: Auto-start, Default export format, Camera visibility
+### 🗄️ Offline-First Architecture
+- **SQLite Database** - Local storage for members and activity history
+- **Offline Queue** - Automatic queuing of scans when offline
+- **Auto-Sync** - Background sync when connection restored
+- **Duplicate Prevention** - Smart duplicate detection within cooldown period
+- **Conflict Resolution** - Automatic handling of offline/online conflicts
+- **Persistent History** - Configurable retention (7-365 days)
 
-### 🗄️ Offline & Data
-- **SQLite Database** - Local member data storage
-- **Offline Mode** - Queue scans when offline, auto-sync when online
-- **Search & Filter** - Fuzzy search by name/ID, filter by status/plan
-- **Export** - CSV and Text format exports
-- **Sync Indicator** - Badge shows pending sync count
+### 📊 Dashboard & Analytics
+- **Real-time Stats** - Total scans, check-ins, check-outs, denied access
+- **Success Rate Tracking** - Visual progress indicators and percentages
+- **Peak Hours Analysis** - Morning, afternoon, evening breakdown
+- **Today's Activity** - Detailed view with sortable columns
+- **Member Duration Tracking** - Automatic calculation of gym session time
+- **Active Session Monitoring** - Track members currently in the gym
 
-### 📊 Statistics & Reporting
-- **Quick Stats** - Today's check-ins, success rate, error count
-- **Activity Feed** - Last 8 activities in sidebar with avatars
-- **Dashboard** - Real-time analytics and charts
-- **Export Reports** - Download activity logs
+### 📜 History & Search
+- **Complete History View** - All activity logs with pagination
+- **Advanced Filtering** - By status (all/success/failed), date range, member name
+- **Date Grouping** - Activities grouped by date with expand/collapse
+- **Sortable Columns** - Sort by member, check-in, check-out, duration
+- **Member Search** - Real-time search across all members
+- **Status Filtering** - Filter by active/expired membership
+- **Export Functionality** - CSV and Text format exports
 
-### 🔗 Integrations
-- **Admin Panel** - One-click access to MituGym web dashboard
-- **Connectivity Detection** - Automatic online/offline status
-- **Network Caching** - Cached avatars (max 50 in memory)
+### 👥 Member Management
+- **Member Database** - Local SQLite cache of all members
+- **Search Interface** - Real-time search with status filters
+- **Member Details Modal** - Comprehensive member information view
+- **Avatar Modal** - Expandable avatar viewer with member info
+- **Plan Tracking** - Membership plan and expiration date
+- **Status Indicators** - Visual active/expired/inactive status
 
-## 🎨 Screenshots
+### ⚙️ Advanced Settings (4 Tabs)
+- **General Tab**
+  - API URL configuration
+  - API Key management
+  - Camera device selection (0-5)
+  - Frame rate adjustment (5-30 FPS)
+  
+- **Display Tab**
+  - Scan cooldown duration (2-15 seconds)
+  - Show camera by default toggle
+  - Auto-start scanning toggle
+  
+- **Audio Tab**
+  - Enable/disable audio feedback
+  - Volume control slider (0-100%)
+  
+- **Advanced Tab**
+  - Log retention (7-90 days)
+  - History retention (7-365 days)
+  - Export format (CSV/Text)
+  - Database cleanup tools
+  - Server sync functionality
 
-### Splash Screen
-Beautiful animated intro with logo and branding
+### 🔐 Authentication & Security
+- **Session-based Auth** - Secure authentication with session tokens
+- **Persistent Sessions** - Stay logged in across app restarts
+- **Auto-logout** - Automatic logout on session expiry
+- **Secure Storage** - Encrypted local storage for sensitive data
+- **TOTP Validation** - Time-based token verification for scans
 
-### Main Scanner
-- Live camera preview with QR detection overlay
-- Real-time member information display
-- Recent activity list (last 10 scans)
-- Status indicators and controls
+### 🔗 Connectivity & Sync
+- **Connectivity Detection** - Real-time online/offline status monitoring
+- **Offline Banner** - Visual indicator with pending sync count
+- **Background Sync** - Automatic sync of queued actions
+- **History Sync** - Server sync for activity history
+- **Retry Logic** - Automatic retry for failed network requests
 
-### Statistics Dashboard
-- Total scans counter
-- Today's activity
-- Success/failure metrics
-- Success rate with visual progress
+## 📱 Application Screens
 
-### Settings
-- API URL configuration
-- API key management
-- Cooldown duration slider
-- Audio toggle
+### 1. Splash Screen
+- Animated logo with gradient background
+- Loading progress indicator
+- Auto-transitions to login or main screen based on session
+
+### 2. Login Screen
+- Modern authentication interface
+- Username/password fields with validation
+- Remember me functionality
+- Session persistence
+- Error handling with user feedback
+
+### 3. Dashboard Screen (Home)
+- **Stats Overview Cards**: Total scans, check-ins, check-outs, denied access
+- **Today's Activity Table**: Recent check-ins with sortable columns
+  - Member column (avatar + name)
+  - Check-in time column
+  - Check-out time column
+  - Duration column
+- **Sorting**: Click column headers to sort by member, check-in, check-out, or duration
+- **Member Modals**: Click avatar or name to view details
+
+### 4. Scanner Screen
+- **Left Panel**: Camera preview with controls
+  - Collapsible camera widget
+  - Start/Stop scanner button
+  - Real-time status messages
+  - Frame rate: 5-30 FPS (configurable)
+- **Right Panel**: Member information display
+  - Last scanned member details
+  - Cooldown timer (when active)
+  - Success/error status indicators
+
+### 5. Check-ins Screen (Stats)
+- **Quick Stats Cards**: Total, check-ins, check-outs, denied
+- **Success Rate Card**: Visual progress bar with percentage
+- **Peak Hours Analysis**: Morning, afternoon, evening breakdown
+- **Recent Activity**: Last 5 activities with full details
+- **Sortable Table**: Same structure as dashboard
+
+### 6. History Screen
+- **Search & Filters**:
+  - Real-time search by member name
+  - Filter chips: All, Success, Denied
+  - Date range picker
+  - Clear filters button
+- **Date Grouping**: Activities grouped by date with expand/collapse
+- **Sortable Columns**: Member, check-in, check-out, duration
+- **Pagination**: Lazy loading with "load more" functionality
+- **Export Button**: Export filtered results to CSV or Text
+- **Activity Details**: Click member to view full details
+
+### 7. Search Screen (Members)
+- **Search Bar**: Real-time search across all members
+- **Status Filters**: All, Active, Expired
+- **Sortable Table**:
+  - Member column (avatar + name)
+  - Plan column
+  - Expiration date column
+  - Status column (with colored badges)
+- **Member Details**: Click any member to view full profile
+
+### 8. Settings Screen
+- **Tab-based Navigation**: General, Display, Audio, Advanced
+- **General Tab**:
+  - API URL text field
+  - API Key text field (obscured)
+  - Camera device slider (0-5)
+  - Frame rate slider (5-30 FPS)
+- **Display Tab**:
+  - Scan cooldown slider (2-15 seconds)
+  - Show camera toggle
+  - Auto-start scanning toggle
+- **Audio Tab**:
+  - Enable audio toggle
+  - Volume slider (0-100%)
+- **Advanced Tab**:
+  - Log retention slider (7-90 days)
+  - History retention slider (7-365 days)
+  - Export format dropdown (CSV/Text)
+  - Database stats display
+  - Cleanup old history button
+  - Sync from server button
+- **Save/Reset Buttons**: Modern action bar at bottom
 
 ## 🚀 Getting Started
 
@@ -141,47 +271,90 @@ Content-Type: application/json
 }
 ```
 
-## 📦 Dependencies
+## 📦 Dependencies & Technologies
 
-### Core
-- **flutter** - UI framework
-- **flutter_riverpod** (^2.6.1) - State management
-- **window_manager** (^0.4.3) - Desktop window control
+### Core Framework
+- **Flutter SDK** (^3.35.5) - Cross-platform UI framework
+- **Dart** (^3.9.2) - Programming language
 
-### Camera & QR
-- **camera** (^0.11.0) - Camera access
-- **camera_windows** (^0.2.3) - Windows camera support
-- **zxing2** (^0.2.3) - QR code detection
-- **image** (^4.3.0) - Image processing
+### State Management
+- **flutter_riverpod** (^3.0.1) - Reactive state management
+- **riverpod_annotation** (^3.0.1) - Code generation for providers
+- **riverpod_generator** (^3.0.1) - Dev dependency for code generation
 
-### Networking & Storage
-- **dio** (^5.7.0) - HTTP client
-- **shared_preferences** (^2.3.3) - Local storage
-- **path_provider** (^2.1.5) - File system access
+### Camera & QR Code Scanning
+- **camera** (^0.11.0+2) - Camera access and control
+- **camera_windows** (^0.2.3) - Windows-specific camera implementation
+- **zxing2** (^0.2.3) - QR code detection and decoding
+- **image** (^4.3.0) - Image processing and manipulation
 
-### UI & Animation
-- **flutter_animate** (^4.5.0) - Smooth animations
-- **shimmer** (^3.0.0) - Loading effects
+### Networking & HTTP
+- **dio** (^5.7.0) - HTTP client with interceptors
+- **connectivity_plus** (^7.0.0) - Network connectivity detection
+
+### Local Storage & Database
+- **shared_preferences** (^2.3.3) - Key-value persistent storage
+- **sqflite** (^2.4.1) - SQLite database for Flutter
+- **sqflite_common_ffi** (^2.3.4) - FFI-based SQLite for desktop
+- **path_provider** (^2.1.5) - File system path access
+
+### UI Components & Styling
+- **google_fonts** (^6.2.1) - Inter font family
+- **cached_network_image** (^3.4.1) - Network image caching
+- **shimmer** (^3.0.0) - Loading shimmer effects
+- **badges** (^3.1.2) - Badge widgets for notifications
+- **fl_chart** (^1.1.1) - Charts and graphs (currently unused)
+- **flutter_animate** (^4.5.0) - Animation utilities
+- **flutter_staggered_animations** (^1.1.1) - Staggered list animations
+
+### Desktop Support
+- **window_manager** (^0.5.1) - Window control for desktop platforms
 
 ### Utilities
-- **audioplayers** (^6.1.0) - Sound feedback
-- **logger** (^2.4.0) - Logging system
-- **intl** (^0.20.1) - Date formatting
+- **audioplayers** (^6.1.0) - Audio playback for feedback sounds
+- **logger** (^2.4.0) - Logging and debugging
+- **intl** (^0.20.1) - Internationalization and date formatting
+- **uuid** (^4.5.1) - UUID generation
+- **url_launcher** (^6.3.1) - Launch URLs in external browser
 
-## 🎨 Color Scheme
+### Development Dependencies
+- **flutter_test** - Testing framework
+- **flutter_lints** (^6.0.0) - Linting rules
+- **build_runner** (^2.4.13) - Code generation runner
 
-The app uses a professional cyan/teal palette matching the MituGym admin panel:
+## 🎨 Design System
+
+### Color Palette
+The app uses a dark theme with green primary accent:
 
 | Color | Hex | Usage |
 |-------|-----|-------|
-| Primary | `#4dd4d4` | Buttons, accents, active states |
-| Secondary | `#5cdfdf` | Highlights, gradients |
-| Success | `#00e6a6` | Success indicators, check-ins |
-| Error | `#ff6b6b` | Error states, failed scans |
-| Warning | `#ffd93d` | Warnings, alerts |
-| Background | `#0a0f0f` | Main background |
-| Surface | `#141a1a` | Cards, containers |
-| Text | `#f0fefe` | Primary text |
+| Primary | `#1e9b71` | Primary buttons, accents, active states, gradients |
+| Primary Light | `#2bc799` | Hover states, highlights |
+| Success | `#00e6a6` | Success indicators, check-ins, completed actions |
+| Success Light | `#00ffc5` | Success highlights |
+| Error | `#ff6b6b` | Error states, failed scans, denied access |
+| Error Light | `#ff8787` | Error highlights |
+| Warning | `#ffd93d` | Warnings, check-outs, pending states |
+| Warning Light | `#ffe66d` | Warning highlights |
+| Background | `#0a0f0f` | Main app background |
+| Surface | `#141a1a` | Cards, elevated surfaces |
+| Card | `#1a2222` | Card backgrounds |
+| Border | `#2a3a3a` | Borders, dividers |
+| Text Primary | `#f0fefe` | Primary text |
+| Text Secondary | `#c0d0d0` | Secondary text |
+| Text Muted | `#809090` | Disabled, muted text |
+
+### Typography
+- **Font Family**: Inter (Google Fonts)
+- **Sizes**: 10px - 36px depending on context
+- **Weights**: Regular (400), Medium (500), Semi-bold (600), Bold (700)
+
+### UI Components
+- **Border Radius**: 8px - 24px (cards and containers)
+- **Shadows**: Subtle shadows with blur radius 8-20px
+- **Gradients**: Linear gradients for cards, buttons, and accents
+- **Spacing**: 4px base unit (4, 8, 12, 16, 20, 24px)
 
 ## 📊 Export Formats
 
@@ -219,18 +392,249 @@ Exports are saved to:
 %USERPROFILE%\Documents\mitugym_exports\
 ```
 
-## 🏗️ Project Structure
+## 🏗️ Project Architecture
 
+### Directory Structure
 ```
 lib/
-├── config/          # App configuration & theme
-├── models/          # Data models
-├── services/        # Business logic & API
-├── providers/       # Riverpod state management
-├── screens/         # UI screens
-├── widgets/         # Reusable components
-└── main.dart        # App entry point
+├── config/                         # Configuration & theming
+│   ├── app_colors.dart            # Color constants and gradients
+│   ├── app_config.dart            # App configuration model
+│   ├── app_themes.dart            # Theme presets (unused)
+│   └── theme.dart                 # Material theme configuration
+│
+├── models/                        # Data models & entities
+│   ├── activity_log.dart          # Activity/scan log model
+│   ├── auth_session.dart          # Authentication session model
+│   ├── member_data.dart           # Member information model
+│   ├── pending_action.dart        # Offline queue action model
+│   └── scan_result.dart           # QR scan result model
+│
+├── providers/                     # Riverpod state management
+│   ├── auth_provider.dart         # Authentication state
+│   ├── config_provider.dart       # App configuration state
+│   ├── history_provider.dart      # Activity history state
+│   ├── offline_provider.dart      # Offline mode state
+│   ├── offline_queue_provider.dart # Offline queue state
+│   ├── scan_provider.dart         # Scan state & logic
+│   └── windows_scanner_provider.dart # Scanner controller state
+│
+├── screens/                       # Application screens
+│   ├── dashboard_screen.dart      # Home/Dashboard view
+│   ├── history_screen.dart        # Activity history with filters
+│   ├── login_screen.dart          # Authentication screen
+│   ├── main_layout_screen.dart    # Main app layout with sidebar
+│   ├── scanner_screen.dart        # QR scanning interface
+│   ├── search_screen.dart         # Member search interface
+│   ├── settings_screen.dart       # Settings with tabs
+│   ├── splash_screen.dart         # Splash/loading screen
+│   └── stats_screen.dart          # Statistics & analytics
+│
+├── services/                      # Business logic & external services
+│   ├── api_service.dart           # HTTP API communication
+│   ├── audio_service.dart         # Sound playback service
+│   ├── auth_service.dart          # Authentication service
+│   ├── connectivity_service.dart  # Network connectivity detection
+│   ├── export_service.dart        # CSV/Text export functionality
+│   ├── history_sync_service.dart  # History synchronization
+│   ├── logger_service.dart        # Logging service
+│   ├── mock_qr_scanner_service.dart # Mock scanner for testing
+│   ├── offline_queue_service.dart # Offline action queue management
+│   ├── offline_storage_service.dart # SQLite database operations
+│   ├── search_service.dart        # Member search functionality
+│   └── windows_qr_scanner_service.dart # Windows QR scanner implementation
+│
+├── widgets/                       # Reusable UI components
+│   ├── activity_list_widget.dart  # Activity list component
+│   ├── collapsible_camera_widget.dart # Camera preview with collapse
+│   ├── control_buttons.dart       # Scanner control buttons
+│   ├── countdown_timer.dart       # Cooldown timer widget
+│   ├── member_avatar_modal.dart   # Avatar expansion modal
+│   ├── member_details_modal.dart  # Member info modal
+│   ├── member_info_card.dart      # Member information card
+│   ├── mock_camera_preview_widget.dart # Mock camera for testing
+│   ├── modern_sidebar_widget.dart # Main navigation sidebar
+│   ├── offline_banner_widget.dart # Offline status banner
+│   ├── sidebar_widget.dart        # Legacy sidebar (unused)
+│   └── windows_camera_preview_widget.dart # Windows camera preview
+│
+└── main.dart                      # App entry point & initialization
+
+assets/
+├── images/
+│   └── logo.png                   # App logo
+└── sounds/
+    ├── success.mp3                # Success scan sound
+    └── error.mp3                  # Error scan sound
+
+windows/                           # Windows platform configuration
+├── runner/                        # Windows runner code
+└── CMakeLists.txt                # Windows build configuration
 ```
+
+### Key Components
+
+#### State Management (Providers)
+- **AuthProvider**: Manages authentication state and session persistence
+- **ConfigProvider**: Handles app settings and preferences
+- **HistoryProvider**: Manages activity logs with pagination and filtering
+- **OfflineProvider**: Tracks online/offline connectivity status
+- **OfflineQueueProvider**: Manages queued actions when offline
+- **ScanProvider**: Controls QR scanning state and results
+- **WindowsScannerProvider**: Manages Windows camera and scanner lifecycle
+
+#### Services Layer
+- **ApiService**: RESTful API communication with MituGym backend
+- **AudioService**: Plays success/error sounds with volume control
+- **AuthService**: Handles login, logout, session management
+- **ConnectivityService**: Monitors internet connection status
+- **ExportService**: Exports activity data to CSV or Text files
+- **HistorySyncService**: Syncs activity history with server
+- **LoggerService**: Centralized logging with file output
+- **OfflineStorageService**: SQLite database operations for members and history
+- **OfflineQueueService**: Manages and processes offline action queue
+- **SearchService**: Implements member search with fuzzy matching
+- **WindowsQrScannerService**: QR code scanning using camera and ZXing
+
+#### Data Models
+- **ActivityLog**: Represents a member check-in/check-out event
+- **AuthSession**: Stores authentication session data
+- **MemberData**: Member profile information
+- **PendingAction**: Queued action for offline sync
+- **ScanResult**: Result from QR code scan operation
+
+#### Widgets
+- **ModernSidebarWidget**: Main navigation with 5 sections + settings
+- **MemberInfoCard**: Displays member details after scan
+- **MemberDetailsModal**: Full member profile modal
+- **MemberAvatarModal**: Expandable avatar viewer
+- **OfflineBannerWidget**: Shows offline status and sync queue
+- **CollapsibleCameraWidget**: Camera preview with show/hide
+- **CountdownTimer**: Visual cooldown timer
+
+## 🔑 Core Functionalities
+
+### QR Code Scanning Flow
+1. **Scanner Initialization**: Camera device selected (0-5), frame rate configured (5-30 FPS)
+2. **QR Detection**: ZXing continuously scans frames for QR codes
+3. **Code Validation**: Validates QR format (member_id:totp_code)
+4. **TOTP Verification**: Time-based token validated against server
+5. **Member Lookup**: Checks local database first, then API if needed
+6. **Auto Check-in/Checkout**: Determines action based on current member status
+7. **Duplicate Prevention**: Cooldown period (2-15s) prevents duplicate scans
+8. **Result Display**: Shows member info, plan, expiration, status
+9. **Audio Feedback**: Plays success/error sound based on result
+10. **History Logging**: Saves to both SQLite database and activity logs
+
+### Offline Mode Operation
+1. **Connectivity Detection**: Continuous monitoring via ConnectivityService
+2. **Queue Management**: Failed actions automatically queued in SQLite
+3. **Background Sync**: Auto-retry when connection restored
+4. **Conflict Resolution**: Server state takes precedence on sync
+5. **Visual Feedback**: Offline banner shows queue count
+6. **Data Integrity**: Transactions ensure database consistency
+
+### History & Reporting System
+1. **Persistent Storage**: SQLite database with configurable retention (7-365 days)
+2. **Pagination**: Lazy loading for efficient large dataset handling
+3. **Filtering**: Real-time filters by status, date range, member name
+4. **Sorting**: Multi-column sorting (member, check-in, check-out, duration)
+5. **Date Grouping**: Automatic grouping by date with expand/collapse
+6. **Export**: CSV and Text format with filtered data
+7. **Sync**: Server synchronization for cross-device consistency
+8. **Cleanup**: Automated cleanup of old records
+
+### Member Management
+1. **Local Cache**: All members stored in SQLite for offline access
+2. **Auto-Update**: Member data refreshed on each successful scan
+3. **Search**: Fuzzy search across member names
+4. **Status Tracking**: Active/expired/inactive membership status
+5. **Plan Tracking**: Membership plan and expiration dates
+6. **Avatar Support**: Network images with gradient fallbacks
+
+### Authentication & Sessions
+1. **Login**: Username/password authentication
+2. **Session Tokens**: Secure session token storage
+3. **Persistence**: Sessions persist across app restarts
+4. **Auto-Login**: Automatic login if valid session exists
+5. **Logout**: Clean session termination
+6. **Expiry Handling**: Automatic logout on session expiry
+
+## 🛠️ Technical Implementation
+
+### Database Schema
+
+#### Members Table
+```sql
+CREATE TABLE members (
+  member_id TEXT PRIMARY KEY,
+  member_name TEXT NOT NULL,
+  plan_name TEXT,
+  expires_at TEXT,
+  membership_status TEXT,
+  avatar_url TEXT,
+  created_at TEXT,
+  updated_at TEXT
+)
+```
+
+#### Activity Logs Table
+```sql
+CREATE TABLE activity_logs (
+  id TEXT PRIMARY KEY,
+  member_id TEXT,
+  member_name TEXT,
+  action TEXT,
+  success INTEGER,
+  error_message TEXT,
+  check_in_time TEXT,
+  check_out_time TEXT,
+  duration_minutes INTEGER,
+  avatar_url TEXT,
+  timestamp TEXT,
+  FOREIGN KEY (member_id) REFERENCES members (member_id)
+)
+```
+
+#### Offline Queue Table
+```sql
+CREATE TABLE offline_queue (
+  id TEXT PRIMARY KEY,
+  action_type TEXT,
+  qr_code TEXT,
+  payload TEXT,
+  timestamp TEXT,
+  retry_count INTEGER
+)
+```
+
+### API Integration
+
+**Base URL**: Configurable in settings  
+**Default**: `https://mitugym-app-webpanel.vercel.app`
+
+#### Endpoints Used:
+- `POST /api/auth/login` - User authentication
+- `POST /api/auth/logout` - Session termination
+- `POST /api/checkin` - Check-in/checkout with TOTP validation
+- `GET /api/checkins/history` - Fetch activity history
+
+### Configuration Storage
+All settings stored in SharedPreferences:
+- `api_url`: API base URL
+- `api_key`: API authentication key
+- `camera_index`: Selected camera device (0-5)
+- `debounce_duration`: Scan cooldown (2-15s)
+- `audio_enabled`: Audio feedback toggle
+- `sound_volume`: Volume level (0.0-1.0)
+- `camera_frame_rate`: Frame rate (5-30 FPS)
+- `log_retention_days`: Log file retention (7-90 days)
+- `history_retention_days`: Database retention (7-365 days)
+- `export_format`: Default export format (csv/text)
+- `auto_start_scanning`: Auto-start scanner on app launch
+- `camera_visible`: Show camera preview by default
+- `session_token`: Authentication session token
+- `last_history_sync`: Last sync timestamp
 
 ## 🤝 Contributing
 
@@ -248,21 +652,60 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 👤 Author
 
-**pateutz1**
+**Adrian Cristache**
 - GitHub: [@pateutz1](https://github.com/pateutz1)
-- Experienced React Native Developer with expertise in Flutter, Next.js, and SQL
+- Full-stack Developer specializing in Flutter, React Native, Next.js, and SQL
+- Focus on offline-first mobile and desktop applications
+
+## 🎯 Project Status
+
+**Version**: 1.0.0  
+**Status**: ✅ Production Ready  
+**Platform**: Windows Desktop  
+**Last Updated**: January 2025
+
+### Recent Updates
+- ✅ Persistent SQLite history database
+- ✅ Session-based authentication
+- ✅ Offline-first architecture with queue management
+- ✅ Advanced filtering and sorting
+- ✅ Configurable history retention
+- ✅ Server synchronization
+- ✅ Member search functionality
+- ✅ Duplicate prevention system
+
+### Future Enhancements
+- [ ] Multi-platform support (macOS, Linux)
+- [ ] Real-time dashboard charts with fl_chart
+- [ ] Member photo capture
+- [ ] Export to PDF
+- [ ] Multi-language support
+- [ ] Dark/Light theme toggle
 
 ## 🙏 Acknowledgments
 
-- Flutter team for the amazing framework
-- ZXing for QR code detection
-- Riverpod for state management
-- MituGym for the opportunity
+- **Flutter Team** - For the amazing cross-platform framework
+- **ZXing** - For reliable QR code detection
+- **Riverpod** - For elegant state management
+- **Google Fonts** - For the beautiful Inter font family
+- **MituGym** - For the opportunity and requirements
+- **Open Source Community** - For the excellent packages and tools
 
-## 📞 Support
+## 📞 Support & Issues
 
-For support, please open an issue in the GitHub repository.
+For support, bug reports, or feature requests:
+- Open an issue in the [GitHub repository](https://github.com/pateutz1/mitugym_scanner_flutter/issues)
+- Provide detailed information about your environment and steps to reproduce
+- Include relevant logs from `%USERPROFILE%\Documents\mitugym_logs\`
+
+## 📚 Related Documentation
+
+- [Flutter Documentation](https://docs.flutter.dev/)
+- [Riverpod Documentation](https://riverpod.dev/)
+- [ZXing Documentation](https://github.com/zxing/zxing)
+- [SQLite Documentation](https://www.sqlite.org/docs.html)
 
 ---
 
-**Made with ❤️ using Flutter**
+**Built with ❤️ using Flutter and Dart**  
+**© 2025 Adrian Cristache. All rights reserved.**
