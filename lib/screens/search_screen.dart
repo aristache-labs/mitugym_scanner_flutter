@@ -55,7 +55,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   List<MemberData> _searchResults = [];
   bool _isSearching = false;
   String _selectedStatus = 'all';
-  String _sortBy = 'member'; // member, plan, expires
+  String _sortBy = ''; // No default sorting - clean state
   bool _sortAscending = true;
   
   @override
@@ -118,6 +118,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   }
   
   List<MemberData> _applySorting(List<MemberData> members) {
+    // If no sort is selected, return original order
+    if (_sortBy.isEmpty) {
+      return members;
+    }
+    
     final sorted = List<MemberData>.from(members);
     
     sorted.sort((a, b) {
@@ -132,6 +137,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           break;
         case 'expires':
           comparison = a.expiresAt.compareTo(b.expiresAt);
+          break;
+        case 'status':
+          comparison = a.membershipStatus.toLowerCase().compareTo(b.membershipStatus.toLowerCase());
           break;
       }
       
@@ -483,21 +491,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             child: _buildSortableHeader('EXPIRES', 'expires'),
           ),
           
-          // Status column (no sorting)
+          // Status column (with sorting)
           SizedBox(
             width: 100,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-              child: Text(
-                'STATUS',
-                style: GoogleFonts.inter(
-                  color: AppColors.textMuted,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.8,
-                ),
-              ),
-            ),
+            child: _buildSortableHeader('STATUS', 'status'),
           ),
         ],
       ),
