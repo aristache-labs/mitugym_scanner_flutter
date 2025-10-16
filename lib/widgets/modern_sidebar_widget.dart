@@ -137,8 +137,8 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
             onTap: () => widget.onNavigate(3),
           ),
           _buildCompactNavItem(
-            icon: Icons.search_rounded,
-            label: 'Search',
+            icon: Icons.people_rounded,
+            label: 'Members',
             isActive: widget.selectedIndex == 4,
             onTap: () => widget.onNavigate(4),
           ),

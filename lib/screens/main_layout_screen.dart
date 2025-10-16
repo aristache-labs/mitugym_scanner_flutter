@@ -75,7 +75,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
     'QR Code Scanner',
     'Check-ins',
     'History',
-    'Search Members',
+    'Members',
     'Settings',
   ];
 

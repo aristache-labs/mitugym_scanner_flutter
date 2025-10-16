@@ -31,7 +31,7 @@ class OfflineStorageService {
       
     return await openDatabase(
       path,
-      version: 4, // Updated for member_data_json column
+      version: 5, // Updated for additional member detail columns
       onCreate: _createTables,
       onUpgrade: _onUpgrade,
     );
@@ -142,6 +142,23 @@ class OfflineStorageService {
         _logger.w('Could not add member_data_json column (may already exist): $e');
       }
     }
+    
+    if (oldVersion < 5) {
+      // Add additional member detail columns to members table
+      try {
+        await db.execute('ALTER TABLE members ADD COLUMN email TEXT');
+        await db.execute('ALTER TABLE members ADD COLUMN phone TEXT');
+        await db.execute('ALTER TABLE members ADD COLUMN date_of_birth TEXT');
+        await db.execute('ALTER TABLE members ADD COLUMN address TEXT');
+        await db.execute('ALTER TABLE members ADD COLUMN city TEXT');
+        await db.execute('ALTER TABLE members ADD COLUMN county TEXT');
+        await db.execute('ALTER TABLE members ADD COLUMN gender TEXT');
+        await db.execute('ALTER TABLE members ADD COLUMN starts_at TEXT');
+        _logger.i('Added additional member detail columns to members table');
+      } catch (e) {
+        _logger.w('Could not add member detail columns (may already exist): $e');
+      }
+    }
   }
   
   /// Save member data locally
@@ -157,6 +174,14 @@ class OfflineStorageService {
           'expires_at': member.expiresAt,
           'membership_status': member.membershipStatus,
           'avatar_url': member.avatarUrl,
+          'email': member.email,
+          'phone': member.phone,
+          'date_of_birth': member.dateOfBirth,
+          'address': member.address,
+          'city': member.city,
+          'county': member.county,
+          'gender': member.gender,
+          'starts_at': member.expiresAt, // Use expiresAt as fallback if starts_at not available
           'last_updated': DateTime.now().millisecondsSinceEpoch,
         },
         conflictAlgorithm: ConflictAlgorithm.replace,
@@ -217,6 +242,13 @@ class OfflineStorageService {
         expiresAt: data['expires_at'] as String,
         membershipStatus: data['membership_status'] as String,
         avatarUrl: data['avatar_url'] as String?,
+        email: data['email'] as String?,
+        phone: data['phone'] as String?,
+        dateOfBirth: data['date_of_birth'] as String?,
+        address: data['address'] as String?,
+        city: data['city'] as String?,
+        county: data['county'] as String?,
+        gender: data['gender'] as String?,
       )).toList();
     } catch (e) {
       _logger.e('Failed to get offline members: $e');
@@ -251,6 +283,9 @@ class OfflineStorageService {
       if (activity.memberData != null) {
         try {
           memberDataJson = jsonEncode(activity.memberData!.toJson());
+          
+          // ALSO save the member to the members table for search/Members page
+          await saveMemberLocally(activity.memberData!);
         } catch (e) {
           _logger.w('Failed to serialize member data: $e');
         }
@@ -558,6 +593,13 @@ class OfflineStorageService {
         expiresAt: data['expires_at'] as String,
         membershipStatus: data['membership_status'] as String,
         avatarUrl: data['avatar_url'] as String?,
+        email: data['email'] as String?,
+        phone: data['phone'] as String?,
+        dateOfBirth: data['date_of_birth'] as String?,
+        address: data['address'] as String?,
+        city: data['city'] as String?,
+        county: data['county'] as String?,
+        gender: data['gender'] as String?,
       )).toList();
     } catch (e) {
       _logger.e('Failed to search members: $e');
