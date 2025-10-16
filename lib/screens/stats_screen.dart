@@ -621,26 +621,41 @@ class StatsScreen extends ConsumerWidget {
           Expanded(
             flex: 2,
             child: activity.checkInTime != null
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        DateFormat('MMM d, yyyy').format(activity.checkInTime!),
-                        style: GoogleFonts.inter(
-                          color: AppColors.textSecondary,
-                          fontSize: 12,
+                ? Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: AppColors.primary.withValues(alpha: 0.2),
+                          width: 1,
                         ),
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        DateFormat('h:mm a').format(activity.checkInTime!),
-                        style: GoogleFonts.inter(
-                          color: AppColors.textPrimary,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            DateFormat('MMM d, yyyy').format(activity.checkInTime!),
+                            style: GoogleFonts.inter(
+                              color: AppColors.textSecondary,
+                              fontSize: 11,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            DateFormat('h:mm a').format(activity.checkInTime!),
+                            style: GoogleFonts.inter(
+                              color: AppColors.primary,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   )
                 : Text(
                     '--',
@@ -655,26 +670,41 @@ class StatsScreen extends ConsumerWidget {
           Expanded(
             flex: 2,
             child: activity.checkOutTime != null
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        DateFormat('MMM d, yyyy').format(activity.checkOutTime!),
-                        style: GoogleFonts.inter(
-                          color: AppColors.textSecondary,
-                          fontSize: 12,
+                ? Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: AppColors.warning.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: AppColors.warning.withValues(alpha: 0.2),
+                          width: 1,
                         ),
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        DateFormat('h:mm a').format(activity.checkOutTime!),
-                        style: GoogleFonts.inter(
-                          color: AppColors.textPrimary,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            DateFormat('MMM d, yyyy').format(activity.checkOutTime!),
+                            style: GoogleFonts.inter(
+                              color: AppColors.textSecondary,
+                              fontSize: 11,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            DateFormat('h:mm a').format(activity.checkOutTime!),
+                            style: GoogleFonts.inter(
+                              color: AppColors.warning,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   )
                 : activity.checkInTime != null
                     ? Align(
@@ -756,12 +786,26 @@ class StatsScreen extends ConsumerWidget {
                       ),
                     ),
                   )
-                : Text(
-                    activity.formattedDuration,
-                    style: GoogleFonts.inter(
-                      color: AppColors.primary,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
+                : Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: AppColors.success.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: AppColors.success.withValues(alpha: 0.2),
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        activity.formattedDuration,
+                        style: GoogleFonts.inter(
+                          color: AppColors.success,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ),
           ),
