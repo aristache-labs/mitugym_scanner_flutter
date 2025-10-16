@@ -27,10 +27,22 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   String _sortBy = 'time'; // member, checkIn, checkOut, duration, time
   bool _sortAscending = false;
   
+  // Collapse/expand state for date categories
+  final Map<String, bool> _expandedDates = {};
+  
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+  }
+  
+  bool _isCurrentWeek(DateTime date) {
+    final now = DateTime.now();
+    final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+    final endOfWeek = startOfWeek.add(const Duration(days: 6));
+    
+    return date.isAfter(startOfWeek.subtract(const Duration(days: 1))) &&
+           date.isBefore(endOfWeek.add(const Duration(days: 1)));
   }
   
   @override
@@ -563,79 +575,108 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         final dateKey = sortedDates[index];
         final dayActivities = grouped[dateKey]!;
         
+        // Determine if this date should be expanded by default
+        final firstActivityDate = dayActivities.first.time;
+        final isCurrentWeekDate = _isCurrentWeek(firstActivityDate);
+        
+        // Initialize expanded state if not set
+        if (!_expandedDates.containsKey(dateKey)) {
+          _expandedDates[dateKey] = isCurrentWeekDate;
+        }
+        
+        final isExpanded = _expandedDates[dateKey] ?? false;
+        
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Date header - Modern subtle design
-            Padding(
-              padding: EdgeInsets.only(bottom: 16, top: index == 0 ? 0 : 24),
-              child: Row(
-                children: [
-                  // Vertical accent line
-                  Container(
-                    width: 3,
-                    height: 20,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          AppColors.primary.withValues(alpha: 0.8),
-                          AppColors.primary.withValues(alpha: 0.3),
+            // Date header - Clickable to expand/collapse
+            InkWell(
+              onTap: () {
+                setState(() {
+                  _expandedDates[dateKey] = !isExpanded;
+                });
+              },
+              borderRadius: BorderRadius.circular(8),
+              child: Padding(
+                padding: EdgeInsets.only(bottom: 16, top: index == 0 ? 0 : 24, left: 4, right: 4),
+                child: Row(
+                  children: [
+                    // Expand/collapse icon
+                    Icon(
+                      isExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right,
+                      size: 20,
+                      color: AppColors.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    // Vertical accent line
+                    Container(
+                      width: 3,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            AppColors.primary.withValues(alpha: isExpanded ? 0.8 : 0.5),
+                            AppColors.primary.withValues(alpha: isExpanded ? 0.3 : 0.2),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    // Date text
+                    Expanded(
+                      child: Text(
+                        dateKey,
+                        style: GoogleFonts.inter(
+                          color: isExpanded ? AppColors.text : AppColors.textMuted,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    // Scan count badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface.withValues(alpha: 0.5),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: AppColors.border.withValues(alpha: 0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.qr_code_scanner_rounded,
+                            size: 12,
+                            color: AppColors.textMuted,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${dayActivities.length}',
+                            style: GoogleFonts.inter(
+                              color: AppColors.textMuted,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ],
                       ),
-                      borderRadius: BorderRadius.circular(2),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  // Date text
-                  Text(
-                    dateKey,
-                    style: GoogleFonts.inter(
-                      color: AppColors.text,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.2,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  // Scan count badge
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: AppColors.surface.withValues(alpha: 0.5),
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(
-                        color: AppColors.border.withValues(alpha: 0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.qr_code_scanner_rounded,
-                          size: 12,
-                          color: AppColors.textMuted,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${dayActivities.length}',
-                          style: GoogleFonts.inter(
-                            color: AppColors.textMuted,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             
-            // Activities for this date
-            ...dayActivities.map((activity) => _buildActivityCard(activity)),
+            // Activities for this date (only show if expanded)
+            if (isExpanded)
+              ...dayActivities.map((activity) => _buildActivityCard(activity)),
           ],
         );
       },
