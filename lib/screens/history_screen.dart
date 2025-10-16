@@ -892,9 +892,6 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                                   : AppColors.textPrimary,
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              decoration: activity.memberData != null 
-                                  ? TextDecoration.underline 
-                                  : TextDecoration.none,
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),

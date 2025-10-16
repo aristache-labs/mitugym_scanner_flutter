@@ -460,9 +460,6 @@ class DashboardScreen extends ConsumerWidget {
                             : AppColors.textPrimary,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        decoration: activity.memberData != null 
-                            ? TextDecoration.underline 
-                            : TextDecoration.none,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
