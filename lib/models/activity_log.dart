@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'member_data.dart';
 
 /// Activity log model
 /// Represents a single check-in/check-out session for display
@@ -15,6 +16,9 @@ class ActivityLog {
   final DateTime? checkOutTime;
   final int? durationMinutes;
   final String? method;
+  
+  // Full member data (for showing details modal)
+  final MemberData? memberData;
 
   const ActivityLog({
     required this.memberName,
@@ -27,6 +31,7 @@ class ActivityLog {
     this.checkOutTime,
     this.durationMinutes,
     this.method,
+    this.memberData,
   });
 
   /// Get member initials for avatar fallback
@@ -76,6 +81,7 @@ class ActivityLog {
     DateTime? checkOutTime,
     int? durationMinutes,
     String? method,
+    MemberData? memberData,
   }) {
     return ActivityLog(
       memberName: memberName ?? this.memberName,
@@ -88,6 +94,7 @@ class ActivityLog {
       checkOutTime: checkOutTime ?? this.checkOutTime,
       durationMinutes: durationMinutes ?? this.durationMinutes,
       method: method ?? this.method,
+      memberData: memberData ?? this.memberData,
     );
   }
 

@@ -223,6 +223,16 @@ class ApiService {
                 durationMinutes = null;
               }
               
+              // Parse full member data if available in response_data
+              MemberData? memberData;
+              if (responseDataObj is Map<String, dynamic>) {
+                try {
+                  memberData = MemberData.fromJson(responseDataObj);
+                } catch (e) {
+                  _logger.w('Failed to parse member data from history: $e');
+                }
+              }
+              
               return ActivityLog(
                 memberName: item['member_name'] as String? ?? 'Unknown',
                 action: item['api_action'] as String? ?? 'session',
@@ -234,6 +244,7 @@ class ApiService {
                 checkOutTime: checkOutTime,
                 durationMinutes: durationMinutes,
                 method: method,
+                memberData: memberData, // Store full member data for details modal
               );
             }).toList();
           }

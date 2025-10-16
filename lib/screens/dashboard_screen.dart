@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../config/app_colors.dart';
 import '../providers/history_provider.dart';
 import '../widgets/member_avatar_modal.dart';
+import '../widgets/member_details_modal.dart';
 
 /// Dashboard screen - Overview and quick stats
 class DashboardScreen extends ConsumerWidget {
@@ -444,14 +445,34 @@ class DashboardScreen extends ConsumerWidget {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text(
-                    activity.memberName,
-                    style: GoogleFonts.inter(
-                      color: AppColors.textPrimary,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
+                  child: GestureDetector(
+                    onTap: () {
+                      print('🔍 Dashboard: Clicked member name: ${activity.memberName}');
+                      print('🔍 Dashboard: memberData is null? ${activity.memberData == null}');
+                      if (activity.memberData != null) {
+                        print('🔍 Dashboard: Opening modal for ${activity.memberData!.memberId}');
+                      }
+                      // Show member details modal if member data is available
+                      if (activity.memberData != null) {
+                        MemberDetailsModal.show(context, member: activity.memberData!);
+                      } else {
+                        print('⚠️ Dashboard: No member data available for ${activity.memberName}');
+                      }
+                    },
+                    child: Text(
+                      activity.memberName,
+                      style: GoogleFonts.inter(
+                        color: activity.memberData != null 
+                            ? AppColors.primary 
+                            : AppColors.textPrimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        decoration: activity.memberData != null 
+                            ? TextDecoration.underline 
+                            : TextDecoration.none,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],

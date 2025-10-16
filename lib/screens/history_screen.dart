@@ -7,6 +7,7 @@ import '../models/activity_log.dart';
 import '../providers/history_provider.dart';
 import '../services/export_service.dart';
 import '../widgets/member_avatar_modal.dart';
+import '../widgets/member_details_modal.dart';
 
 /// History screen with filtering and modern design
 class HistoryScreen extends ConsumerStatefulWidget {
@@ -876,14 +877,27 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                 ),
                 const SizedBox(width: 12),
                       Expanded(
-                        child: Text(
-                    activity.memberName,
-                    style: GoogleFonts.inter(
-                      color: AppColors.textPrimary,
-                            fontSize: 14,
-                      fontWeight: FontWeight.w600,
+                        child: GestureDetector(
+                          onTap: () {
+                            // Show member details modal if member data is available
+                            if (activity.memberData != null) {
+                              MemberDetailsModal.show(context, member: activity.memberData!);
+                            }
+                          },
+                          child: Text(
+                            activity.memberName,
+                            style: GoogleFonts.inter(
+                              color: activity.memberData != null 
+                                  ? AppColors.primary 
+                                  : AppColors.textPrimary,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              decoration: activity.memberData != null 
+                                  ? TextDecoration.underline 
+                                  : TextDecoration.none,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
-                    overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],

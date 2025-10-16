@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../config/app_colors.dart';
 import '../providers/history_provider.dart';
 import '../widgets/member_avatar_modal.dart';
+import '../widgets/member_details_modal.dart';
 
 /// Check-ins Analytics Screen - Modern design
 class StatsScreen extends ConsumerWidget {
@@ -614,14 +615,27 @@ class StatsScreen extends ConsumerWidget {
                 ),
         const SizedBox(width: 12),
         Expanded(
-                  child: Text(
-                    activity.memberName,
-                    style: GoogleFonts.inter(
-                      color: AppColors.textPrimary,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
+                  child: GestureDetector(
+                    onTap: () {
+                      // Show member details modal if member data is available
+                      if (activity.memberData != null) {
+                        MemberDetailsModal.show(context, member: activity.memberData!);
+                      }
+                    },
+                    child: Text(
+                      activity.memberName,
+                      style: GoogleFonts.inter(
+                        color: activity.memberData != null 
+                            ? AppColors.primary 
+                            : AppColors.textPrimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        decoration: activity.memberData != null 
+                            ? TextDecoration.underline 
+                            : TextDecoration.none,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],

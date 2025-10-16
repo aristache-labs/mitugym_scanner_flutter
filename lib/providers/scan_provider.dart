@@ -120,6 +120,7 @@ class ScanNotifier extends Notifier<ScanState> {
           success: true,
           avatarUrl: result.data?.avatarUrl,
           memberId: result.data?.memberId,
+          memberData: result.data, // Store full member data for details modal
         );
         _addActivityLog(activityLog);
         
@@ -147,6 +148,7 @@ class ScanNotifier extends Notifier<ScanState> {
           success: false,
           avatarUrl: result.data?.avatarUrl,
           memberId: result.data?.memberId,
+          memberData: result.data, // Store full member data for details modal
         );
         _addActivityLog(activityLog);
         
