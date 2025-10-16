@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../config/app_colors.dart';
 import '../providers/config_provider.dart';
 import '../providers/history_provider.dart';
+import '../providers/windows_scanner_provider.dart';
 
 /// Modern settings screen - Dashboard style
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -84,6 +85,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     await ref.read(configProvider.notifier).updateCameraFrameRate(_cameraFrameRate);
     await ref.read(configProvider.notifier).updateLogRetentionDays(_logRetentionDays);
     await ref.read(configProvider.notifier).updateExportFormat(_exportFormat);
+    
+    // Update scanner service with new settings
+    ref.read(windowsScannerControllerProvider.notifier).updateDebounceDuration(_debounceDuration);
+    ref.read(windowsScannerControllerProvider.notifier).updateFrameRate(_cameraFrameRate);
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(

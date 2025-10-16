@@ -86,15 +86,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final isOnline = ref.watch(offlineProvider).isOnline;
 
     return Scaffold(
+      backgroundColor: const Color(0xFF0A0F0F), // Dark teal background matching web panel
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+          gradient: RadialGradient(
+            center: Alignment.topRight,
+            radius: 1.5,
             colors: [
-              AppColors.primary.withValues(alpha: 0.8),
-              AppColors.secondary.withValues(alpha: 0.9),
-              AppColors.surface,
+              const Color(0xFF1A2222).withValues(alpha: 0.3),
+              const Color(0xFF0A0F0F),
             ],
           ),
         ),
@@ -102,20 +102,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           child: Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Logo and title
-                  _buildHeader(),
-                  const SizedBox(height: 48),
+              child: Container(
+                constraints: const BoxConstraints(maxWidth: 480),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Logo - matching web panel
+                    _buildHeader(),
+                    const SizedBox(height: 48),
 
-                  // Login form card
-                  _buildLoginCard(isOnline),
-                  const SizedBox(height: 24),
+                    // Login form card with title - matching web panel
+                    _buildLoginCard(isOnline),
+                    const SizedBox(height: 24),
 
-                  // Offline indicator
-                  if (!isOnline) _buildOfflineIndicator(),
-                ],
+                    // Offline indicator
+                    if (!isOnline) _buildOfflineIndicator(),
+                  ],
+                ),
               ),
             ),
           ),
@@ -125,52 +128,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _buildHeader() {
-    return Column(
-      children: [
-        // App icon/logo
-        Container(
-          width: 100,
-          height: 100,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: Icon(
-            Icons.qr_code_scanner,
-            size: 60,
+    return Center(
+      child: Image.asset(
+        'assets/images/logo.png',
+        width: 120,
+        height: 120,
+        errorBuilder: (context, error, stackTrace) {
+          // Fallback to icon if image not found
+          return Icon(
+            Icons.fitness_center,
+            size: 90,
             color: AppColors.primary,
-          ),
-        ),
-        const SizedBox(height: 24),
-
-        // App name
-        Text(
-          'MituGym Scanner',
-          style: GoogleFonts.inter(
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            letterSpacing: -0.5,
-          ),
-        ),
-        const SizedBox(height: 8),
-
-        // Subtitle
-        Text(
-          'Sign in to continue',
-          style: GoogleFonts.inter(
-            fontSize: 16,
-            color: Colors.white.withValues(alpha: 0.8),
-          ),
-        ),
-      ],
+          );
+        },
+      ),
     );
   }
 
@@ -195,6 +166,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // Title - "Staff Portal" inside card, matching web panel
+              Center(
+                child: Text(
+                  'Staff Portal',
+                  style: GoogleFonts.inter(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primary,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+              
               // Email field
               _buildEmailField(),
               const SizedBox(height: 20),
@@ -205,6 +190,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
               // Login button
               _buildLoginButton(isOnline),
+              const SizedBox(height: 24),
+              
+              // Contact support text - matching web panel
+              Center(
+                child: Text.rich(
+                  TextSpan(
+                    text: 'Need access? Contact ',
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      color: AppColors.textSecondary,
+                    ),
+                    children: [
+                      TextSpan(
+                        text: 'ops@mitugym.dev',
+                        style: GoogleFonts.inter(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
             ],
           ),
         ),
@@ -217,11 +226,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Email',
+          'EMAIL',
           style: GoogleFonts.inter(
-            fontSize: 14,
+            fontSize: 11,
             fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+            color: AppColors.textSecondary,
+            letterSpacing: 0.5,
           ),
         ),
         const SizedBox(height: 8),
@@ -231,38 +241,33 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           enabled: !_isLoading,
           style: GoogleFonts.inter(
             color: AppColors.textPrimary,
-            fontSize: 16,
+            fontSize: 15,
           ),
           decoration: InputDecoration(
-            hintText: 'your-email@example.com',
-            hintStyle: GoogleFonts.inter(
-              color: AppColors.textMuted,
-            ),
-            prefixIcon: Icon(
-              Icons.email_outlined,
-              color: AppColors.primary,
-            ),
+            hintText: '',
             filled: true,
-            fillColor: AppColors.background,
+            fillColor: const Color(0xFF1F2A2E), // Dark input background matching web panel
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide.none,
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(
-                color: AppColors.border.withValues(alpha: 0.2),
+                color: const Color(0xFF2A3535).withValues(alpha: 0.5),
+                width: 1,
               ),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(
                 color: AppColors.primary,
                 width: 2,
               ),
             ),
             errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(
                 color: AppColors.error,
               ),
@@ -287,11 +292,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Password',
+          'PASSWORD',
           style: GoogleFonts.inter(
-            fontSize: 14,
+            fontSize: 11,
             fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+            color: AppColors.textSecondary,
+            letterSpacing: 0.5,
           ),
         ),
         const SizedBox(height: 8),
@@ -301,21 +307,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           enabled: !_isLoading,
           style: GoogleFonts.inter(
             color: AppColors.textPrimary,
-            fontSize: 16,
+            fontSize: 15,
           ),
           decoration: InputDecoration(
-            hintText: 'Enter your password',
-            hintStyle: GoogleFonts.inter(
-              color: AppColors.textMuted,
-            ),
-            prefixIcon: Icon(
-              Icons.lock_outlined,
-              color: AppColors.primary,
-            ),
+            hintText: '',
             suffixIcon: IconButton(
               icon: Icon(
                 _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
                 color: AppColors.textMuted,
+                size: 20,
               ),
               onPressed: () {
                 setState(() {
@@ -324,26 +324,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               },
             ),
             filled: true,
-            fillColor: AppColors.background,
+            fillColor: const Color(0xFF1F2A2E), // Dark input background matching web panel
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide.none,
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(
-                color: AppColors.border.withValues(alpha: 0.2),
+                color: const Color(0xFF2A3535).withValues(alpha: 0.5),
+                width: 1,
               ),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(
                 color: AppColors.primary,
                 width: 2,
               ),
             ),
             errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(
                 color: AppColors.error,
               ),

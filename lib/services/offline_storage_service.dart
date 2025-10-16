@@ -43,7 +43,7 @@ class OfflineStorageService {
   
   /// Create database tables
   Future<void> _createTables(Database db, int version) async {
-    // Members table
+    // Members table with ALL columns
     await db.execute('''
       CREATE TABLE members (
         member_id TEXT PRIMARY KEY,
@@ -52,11 +52,19 @@ class OfflineStorageService {
         expires_at TEXT NOT NULL,
         membership_status TEXT NOT NULL,
         avatar_url TEXT,
+        email TEXT,
+        phone TEXT,
+        date_of_birth TEXT,
+        address TEXT,
+        city TEXT,
+        county TEXT,
+        gender TEXT,
+        starts_at TEXT,
         last_updated INTEGER NOT NULL
       )
     ''');
     
-    // Check-in history table
+    // Check-in history table with ALL columns
     await db.execute('''
       CREATE TABLE checkin_history (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -71,6 +79,7 @@ class OfflineStorageService {
         check_out_time INTEGER,
         duration_minutes INTEGER,
         method TEXT,
+        member_data_json TEXT,
         sync_status TEXT DEFAULT 'synced'
       )
     ''');
