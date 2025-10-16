@@ -16,12 +16,14 @@ class OfflineQueueService {
     required String qrCode,
     required String apiKey,
     String action = 'auto',
+    bool isOfflineScan = true, // Default to true for queued actions
   }) async {
     try {
       final pendingAction = PendingAction.create(
         qrCode: qrCode,
         apiKey: apiKey,
         type: action,
+        isOfflineScan: isOfflineScan,
       );
 
       final db = await _storage.database;

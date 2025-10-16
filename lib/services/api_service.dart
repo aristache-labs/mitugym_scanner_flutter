@@ -30,21 +30,33 @@ class ApiService {
 
   /// Check in or check out a member
   /// 
-  /// [qrCode] - The QR code scanned from member's device
+  /// [qrCode] - The QR code scanned from member's device (or just member_id for offline scans)
   /// [apiKey] - The API key for authentication
+  /// [isOfflineScan] - Flag to indicate this is an offline scan (skips TOTP validation)
   /// 
   /// Returns a [ScanResult] with success/failure information
-  Future<ScanResult> checkInOut(String qrCode, String apiKey) async {
+  Future<ScanResult> checkInOut(
+    String qrCode,
+    String apiKey, {
+    bool isOfflineScan = false,
+  }) async {
     try {
-      _logger.i('Attempting check-in/out for QR: $qrCode');
+      _logger.i('Attempting check-in/out for QR: $qrCode (offline: $isOfflineScan)');
+
+      final requestData = <String, dynamic>{
+        'qr_code': qrCode,
+        'api_key': apiKey,
+        'action': 'auto',
+      };
+      
+      // Add offline scan flag if true
+      if (isOfflineScan) {
+        requestData['is_offline_scan'] = true;
+      }
 
       final response = await _dio.post(
         '/api/checkin',
-        data: {
-          'qr_code': qrCode,
-          'api_key': apiKey,
-          'action': 'auto',
-        },
+        data: requestData,
       );
 
       _logger.i('API Response: ${response.statusCode}');

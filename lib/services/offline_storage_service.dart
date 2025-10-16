@@ -31,7 +31,7 @@ class OfflineStorageService {
       
     return await openDatabase(
       path,
-      version: 6, // Updated for pending_actions table and sync_status column
+      version: 7, // Updated for offline scan support (member_id, is_offline_scan)
       onCreate: _createTables,
       onUpgrade: _onUpgrade,
     );
@@ -97,12 +97,14 @@ class OfflineStorageService {
       CREATE TABLE pending_actions (
         id TEXT PRIMARY KEY,
         qr_code TEXT NOT NULL,
+        member_id TEXT NOT NULL,
         action TEXT NOT NULL,
         api_key TEXT NOT NULL,
         timestamp INTEGER NOT NULL,
         synced INTEGER DEFAULT 0,
         retry_count INTEGER DEFAULT 0,
-        error TEXT
+        error TEXT,
+        is_offline_scan INTEGER DEFAULT 0
       )
     ''');
     
@@ -182,12 +184,14 @@ class OfflineStorageService {
           CREATE TABLE IF NOT EXISTS pending_actions (
             id TEXT PRIMARY KEY,
             qr_code TEXT NOT NULL,
+            member_id TEXT NOT NULL,
             action TEXT NOT NULL,
             api_key TEXT NOT NULL,
             timestamp INTEGER NOT NULL,
             synced INTEGER DEFAULT 0,
             retry_count INTEGER DEFAULT 0,
-            error TEXT
+            error TEXT,
+            is_offline_scan INTEGER DEFAULT 0
           )
         ''');
         _logger.i('Created pending_actions table');
@@ -201,6 +205,17 @@ class OfflineStorageService {
         _logger.i('Added sync_status column to checkin_history table');
       } catch (e) {
         _logger.w('Could not add sync_status column (may already exist): $e');
+      }
+    }
+    
+    if (oldVersion < 7) {
+      // Add member_id and is_offline_scan columns to pending_actions
+      try {
+        await db.execute('ALTER TABLE pending_actions ADD COLUMN member_id TEXT');
+        await db.execute('ALTER TABLE pending_actions ADD COLUMN is_offline_scan INTEGER DEFAULT 0');
+        _logger.i('Added member_id and is_offline_scan columns to pending_actions table');
+      } catch (e) {
+        _logger.w('Could not add columns (may already exist): $e');
       }
     }
   }

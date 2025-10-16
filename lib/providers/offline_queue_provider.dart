@@ -130,8 +130,12 @@ class OfflineQueueNotifier extends Notifier<OfflineQueueState> {
           continue;
         }
 
-        // Attempt to sync
-        final result = await apiService.checkInOut(action.qrCode, action.apiKey);
+        // Attempt to sync with offline flag
+        final result = await apiService.checkInOut(
+          action.qrCode, // Contains just member_id for offline scans
+          action.apiKey,
+          isOfflineScan: action.isOfflineScan, // Pass offline flag to skip TOTP
+        );
 
         if (result.success) {
           // Mark as synced
