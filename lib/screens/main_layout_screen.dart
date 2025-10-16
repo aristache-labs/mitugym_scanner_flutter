@@ -400,6 +400,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
   Widget _buildUserDropdown(BuildContext context) {
     final authState = ref.watch(authProvider);
     final userName = authState.session?.userName ?? 'User';
+    final avatarUrl = authState.session?.avatarUrl;
     
     return Container(
       margin: const EdgeInsets.only(right: 20, top: 10, bottom: 10),
@@ -448,23 +449,64 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
                       width: 32,
                       height: 32,
                       decoration: BoxDecoration(
-                        gradient: AppColors.primaryGradient,
+                        gradient: avatarUrl == null || avatarUrl.isEmpty ? AppColors.primaryGradient : null,
                         shape: BoxShape.circle,
                         border: Border.all(
                           color: Colors.white.withValues(alpha: 0.2),
                           width: 2,
                         ),
                       ),
-                      child: Center(
-                        child: Text(
-                          userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
-                          style: GoogleFonts.inter(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
+                      child: avatarUrl != null && avatarUrl.isNotEmpty
+                          ? ClipOval(
+                              child: Image.network(
+                                avatarUrl,
+                                width: 32,
+                                height: 32,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  // Fallback to initials if image fails to load
+                                  return Container(
+                                    decoration: BoxDecoration(
+                                      gradient: AppColors.primaryGradient,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
+                                        style: GoogleFonts.inter(
+                                          color: Colors.white,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                loadingBuilder: (context, child, loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return Center(
+                                    child: SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            )
+                          : Center(
+                              child: Text(
+                                userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
+                                style: GoogleFonts.inter(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
                     ),
                     const SizedBox(width: 10),
                     

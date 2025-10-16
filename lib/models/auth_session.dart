@@ -7,6 +7,7 @@ class AuthSession {
   final String apiKey;
   final String userName;
   final String locationName;
+  final String? avatarUrl;
   final DateTime loginTime;
   final DateTime? lastValidated;
 
@@ -15,6 +16,7 @@ class AuthSession {
     required this.apiKey,
     required this.userName,
     required this.locationName,
+    this.avatarUrl,
     required this.loginTime,
     this.lastValidated,
   });
@@ -26,6 +28,7 @@ class AuthSession {
       apiKey: json['api_key'] as String,
       userName: json['user_name'] as String,
       locationName: json['location_name'] as String,
+      avatarUrl: json['avatar_url'] as String?,
       loginTime: DateTime.parse(json['login_time'] as String),
       lastValidated: json['last_validated'] != null
           ? DateTime.parse(json['last_validated'] as String)
@@ -40,6 +43,7 @@ class AuthSession {
       'api_key': apiKey,
       'user_name': userName,
       'location_name': locationName,
+      'avatar_url': avatarUrl,
       'login_time': loginTime.toIso8601String(),
       'last_validated': lastValidated?.toIso8601String(),
     };
@@ -51,6 +55,7 @@ class AuthSession {
     String? apiKey,
     String? userName,
     String? locationName,
+    String? avatarUrl,
     DateTime? loginTime,
     DateTime? lastValidated,
   }) {
@@ -59,6 +64,7 @@ class AuthSession {
       apiKey: apiKey ?? this.apiKey,
       userName: userName ?? this.userName,
       locationName: locationName ?? this.locationName,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
       loginTime: loginTime ?? this.loginTime,
       lastValidated: lastValidated ?? this.lastValidated,
     );
@@ -73,6 +79,9 @@ class AuthSession {
     await prefs.setString('auth_api_key', jsonData['api_key']);
     await prefs.setString('auth_user_name', jsonData['user_name']);
     await prefs.setString('auth_location_name', jsonData['location_name']);
+    if (jsonData['avatar_url'] != null) {
+      await prefs.setString('auth_avatar_url', jsonData['avatar_url']);
+    }
     await prefs.setString('auth_login_time', jsonData['login_time']);
     if (jsonData['last_validated'] != null) {
       await prefs.setString('auth_last_validated', jsonData['last_validated']);
@@ -87,6 +96,7 @@ class AuthSession {
     final apiKey = prefs.getString('auth_api_key');
     final userName = prefs.getString('auth_user_name');
     final locationName = prefs.getString('auth_location_name');
+    final avatarUrl = prefs.getString('auth_avatar_url');
     final loginTimeStr = prefs.getString('auth_login_time');
     final lastValidatedStr = prefs.getString('auth_last_validated');
     
@@ -100,6 +110,7 @@ class AuthSession {
       apiKey: apiKey,
       userName: userName,
       locationName: locationName,
+      avatarUrl: avatarUrl,
       loginTime: DateTime.parse(loginTimeStr),
       lastValidated: lastValidatedStr != null ? DateTime.parse(lastValidatedStr) : null,
     );
@@ -112,6 +123,7 @@ class AuthSession {
     await prefs.remove('auth_api_key');
     await prefs.remove('auth_user_name');
     await prefs.remove('auth_location_name');
+    await prefs.remove('auth_avatar_url');
     await prefs.remove('auth_login_time');
     await prefs.remove('auth_last_validated');
   }

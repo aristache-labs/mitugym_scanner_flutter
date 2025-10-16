@@ -49,6 +49,7 @@ class AuthService {
             apiKey: data['api_key'] as String,
             userName: data['user_name'] as String,
             locationName: data['location_name'] as String,
+            avatarUrl: data['avatar_url'] as String?,
             loginTime: DateTime.now(),
             lastValidated: DateTime.now(),
           );
@@ -108,6 +109,7 @@ class AuthService {
               lastValidated: DateTime.now(),
               userName: data['user_name'] as String,
               locationName: data['location_name'] as String,
+              avatarUrl: data['avatar_url'] as String?,
             );
             await updatedSession.save();
           }
