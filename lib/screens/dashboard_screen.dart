@@ -19,6 +19,7 @@ class DashboardScreen extends ConsumerStatefulWidget {
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   String _sortBy = ''; // No default sorting - clean state
   bool _sortAscending = true;
+  int _hoveredCardIndex = -1;
 
   void _toggleSort(String sortKey) {
     setState(() {
@@ -78,42 +79,62 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     return Row(
       children: [
         Expanded(
-          child: _buildPremiumStatCard(
+          child: MouseRegion(
+            onEnter: (_) => setState(() => _hoveredCardIndex = 0),
+            onExit: (_) => setState(() => _hoveredCardIndex = -1),
+            child: _buildPremiumStatCard(
             'Total Scans',
             '$totalScans',
             LucideIcons.scanLine,
             AppColors.primary,
             'All scans today',
+            isHovered: _hoveredCardIndex == 0,
+          ),
           ),
         ),
         const SizedBox(width: 16),
         Expanded(
-          child: _buildPremiumStatCard(
+          child: MouseRegion(
+            onEnter: (_) => setState(() => _hoveredCardIndex = 1),
+            onExit: (_) => setState(() => _hoveredCardIndex = -1),
+            child: _buildPremiumStatCard(
             'Check-ins',
             '$checkIns',
             LucideIcons.userCheck,
             AppColors.success,
             'Successful entries',
+            isHovered: _hoveredCardIndex == 1,
+          ),
           ),
         ),
         const SizedBox(width: 16),
         Expanded(
-          child: _buildPremiumStatCard(
+          child: MouseRegion(
+            onEnter: (_) => setState(() => _hoveredCardIndex = 2),
+            onExit: (_) => setState(() => _hoveredCardIndex = -1),
+            child: _buildPremiumStatCard(
             'Check-outs',
             '$checkOuts',
             LucideIcons.userMinus,
             AppColors.warning,
             'Successful exits',
+            isHovered: _hoveredCardIndex == 2,
+          ),
           ),
         ),
         const SizedBox(width: 16),
         Expanded(
-          child: _buildPremiumStatCard(
+          child: MouseRegion(
+            onEnter: (_) => setState(() => _hoveredCardIndex = 3),
+            onExit: (_) => setState(() => _hoveredCardIndex = -1),
+            child: _buildPremiumStatCard(
             'Denied',
             '$denied',
             LucideIcons.userX,
             AppColors.error,
             'Failed scans',
+            isHovered: _hoveredCardIndex == 3,
+          ),
           ),
         ),
       ],
@@ -126,6 +147,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     IconData icon,
     Color color,
     String subtitle,
+    { bool isHovered = false }
   ) {
     return Container(
       decoration: BoxDecoration(
@@ -170,33 +192,31 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               ),
             ),
             child: Center(
-              child: Container(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeInOut,
                 width: 56,
                 height: 56,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0D0D0D),
+                  color: isHovered ? color : const Color(0xFF0D0D0D),
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: color.withValues(alpha: 0.35),
                     width: 1,
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.45),
-                      blurRadius: 16,
-                      offset: const Offset(0, 6),
-                    ),
-                    BoxShadow(
-                      color: color.withValues(alpha: 0.25),
-                      blurRadius: 12,
-                      spreadRadius: -2,
-                    ),
-                  ],
                 ),
-                child: Icon(
-                  icon,
-                  color: color,
-                  size: 28,
+                child: AnimatedScale(
+                  duration: const Duration(milliseconds: 250),
+                  scale: isHovered ? 1.1 : 1.0,
+                  child: AnimatedRotation(
+                    duration: const Duration(milliseconds: 250),
+                    turns: isHovered ? (-5 / 360) : 0,
+                    child: Icon(
+                      icon,
+                      color: isHovered ? const Color(0xFF0D0D0D) : color,
+                      size: 28,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -208,15 +228,17 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
-                  value,
+                AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeInOut,
                   style: GoogleFonts.firaCode(
-                    color: AppColors.textPrimary,
+                    color: isHovered ? color : AppColors.textPrimary,
                     fontSize: 48,
                     fontWeight: FontWeight.w700,
                     height: 1.0,
                     letterSpacing: 2,
                   ),
+                  child: Text(value),
                 ),
                 const SizedBox(height: 8),
                 Text(
