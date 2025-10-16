@@ -31,7 +31,7 @@ class OfflineStorageService {
       
     return await openDatabase(
       path,
-      version: 5, // Updated for additional member detail columns
+      version: 6, // Updated for pending_actions table and sync_status column
       onCreate: _createTables,
       onUpgrade: _onUpgrade,
     );
@@ -70,7 +70,8 @@ class OfflineStorageService {
         check_in_time INTEGER,
         check_out_time INTEGER,
         duration_minutes INTEGER,
-        method TEXT
+        method TEXT,
+        sync_status TEXT DEFAULT 'synced'
       )
     ''');
     
@@ -80,7 +81,7 @@ class OfflineStorageService {
       ON checkin_history(timestamp)
     ''');
     
-    // Pending sync queue table
+    // Pending sync queue table (legacy)
     await db.execute('''
       CREATE TABLE sync_queue (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -88,6 +89,20 @@ class OfflineStorageService {
         action TEXT NOT NULL,
         timestamp INTEGER NOT NULL,
         retry_count INTEGER DEFAULT 0
+      )
+    ''');
+    
+    // Pending actions table (for offline queue)
+    await db.execute('''
+      CREATE TABLE pending_actions (
+        id TEXT PRIMARY KEY,
+        qr_code TEXT NOT NULL,
+        action TEXT NOT NULL,
+        api_key TEXT NOT NULL,
+        timestamp INTEGER NOT NULL,
+        synced INTEGER DEFAULT 0,
+        retry_count INTEGER DEFAULT 0,
+        error TEXT
       )
     ''');
     
@@ -157,6 +172,35 @@ class OfflineStorageService {
         _logger.i('Added additional member detail columns to members table');
       } catch (e) {
         _logger.w('Could not add member detail columns (may already exist): $e');
+      }
+    }
+    
+    if (oldVersion < 6) {
+      // Add pending_actions table for offline queue
+      try {
+        await db.execute('''
+          CREATE TABLE IF NOT EXISTS pending_actions (
+            id TEXT PRIMARY KEY,
+            qr_code TEXT NOT NULL,
+            action TEXT NOT NULL,
+            api_key TEXT NOT NULL,
+            timestamp INTEGER NOT NULL,
+            synced INTEGER DEFAULT 0,
+            retry_count INTEGER DEFAULT 0,
+            error TEXT
+          )
+        ''');
+        _logger.i('Created pending_actions table');
+      } catch (e) {
+        _logger.w('Could not create pending_actions table (may already exist): $e');
+      }
+      
+      // Add sync_status column to checkin_history
+      try {
+        await db.execute('ALTER TABLE checkin_history ADD COLUMN sync_status TEXT DEFAULT "synced"');
+        _logger.i('Added sync_status column to checkin_history table');
+      } catch (e) {
+        _logger.w('Could not add sync_status column (may already exist): $e');
       }
     }
   }

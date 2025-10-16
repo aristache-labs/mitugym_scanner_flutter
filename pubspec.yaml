@@ -52,6 +52,7 @@ dependencies:
   # Logging & Utils
   logger: ^2.4.0
   intl: ^0.20.1
+  uuid: ^4.5.1
   
   # Database & Connectivity
   sqflite: ^2.4.1
