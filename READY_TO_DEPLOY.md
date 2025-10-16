@@ -150,8 +150,6 @@ The offline scan TOTP bypass is secure because:
    UPDATE profiles SET role = 'staff' WHERE email IN ('staff@gym.com');
    ```
 
-2. **Minor UI Overflow**: 5-pixel overflow in offline banner (cosmetic, not breaking)
-
 ---
 
 ## 🎉 **Summary:**
