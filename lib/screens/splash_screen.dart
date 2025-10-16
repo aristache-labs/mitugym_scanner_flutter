@@ -137,102 +137,188 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             ],
           ),
         ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Logo with glow effect
-              Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: AppColors.primaryGradient,
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.3),
-                      blurRadius: 30,
-                      spreadRadius: 5,
+        child: Stack(
+          children: [
+            // Animated background particles/dots
+            ...List.generate(20, (index) {
+              final random = (index * 137.5) % 100;
+              return Positioned(
+                left: (random * 10) % MediaQuery.of(context).size.width,
+                top: ((random * 20) % MediaQuery.of(context).size.height),
+                child: Container(
+                  width: 4,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.primary.withValues(alpha: 0.15),
+                  ),
+                )
+                    .animate(onPlay: (controller) => controller.repeat(reverse: true))
+                    .fadeIn(duration: 2000.ms, delay: (index * 100).ms)
+                    .fadeOut(duration: 2000.ms, delay: (index * 100).ms),
+              );
+            }),
+            
+            // Main content
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Logo with glow effect and animations
+                  Container(
+                    width: 180,
+                    height: 180,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withValues(alpha: 0.4),
+                          blurRadius: 60,
+                          spreadRadius: 10,
+                        ),
+                        BoxShadow(
+                          color: AppColors.accent.withValues(alpha: 0.3),
+                          blurRadius: 40,
+                          spreadRadius: 5,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.qr_code_scanner_rounded,
-                  size: 60,
-                  color: AppColors.background,
-                ),
-              )
-                  .animate(onPlay: (controller) => controller.repeat())
-                  .shimmer(
-                    duration: 2000.ms,
-                    color: AppColors.accent.withValues(alpha: 0.3),
+                    child: ClipOval(
+                      child: Container(
+                        color: AppColors.background,
+                        padding: const EdgeInsets.all(20),
+                        child: Image.asset(
+                          'assets/images/logo.png',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
                   )
-                  .animate()
-                  .scale(duration: 600.ms, curve: Curves.easeOut),
+                      .animate(onPlay: (controller) => controller.repeat())
+                      .shimmer(
+                        duration: 2500.ms,
+                        color: AppColors.accent.withValues(alpha: 0.3),
+                      )
+                      .animate()
+                      .scale(
+                        begin: const Offset(0.8, 0.8),
+                        duration: 800.ms,
+                        curve: Curves.elasticOut,
+                      )
+                      .fadeIn(duration: 600.ms)
+                      .animate(onPlay: (controller) => controller.repeat(reverse: true))
+                      .then()
+                      .scale(
+                        begin: const Offset(1.0, 1.0),
+                        end: const Offset(1.05, 1.05),
+                        duration: 1500.ms,
+                        curve: Curves.easeInOut,
+                      ),
 
-              const SizedBox(height: 40),
+                  const SizedBox(height: 50),
 
-              // App title
-              const Text(
-                'MituGym',
-                style: TextStyle(
-                  fontSize: 42,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.text,
-                  letterSpacing: 2,
-                ),
-              )
-                  .animate()
-                  .fadeIn(duration: 800.ms, delay: 200.ms)
-                  .slideY(begin: 0.3, duration: 800.ms, delay: 200.ms),
+                  // App title with gradient effect
+                  ShaderMask(
+                    shaderCallback: (bounds) => LinearGradient(
+                      colors: [
+                        AppColors.primary,
+                        AppColors.accent,
+                        AppColors.primary,
+                      ],
+                    ).createShader(bounds),
+                    child: const Text(
+                      'MITUGYM',
+                      style: TextStyle(
+                        fontSize: 48,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                        letterSpacing: 6,
+                      ),
+                    ),
+                  )
+                      .animate()
+                      .fadeIn(duration: 800.ms, delay: 300.ms)
+                      .slideY(begin: 0.3, duration: 800.ms, delay: 300.ms, curve: Curves.easeOut)
+                      .animate(onPlay: (controller) => controller.repeat())
+                      .shimmer(
+                        duration: 3000.ms,
+                        delay: 1000.ms,
+                        color: AppColors.accent.withValues(alpha: 0.5),
+                      ),
 
-              const SizedBox(height: 8),
+                  const SizedBox(height: 12),
 
-              // Subtitle
-              Text(
-                'SCANNER',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.primary,
-                  letterSpacing: 4,
-                ),
-              )
-                  .animate()
-                  .fadeIn(duration: 800.ms, delay: 400.ms)
-                  .slideY(begin: 0.3, duration: 800.ms, delay: 400.ms),
+                  // Subtitle with typing effect
+                  Text(
+                    'SCANNER SYSTEM',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary.withValues(alpha: 0.8),
+                      letterSpacing: 8,
+                    ),
+                  )
+                      .animate()
+                      .fadeIn(duration: 800.ms, delay: 500.ms)
+                      .slideY(begin: 0.3, duration: 800.ms, delay: 500.ms),
 
-              const SizedBox(height: 60),
+                  const SizedBox(height: 80),
 
-              // Loading indicator
-              SizedBox(
-                width: 200,
-                child: LinearProgressIndicator(
-                  backgroundColor: AppColors.surface,
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-                  minHeight: 3,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              )
-                  .animate()
-                  .fadeIn(duration: 600.ms, delay: 600.ms),
+                  // Modern loading indicator
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Circular progress
+                      SizedBox(
+                        width: 60,
+                        height: 60,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 3,
+                          valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                          backgroundColor: AppColors.surface,
+                        ),
+                      ),
+                      // Pulsing center dot
+                      Container(
+                        width: 12,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColors.primary,
+                        ),
+                      )
+                          .animate(onPlay: (controller) => controller.repeat())
+                          .scale(
+                            begin: const Offset(1.0, 1.0),
+                            end: const Offset(1.5, 1.5),
+                            duration: 1000.ms,
+                          )
+                          .fadeOut(duration: 1000.ms),
+                    ],
+                  )
+                      .animate()
+                      .fadeIn(duration: 600.ms, delay: 700.ms)
+                      .scale(duration: 400.ms, delay: 700.ms),
 
-              const SizedBox(height: 20),
+                  const SizedBox(height: 30),
 
-              // Loading text - dynamic based on initialization stage
-              Text(
-                _loadingText,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.muted,
-                ),
-              )
-                  .animate(onPlay: (controller) => controller.repeat())
-                  .fadeIn(duration: 1000.ms)
-                  .then()
-                  .fadeOut(duration: 1000.ms),
-            ],
-          ),
+                  // Loading text with fade animation
+                  Text(
+                    _loadingText,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: AppColors.muted,
+                      letterSpacing: 1,
+                    ),
+                  )
+                      .animate(onPlay: (controller) => controller.repeat())
+                      .fadeIn(duration: 1200.ms)
+                      .then()
+                      .fadeOut(duration: 1200.ms),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
