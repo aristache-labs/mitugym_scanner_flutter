@@ -8,11 +8,30 @@ import '../widgets/member_avatar_modal.dart';
 import '../widgets/member_details_modal.dart';
 
 /// Dashboard screen - Overview and quick stats
-class DashboardScreen extends ConsumerWidget {
+class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+  String _sortBy = ''; // No default sorting - clean state
+  bool _sortAscending = true;
+
+  void _toggleSort(String sortKey) {
+    setState(() {
+      if (_sortBy == sortKey) {
+        _sortAscending = !_sortAscending;
+      } else {
+        _sortBy = sortKey;
+        _sortAscending = true;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final historyState = ref.watch(historyProvider);
 
     return SingleChildScrollView(
@@ -221,10 +240,13 @@ class DashboardScreen extends ConsumerWidget {
     final todayStart = DateTime(now.year, now.month, now.day);
     final todayEnd = todayStart.add(const Duration(days: 1));
     
-    final recentActivities = historyState.items
+    var recentActivities = historyState.items
         .where((a) => a.time.isAfter(todayStart) && a.time.isBefore(todayEnd))
         .take(10)
         .toList();
+    
+    // Apply sorting
+    final sortedActivities = _applySorting(recentActivities);
 
     return Container(
       padding: const EdgeInsets.all(24),
@@ -255,7 +277,7 @@ class DashboardScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 20),
-          if (recentActivities.isEmpty)
+          if (sortedActivities.isEmpty)
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(32.0),
@@ -270,14 +292,14 @@ class DashboardScreen extends ConsumerWidget {
             )
           else ...[
             _buildActivityTableHeader(),
-            ...recentActivities.map((activity) => _buildActivityItem(activity, context)),
+            ...sortedActivities.map((activity) => _buildActivityItem(activity, context)),
           ],
         ],
       ),
     );
   }
 
-  /// Build activity table header (matching history page)
+  /// Build activity table header (matching history page) with sorting
   Widget _buildActivityTableHeader() {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -295,61 +317,101 @@ class DashboardScreen extends ConsumerWidget {
           // Member column (with avatar space)
           SizedBox(
             width: 200,
-            child: Text(
-              'MEMBER',
-              style: GoogleFonts.inter(
-                color: AppColors.textMuted,
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.8,
-              ),
-            ),
+            child: _buildSortableHeader('MEMBER', 'member'),
           ),
           
           // Checked In column
           Expanded(
             flex: 2,
-            child: Text(
-              'CHECKED IN',
-              style: GoogleFonts.inter(
-                color: AppColors.textMuted,
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.8,
-              ),
-            ),
+            child: _buildSortableHeader('CHECKED IN', 'checkIn'),
           ),
           
           // Checked Out column
           Expanded(
             flex: 2,
-            child: Text(
-              'CHECKED OUT',
-              style: GoogleFonts.inter(
-                color: AppColors.textMuted,
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.8,
-              ),
-            ),
+            child: _buildSortableHeader('CHECKED OUT', 'checkOut'),
           ),
           
           // Duration column
           SizedBox(
             width: 120,
-            child: Text(
-              'DURATION',
+            child: _buildSortableHeader('DURATION', 'duration'),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildSortableHeader(String label, String sortKey) {
+    final isActive = _sortBy == sortKey;
+    
+    return InkWell(
+      onTap: () => _toggleSort(sortKey),
+      borderRadius: BorderRadius.circular(6),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
               style: GoogleFonts.inter(
-                color: AppColors.textMuted,
+                color: isActive ? AppColors.primary : AppColors.textMuted,
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.8,
               ),
             ),
-          ),
-        ],
+            const SizedBox(width: 4),
+            Icon(
+              isActive
+                  ? (_sortAscending ? Icons.arrow_upward : Icons.arrow_downward)
+                  : Icons.unfold_more,
+              size: 14,
+              color: isActive ? AppColors.primary : AppColors.textMuted.withValues(alpha: 0.5),
+            ),
+          ],
+        ),
       ),
     );
+  }
+  
+  List<dynamic> _applySorting(List<dynamic> activities) {
+    // If no sort is selected, return original order
+    if (_sortBy.isEmpty) {
+      return activities;
+    }
+    
+    final sorted = List<dynamic>.from(activities);
+    
+    sorted.sort((a, b) {
+      int comparison = 0;
+      
+      switch (_sortBy) {
+        case 'member':
+          comparison = a.memberName.toLowerCase().compareTo(b.memberName.toLowerCase());
+          break;
+        case 'checkIn':
+          final aTime = a.checkInTime ?? a.time;
+          final bTime = b.checkInTime ?? b.time;
+          comparison = aTime.compareTo(bTime);
+          break;
+        case 'checkOut':
+          final aTime = a.checkOutTime ?? DateTime(2099);
+          final bTime = b.checkOutTime ?? DateTime(2099);
+          comparison = aTime.compareTo(bTime);
+          break;
+        case 'duration':
+          final aDuration = a.durationMinutes ?? 0;
+          final bDuration = b.durationMinutes ?? 0;
+          comparison = aDuration.compareTo(bDuration);
+          break;
+      }
+      
+      return _sortAscending ? comparison : -comparison;
+    });
+    
+    return sorted;
   }
 
   /// Build activity item (matching history page layout)

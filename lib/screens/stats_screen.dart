@@ -8,11 +8,30 @@ import '../widgets/member_avatar_modal.dart';
 import '../widgets/member_details_modal.dart';
 
 /// Check-ins Analytics Screen - Modern design
-class StatsScreen extends ConsumerWidget {
+class StatsScreen extends ConsumerStatefulWidget {
   const StatsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<StatsScreen> createState() => _StatsScreenState();
+}
+
+class _StatsScreenState extends ConsumerState<StatsScreen> {
+  String _sortBy = ''; // No default sorting - clean state
+  bool _sortAscending = true;
+
+  void _toggleSort(String sortKey) {
+    setState(() {
+      if (_sortBy == sortKey) {
+        _sortAscending = !_sortAscending;
+      } else {
+        _sortBy = sortKey;
+        _sortAscending = true;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final historyState = ref.watch(historyProvider);
     
     // Calculate all statistics for today
@@ -393,7 +412,10 @@ class StatsScreen extends ConsumerWidget {
 
   /// Build recent check-ins list
   Widget _buildRecentCheckIns(List activities, BuildContext context) {
-    final recent = activities.take(5).toList();
+    var recent = activities.take(5).toList();
+    
+    // Apply sorting
+    recent = _applySorting(recent);
     
     return Container(
       padding: const EdgeInsets.all(24),
@@ -447,8 +469,8 @@ class StatsScreen extends ConsumerWidget {
     );
   }
 
-  /// Build activity table header (matching dashboard/history)
-  static Widget _buildActivityTableHeader() {
+  /// Build activity table header (matching dashboard/history) with sorting
+  Widget _buildActivityTableHeader() {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -465,65 +487,105 @@ class StatsScreen extends ConsumerWidget {
           // Member column (with avatar space)
           SizedBox(
             width: 200,
-            child: Text(
-              'MEMBER',
-              style: GoogleFonts.inter(
-                color: AppColors.textMuted,
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.8,
-              ),
-            ),
+            child: _buildSortableHeader('MEMBER', 'member'),
           ),
           
           // Checked In column
           Expanded(
             flex: 2,
-            child: Text(
-              'CHECKED IN',
-              style: GoogleFonts.inter(
-                color: AppColors.textMuted,
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.8,
-              ),
-            ),
+            child: _buildSortableHeader('CHECKED IN', 'checkIn'),
           ),
           
           // Checked Out column
           Expanded(
             flex: 2,
-            child: Text(
-              'CHECKED OUT',
-              style: GoogleFonts.inter(
-                color: AppColors.textMuted,
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.8,
-              ),
-            ),
+            child: _buildSortableHeader('CHECKED OUT', 'checkOut'),
           ),
           
           // Duration column
           SizedBox(
             width: 120,
-            child: Text(
-              'DURATION',
-              style: GoogleFonts.inter(
-                color: AppColors.textMuted,
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.8,
-              ),
-            ),
+            child: _buildSortableHeader('DURATION', 'duration'),
           ),
         ],
       ),
     );
   }
+  
+  Widget _buildSortableHeader(String label, String sortKey) {
+    final isActive = _sortBy == sortKey;
+    
+    return InkWell(
+      onTap: () => _toggleSort(sortKey),
+      borderRadius: BorderRadius.circular(6),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                color: isActive ? AppColors.primary : AppColors.textMuted,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.8,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Icon(
+              isActive
+                  ? (_sortAscending ? Icons.arrow_upward : Icons.arrow_downward)
+                  : Icons.unfold_more,
+              size: 14,
+              color: isActive ? AppColors.primary : AppColors.textMuted.withValues(alpha: 0.5),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  
+  List<dynamic> _applySorting(List<dynamic> activities) {
+    // If no sort is selected, return original order
+    if (_sortBy.isEmpty) {
+      return activities;
+    }
+    
+    final sorted = List<dynamic>.from(activities);
+    
+    sorted.sort((a, b) {
+      int comparison = 0;
+      
+      switch (_sortBy) {
+        case 'member':
+          comparison = a.memberName.toLowerCase().compareTo(b.memberName.toLowerCase());
+          break;
+        case 'checkIn':
+          final aTime = a.checkInTime ?? a.time;
+          final bTime = b.checkInTime ?? b.time;
+          comparison = aTime.compareTo(bTime);
+          break;
+        case 'checkOut':
+          final aTime = a.checkOutTime ?? DateTime(2099);
+          final bTime = b.checkOutTime ?? DateTime(2099);
+          comparison = aTime.compareTo(bTime);
+          break;
+        case 'duration':
+          final aDuration = a.durationMinutes ?? 0;
+          final bDuration = b.durationMinutes ?? 0;
+          comparison = aDuration.compareTo(bDuration);
+          break;
+      }
+      
+      return _sortAscending ? comparison : -comparison;
+    });
+    
+    return sorted;
+  }
 
   /// Build activity item (matching dashboard/history layout)
-  static Widget _buildActivityItem(dynamic activity, BuildContext context) {
+  Widget _buildActivityItem(dynamic activity, BuildContext context) {
     final isSuccess = activity.success;
     final statusColor = isSuccess ? AppColors.success : AppColors.error;
     
