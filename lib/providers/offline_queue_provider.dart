@@ -5,6 +5,7 @@ import '../services/offline_queue_service.dart';
 import '../services/api_service.dart';
 import 'offline_provider.dart';
 import 'scan_provider.dart';
+import 'history_provider.dart';
 
 /// Offline queue state
 class OfflineQueueState {
@@ -171,6 +172,16 @@ class OfflineQueueNotifier extends Notifier<OfflineQueueState> {
     );
 
     _logger.i('Sync complete. Synced: $successCount/${pendingActions.length}');
+    
+    // If any actions were successfully synced, refresh history to show new records
+    if (successCount > 0) {
+      _logger.i('Refreshing history after successful sync');
+      try {
+        await ref.read(historyProvider.notifier).syncFromServer();
+      } catch (e) {
+        _logger.e('Failed to refresh history after sync: $e');
+      }
+    }
   }
 
   /// Get pending count
