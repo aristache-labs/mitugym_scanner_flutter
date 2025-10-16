@@ -67,7 +67,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   Future<void> _performSearch() async {
     final query = _searchController.text.trim();
-    
+
     setState(() => _isSearching = true);
 
     try {
@@ -192,7 +192,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+        children: [
             if (_searchResults.isNotEmpty) ...[
               Text(
                 '${_searchResults.length} ${_searchResults.length == 1 ? 'member' : 'members'} found',
@@ -225,36 +225,36 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           color: AppColors.border.withValues(alpha: 0.3),
           width: 1,
         ),
-      ),
-      child: Column(
+            ),
+            child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Search field
-          TextField(
-            controller: _searchController,
+              children: [
+                // Search field
+                TextField(
+                  controller: _searchController,
             style: GoogleFonts.inter(color: AppColors.textPrimary),
-            decoration: InputDecoration(
+                  decoration: InputDecoration(
               hintText: 'Search by name...',
               hintStyle: GoogleFonts.inter(
                 color: AppColors.textMuted,
                 fontSize: 14,
               ),
               prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primary),
-              suffixIcon: _searchController.text.isNotEmpty
-                  ? IconButton(
+                    suffixIcon: _searchController.text.isNotEmpty
+                        ? IconButton(
                       icon: const Icon(Icons.clear, color: AppColors.textMuted),
-                      onPressed: () {
-                        _searchController.clear();
+                            onPressed: () {
+                              _searchController.clear();
                         // Search will trigger automatically via listener
-                      },
-                    )
-                  : null,
-              filled: true,
+                            },
+                          )
+                        : null,
+                    filled: true,
               fillColor: AppColors.surface.withValues(alpha: 0.5),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             ),
           ),
@@ -264,7 +264,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
-              children: [
+                  children: [
                 _buildFilterChip(
                   label: 'All',
                   value: 'all',
@@ -311,7 +311,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       borderRadius: BorderRadius.circular(10),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
+      decoration: BoxDecoration(
           color: isSelected ? chipColor.withValues(alpha: 0.15) : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
@@ -438,11 +438,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           padding: const EdgeInsets.only(top: 48),
           child: ListView.builder(
             padding: EdgeInsets.zero,
-            itemCount: _searchResults.length,
-            itemBuilder: (context, index) {
-              final member = _searchResults[index];
-              return _buildMemberCard(member);
-            },
+      itemCount: _searchResults.length,
+      itemBuilder: (context, index) {
+        final member = _searchResults[index];
+        return _buildMemberCard(member);
+      },
           ),
         ),
         
@@ -558,18 +558,18 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       ),
       child: Material(
         color: Colors.transparent,
-        child: InkWell(
-          onTap: () => _showMemberDetails(member),
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
+      child: InkWell(
+        onTap: () => _showMemberDetails(member),
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              children: [
+          child: Row(
+            children: [
                 // Member column (with avatar) - matches header width: 200
                 SizedBox(
                   width: 200,
                   child: Row(
-                    children: [
+                  children: [
                       // Compact Avatar (clickable to expand)
                       GestureDetector(
                         onTap: () {
@@ -605,9 +605,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                                     style: GoogleFonts.inter(
                                       color: Colors.white,
                                       fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                                 ),
                         ),
                       ),
@@ -622,12 +622,12 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                             fontWeight: FontWeight.w600,
                           ),
                           overflow: TextOverflow.ellipsis,
-                        ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                
+              ),
+              
                 // Plan column - matches header flex: 2
                 Expanded(
                   flex: 2,
@@ -658,7 +658,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   width: 100,
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
+                decoration: BoxDecoration(
                       color: statusColor.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(6),
                       border: Border.all(
@@ -677,10 +677,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                         ),
                         const SizedBox(width: 4),
                         Flexible(
-                          child: Text(
-                            member.membershipStatus.toUpperCase(),
+                child: Text(
+                  member.membershipStatus.toUpperCase(),
                             style: GoogleFonts.inter(
-                              color: statusColor,
+                    color: statusColor,
                               fontSize: 10,
                               fontWeight: FontWeight.w600,
                             ),
@@ -688,11 +688,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                           ),
                         ),
                       ],
-                    ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
+          ),
           ),
         ),
       ),

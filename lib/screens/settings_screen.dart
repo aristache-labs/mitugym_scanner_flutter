@@ -120,29 +120,29 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [
+          children: [
         // Modern header with tabs
         _buildModernHeader(),
-        
-        // Content
-        Expanded(
-          child: Form(
-            key: _formKey,
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildGeneralTab(),
-                _buildDisplayTab(),
-                _buildAudioTab(),
-                _buildAdvancedTab(),
-              ],
+            
+            // Content
+            Expanded(
+              child: Form(
+                key: _formKey,
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildGeneralTab(),
+                    _buildDisplayTab(),
+                    _buildAudioTab(),
+                    _buildAdvancedTab(),
+                  ],
+                ),
+              ),
             ),
-          ),
-        ),
-        
-        // Modern bottom bar
-        _buildBottomActionBar(),
-      ],
+            
+            // Modern bottom bar
+            _buildBottomActionBar(),
+          ],
     );
   }
 
@@ -168,8 +168,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
           width: 1,
         ),
       ),
-      child: Column(
-        children: [
+                child: Column(
+                  children: [
           // Tab bar
           Container(
             margin: const EdgeInsets.all(8),
@@ -235,7 +235,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
         ),
         border: Border.all(
           color: AppColors.border.withValues(alpha: 0.3),
-          width: 1,
+            width: 1,
         ),
       ),
       child: Row(
@@ -263,22 +263,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                   });
                 },
                 borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  height: 48,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
+            child: Container(
+              height: 48,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
                       color: AppColors.border,
-                      width: 1.5,
-                    ),
-                  ),
+                  width: 1.5,
+                ),
+              ),
                   child: Center(
-                    child: Text(
+                child: Text(
                       'Reset',
-                      style: GoogleFonts.inter(
+                  style: GoogleFonts.inter(
                         color: AppColors.textSecondary,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.3,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.3,
                       ),
                     ),
                   ),
@@ -294,33 +294,33 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
               child: InkWell(
                 onTap: _saveSettings,
                 borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  height: 48,
-                  decoration: BoxDecoration(
-                    gradient: AppColors.primaryGradient,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.3),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
+            child: Container(
+              height: 48,
+              decoration: BoxDecoration(
+                gradient: AppColors.primaryGradient,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
                       const Icon(Icons.save_rounded, size: 18, color: Colors.white),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Save Settings',
-                        style: GoogleFonts.inter(
+                    const SizedBox(width: 8),
+                    Text(
+                      'Save Settings',
+                      style: GoogleFonts.inter(
                           color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.3,
-                        ),
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.3,
                       ),
-                    ],
+                    ),
+                  ],
                   ),
                 ),
               ),
@@ -501,7 +501,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
       ],
     );
   }
-  
+
   /// Build history stats row
   Widget _buildHistoryStatsRow() {
     return FutureBuilder<int>(
@@ -513,32 +513,32 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
         
         return Container(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
+                      decoration: BoxDecoration(
             color: AppColors.surface.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: AppColors.border.withValues(alpha: 0.3),
             ),
-          ),
-          child: Column(
+                      ),
+                      child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+                        children: [
               Row(
                 children: [
                   const Icon(Icons.storage_rounded, color: AppColors.primary, size: 18),
                   const SizedBox(width: 8),
-                  Text(
+                          Text(
                     'Total Records: $count',
-                    style: GoogleFonts.inter(
+                            style: GoogleFonts.inter(
                       color: AppColors.textPrimary,
-                      fontSize: 14,
+                              fontSize: 14,
                       fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                            ),
+                          ),
                 ],
               ),
               if (lastSync != null) ...[
-                const SizedBox(height: 8),
+                            const SizedBox(height: 8),
                 Row(
                   children: [
                     const Icon(Icons.sync_rounded, color: AppColors.textMuted, size: 16),
@@ -551,10 +551,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                       ),
                     ),
                   ],
-                ),
-              ],
-            ],
-          ),
+                            ),
+                          ],
+                        ],
+                      ),
         );
       },
     );
@@ -628,20 +628,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text(
+                            child: Text(
               'Cancel',
               style: GoogleFonts.inter(color: AppColors.textMuted),
             ),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: Text(
+                            child: Text(
               'Cleanup',
               style: GoogleFonts.inter(color: AppColors.warning),
-            ),
-          ),
-        ],
-      ),
+                        ),
+                      ),
+                    ],
+                  ),
     );
     
     if (confirmed == true) {

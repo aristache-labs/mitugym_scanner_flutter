@@ -29,12 +29,12 @@ class OfflineStorageService {
       
       _logger.i('Initializing offline database at: $path');
       
-    return await openDatabase(
-      path,
+      return await openDatabase(
+        path,
       version: 7, // Updated for offline scan support (member_id, is_offline_scan)
-      onCreate: _createTables,
-      onUpgrade: _onUpgrade,
-    );
+        onCreate: _createTables,
+        onUpgrade: _onUpgrade,
+      );
     } catch (e) {
       _logger.e('Failed to initialize database: $e');
       rethrow;
@@ -438,10 +438,10 @@ class OfflineStorageService {
         }
         
         return ActivityLog(
-          memberName: data['member_name'] as String,
-          action: data['action'] as String,
-          time: DateTime.fromMillisecondsSinceEpoch(data['timestamp'] as int),
-          success: (data['success'] as int) == 1,
+        memberName: data['member_name'] as String,
+        action: data['action'] as String,
+        time: DateTime.fromMillisecondsSinceEpoch(data['timestamp'] as int),
+        success: (data['success'] as int) == 1,
           memberId: (data['member_id'] as String?)?.isNotEmpty == true ? data['member_id'] as String : null,
           avatarUrl: data['avatar_url'] as String?,
           checkInTime: checkInTime,

@@ -98,7 +98,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
   /// Build stats cards row
   Widget _buildStatsCards(int total, int checkIns, int checkOuts, int denied) {
     return Row(
-      children: [
+        children: [
         Expanded(
           child: _buildCompactStatCard(
             'Total',
@@ -108,7 +108,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
           ),
         ),
         const SizedBox(width: 12),
-        Expanded(
+          Expanded(
           child: _buildCompactStatCard(
             'Check-ins',
             '$checkIns',
@@ -161,45 +161,45 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
           color: color.withValues(alpha: 0.3),
           width: 1,
         ),
-      ),
-      child: Column(
-        children: [
-          Container(
+        ),
+        child: Column(
+              children: [
+                Container(
             padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
+                  decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [color.withValues(alpha: 0.8), color],
               ),
               borderRadius: BorderRadius.circular(10),
-              boxShadow: [
-                BoxShadow(
+                    boxShadow: [
+                      BoxShadow(
                   color: color.withValues(alpha: 0.3),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
-                ),
-              ],
-            ),
+                      ),
+                    ],
+                  ),
             child: Icon(icon, color: Colors.white, size: 20),
           ),
           const SizedBox(height: 12),
-          Text(
-            value,
-            style: GoogleFonts.inter(
-              color: AppColors.textPrimary,
+                Text(
+                  value,
+                  style: GoogleFonts.inter(
+                    color: AppColors.textPrimary,
               fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: GoogleFonts.inter(
-              color: AppColors.textMuted,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  label,
+                  style: GoogleFonts.inter(
+                    color: AppColors.textMuted,
               fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
       ),
     );
   }
@@ -383,12 +383,12 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
                     Text(
                       '$count',
                       style: GoogleFonts.inter(
-                        color: AppColors.textPrimary,
-                        fontSize: 16,
+                  color: AppColors.textPrimary,
+                  fontSize: 16,
                         fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+                ),
+              ),
+            ],
                 ),
               );
             }),
@@ -511,7 +511,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
       ),
     );
   }
-  
+
   Widget _buildSortableHeader(String label, String sortKey) {
     final isActive = _sortBy == sortKey;
     
@@ -625,7 +625,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
                     );
                   },
                   child: Stack(
-        children: [
+      children: [
                       Container(
                         width: 40,
                         height: 40,
@@ -921,7 +921,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
                         activity.formattedDuration,
                         style: GoogleFonts.inter(
                           color: AppColors.success,
-                          fontSize: 12,
+                  fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -949,15 +949,15 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
                                 color: AppColors.warning,
                               ),
                               const SizedBox(width: 5),
-                              Text(
+              Text(
                                 'In Progress',
                                 style: GoogleFonts.inter(
                                   color: AppColors.warning,
                   fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
                           ),
                         ),
                       )
