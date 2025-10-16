@@ -55,6 +55,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   List<MemberData> _searchResults = [];
   bool _isSearching = false;
   String _selectedStatus = 'all';
+  String _sortBy = 'member'; // member, plan, expires
+  bool _sortAscending = true;
   
   @override
   void dispose() {
@@ -109,7 +111,46 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       }).toList();
     }
     
+    // Apply sorting
+    filtered = _applySorting(filtered);
+    
     return filtered;
+  }
+  
+  List<MemberData> _applySorting(List<MemberData> members) {
+    final sorted = List<MemberData>.from(members);
+    
+    sorted.sort((a, b) {
+      int comparison = 0;
+      
+      switch (_sortBy) {
+        case 'member':
+          comparison = a.memberName.toLowerCase().compareTo(b.memberName.toLowerCase());
+          break;
+        case 'plan':
+          comparison = a.planName.toLowerCase().compareTo(b.planName.toLowerCase());
+          break;
+        case 'expires':
+          comparison = a.expiresAt.compareTo(b.expiresAt);
+          break;
+      }
+      
+      return _sortAscending ? comparison : -comparison;
+    });
+    
+    return sorted;
+  }
+  
+  void _toggleSort(String sortKey) {
+    setState(() {
+      if (_sortBy == sortKey) {
+        _sortAscending = !_sortAscending;
+      } else {
+        _sortBy = sortKey;
+        _sortAscending = true;
+      }
+    });
+    _performSearch();
   }
 
   void _showMemberDetails(MemberData member) {
@@ -381,13 +422,119 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       );
     }
 
-    return ListView.builder(
-      padding: EdgeInsets.zero,
-      itemCount: _searchResults.length,
-      itemBuilder: (context, index) {
-        final member = _searchResults[index];
-        return _buildMemberCard(member);
-      },
+    // Members list with fixed table header
+    return Stack(
+      children: [
+        // Members list with top padding for header
+        Padding(
+          padding: const EdgeInsets.only(top: 48),
+          child: ListView.builder(
+            padding: EdgeInsets.zero,
+            itemCount: _searchResults.length,
+            itemBuilder: (context, index) {
+              final member = _searchResults[index];
+              return _buildMemberCard(member);
+            },
+          ),
+        ),
+        
+        // Fixed table header
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: _buildTableHeader(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTableHeader() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppColors.surface.withValues(alpha: 0.5),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(12),
+          topRight: Radius.circular(12),
+        ),
+        border: Border.all(
+          color: AppColors.border.withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          // Member column (with avatar space)
+          SizedBox(
+            width: 200,
+            child: _buildSortableHeader('MEMBER', 'member'),
+          ),
+          
+          // Plan column
+          Expanded(
+            flex: 2,
+            child: _buildSortableHeader('PLAN', 'plan'),
+          ),
+          
+          // Expires column
+          Expanded(
+            flex: 2,
+            child: _buildSortableHeader('EXPIRES', 'expires'),
+          ),
+          
+          // Status column (no sorting)
+          SizedBox(
+            width: 100,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+              child: Text(
+                'STATUS',
+                style: GoogleFonts.inter(
+                  color: AppColors.textMuted,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.8,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildSortableHeader(String label, String sortKey) {
+    final isActive = _sortBy == sortKey;
+    
+    return InkWell(
+      onTap: () => _toggleSort(sortKey),
+      borderRadius: BorderRadius.circular(6),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                color: isActive ? AppColors.primary : AppColors.textMuted,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.8,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Icon(
+              isActive
+                  ? (_sortAscending ? Icons.arrow_upward : Icons.arrow_downward)
+                  : Icons.unfold_more,
+              size: 14,
+              color: isActive ? AppColors.primary : AppColors.textMuted.withValues(alpha: 0.5),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -418,116 +565,133 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           onTap: () => _showMemberDetails(member),
           borderRadius: BorderRadius.circular(12),
           child: Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               children: [
-                // Compact Avatar (clickable to expand)
-                GestureDetector(
-                  onTap: () {
-                    MemberAvatarModal.show(
-                      context,
-                      avatarUrl: member.avatarUrl,
-                      memberName: member.memberName,
-                      memberId: member.memberId,
-                    );
-                  },
+                // Member column (with avatar) - matches header width: 200
+                SizedBox(
+                  width: 200,
+                  child: Row(
+                    children: [
+                      // Compact Avatar (clickable to expand)
+                      GestureDetector(
+                        onTap: () {
+                          MemberAvatarModal.show(
+                            context,
+                            avatarUrl: member.avatarUrl,
+                            memberName: member.memberName,
+                            memberId: member.memberId,
+                          );
+                        },
+                        child: Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: member.hasAvatar ? null : AppColors.primaryGradient,
+                            border: Border.all(
+                              color: statusColor.withValues(alpha: 0.3),
+                              width: 2,
+                            ),
+                            image: member.hasAvatar
+                                ? DecorationImage(
+                                    image: NetworkImage(member.avatarUrl!),
+                                    fit: BoxFit.cover,
+                                  )
+                                : null,
+                          ),
+                          child: member.hasAvatar
+                              ? null
+                              : Center(
+                                  child: Text(
+                                    member.initials,
+                                    style: GoogleFonts.inter(
+                                      color: Colors.white,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      // Member name
+                      Expanded(
+                        child: Text(
+                          member.memberName,
+                          style: GoogleFonts.inter(
+                            color: AppColors.textPrimary,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                
+                // Plan column - matches header flex: 2
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    member.planName,
+                    style: GoogleFonts.inter(
+                      color: AppColors.textMuted,
+                      fontSize: 12,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                
+                // Expires column - matches header flex: 2
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    member.formattedExpiryDate,
+                    style: GoogleFonts.inter(
+                      color: AppColors.textMuted,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+                
+                // Status column - matches header width: 100
+                SizedBox(
+                  width: 100,
                   child: Container(
-                    width: 44,
-                    height: 44,
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: member.hasAvatar ? null : AppColors.primaryGradient,
+                      color: statusColor.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(6),
                       border: Border.all(
                         color: statusColor.withValues(alpha: 0.3),
-                        width: 2,
+                        width: 1,
                       ),
-                      image: member.hasAvatar
-                          ? DecorationImage(
-                              image: NetworkImage(member.avatarUrl!),
-                              fit: BoxFit.cover,
-                            )
-                          : null,
                     ),
-                    child: member.hasAvatar
-                        ? null
-                        : Center(
-                            child: Text(
-                              member.initials,
-                              style: GoogleFonts.inter(
-                                color: Colors.white,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                
-                // Member info - Compact
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        member.memberName,
-                        style: GoogleFonts.inter(
-                          color: AppColors.textPrimary,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        member.planName,
-                        style: GoogleFonts.inter(
-                          color: AppColors.textMuted,
-                          fontSize: 12,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        'Expires: ${member.formattedExpiryDate}',
-                        style: GoogleFonts.inter(
-                          color: AppColors.textMuted,
-                          fontSize: 11,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                
-                // Status badge - Compact
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: statusColor.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(
-                      color: statusColor.withValues(alpha: 0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        isActive ? Icons.check_circle_rounded : Icons.cancel_rounded,
-                        size: 12,
-                        color: statusColor,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        member.membershipStatus.toUpperCase(),
-                        style: GoogleFonts.inter(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          isActive ? Icons.check_circle_rounded : Icons.cancel_rounded,
+                          size: 12,
                           color: statusColor,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 4),
+                        Flexible(
+                          child: Text(
+                            member.membershipStatus.toUpperCase(),
+                            style: GoogleFonts.inter(
+                              color: statusColor,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
