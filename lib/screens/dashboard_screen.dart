@@ -142,13 +142,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           color: color.withValues(alpha: 0.2),
           width: 1,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: color.withValues(alpha: 0.12),
-            blurRadius: 20,
-            offset: const Offset(0, 6),
-          ),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
