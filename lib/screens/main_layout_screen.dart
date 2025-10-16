@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -277,109 +277,123 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
     final authState = ref.watch(authProvider);
     final userName = authState.session?.userName ?? 'User';
     
-    return PopupMenuButton<String>(
-      tooltip: '', // Remove default "Show menu" tooltip
-      offset: const Offset(0, 50),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: AppColors.border.withValues(alpha: 0.3),
-        ),
-      ),
-      color: AppColors.surface,
-      child: Container(
-        margin: const EdgeInsets.only(right: 20, top: 10, bottom: 10),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        constraints: const BoxConstraints(
-          minHeight: 50,
-        ),
-        decoration: BoxDecoration(
-          color: AppColors.surface.withValues(alpha: 0.5),
+    return Container(
+      margin: const EdgeInsets.only(right: 20, top: 10, bottom: 10),
+      child: PopupMenuButton<String>(
+        tooltip: '', // Remove default "Show menu" tooltip
+        offset: const Offset(0, 50),
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
+          side: BorderSide(
             color: AppColors.border.withValues(alpha: 0.3),
-            width: 1,
           ),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Avatar
-            Container(
-              width: 32,
-              height: 32,
+        color: AppColors.surface,
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          child: InkWell(
+            onTap: () {}, // Empty onTap to enable hover/ripple effect
+            borderRadius: BorderRadius.circular(12),
+            hoverColor: AppColors.primary.withValues(alpha: 0.1),
+            splashColor: AppColors.primary.withValues(alpha: 0.2),
+            highlightColor: AppColors.primary.withValues(alpha: 0.15),
+            child: Ink(
               decoration: BoxDecoration(
-                gradient: AppColors.primaryGradient,
-                shape: BoxShape.circle,
+                color: AppColors.surface.withValues(alpha: 0.5),
+                borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  width: 2,
+                  color: AppColors.border.withValues(alpha: 0.3),
+                  width: 1,
                 ),
               ),
-              child: Center(
-                child: Text(
-                  userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
-                  style: GoogleFonts.inter(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                constraints: const BoxConstraints(
+                  minHeight: 50,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Avatar
+                    Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        gradient: AppColors.primaryGradient,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          width: 2,
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
+                          style: GoogleFonts.inter(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    
+                    // Welcome text + User name
+                    Flexible(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'WELCOME BACK',
+                            style: GoogleFonts.inter(
+                              color: AppColors.textMuted,
+                              fontSize: 9,
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 0.5,
+                              height: 1.2,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            userName,
+                            style: GoogleFonts.inter(
+                              color: AppColors.textPrimary,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.3,
+                              height: 1.2,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    
+                    // Dropdown icon
+                    Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      color: Colors.white.withValues(alpha: 0.7),
+                      size: 18,
+                    ),
+                  ],
                 ),
               ),
             ),
-            const SizedBox(width: 10),
-            
-            // Welcome text + User name
-            Flexible(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'WELCOME BACK',
-                    style: GoogleFonts.inter(
-                      color: AppColors.textMuted,
-                      fontSize: 9,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: 0.5,
-                      height: 1.2,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    userName,
-                    style: GoogleFonts.inter(
-                      color: AppColors.textPrimary,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.3,
-                      height: 1.2,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            
-            // Dropdown icon
-            Icon(
-              Icons.keyboard_arrow_down_rounded,
-              color: Colors.white.withValues(alpha: 0.7),
-              size: 18,
-            ),
-          ],
+          ),
         ),
-      ),
-      onSelected: (value) async {
-        if (value == 'settings') {
-          await _openWebSettings();
-        } else if (value == 'logout') {
-          await _handleLogout();
-        }
-      },
+        onSelected: (value) async {
+          if (value == 'settings') {
+            await _openWebSettings();
+          } else if (value == 'logout') {
+            await _handleLogout();
+          }
+        },
       itemBuilder: (context) => [
         // Settings option
         PopupMenuItem<String>(
@@ -445,6 +459,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
           ),
         ),
       ],
+      ),
     );
   }
 
