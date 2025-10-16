@@ -23,6 +23,10 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   DateTimeRange? _dateRange;
   final TextEditingController _searchController = TextEditingController();
   
+  // Sorting state
+  String _sortBy = 'time'; // member, checkIn, checkOut, duration, time
+  bool _sortAscending = false;
+  
   @override
   void initState() {
     super.initState();
@@ -50,7 +54,52 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
 
   List<ActivityLog> _getFilteredActivities() {
     final historyState = ref.watch(historyProvider);
-    return historyState.items;
+    final items = List<ActivityLog>.from(historyState.items);
+    
+    // Apply sorting
+    items.sort((a, b) {
+      int comparison = 0;
+      
+      switch (_sortBy) {
+        case 'member':
+          comparison = a.memberName.compareTo(b.memberName);
+          break;
+        case 'checkIn':
+          final aTime = a.checkInTime ?? DateTime(1970);
+          final bTime = b.checkInTime ?? DateTime(1970);
+          comparison = aTime.compareTo(bTime);
+          break;
+        case 'checkOut':
+          final aTime = a.checkOutTime ?? DateTime(1970);
+          final bTime = b.checkOutTime ?? DateTime(1970);
+          comparison = aTime.compareTo(bTime);
+          break;
+        case 'duration':
+          final aDuration = a.durationMinutes ?? 0;
+          final bDuration = b.durationMinutes ?? 0;
+          comparison = aDuration.compareTo(bDuration);
+          break;
+        case 'time':
+        default:
+          comparison = a.time.compareTo(b.time);
+          break;
+      }
+      
+      return _sortAscending ? comparison : -comparison;
+    });
+    
+    return items;
+  }
+  
+  void _toggleSort(String sortBy) {
+    setState(() {
+      if (_sortBy == sortBy) {
+        _sortAscending = !_sortAscending;
+      } else {
+        _sortBy = sortBy;
+        _sortAscending = true;
+      }
+    });
   }
 
   Future<void> _selectDateRange() async {
@@ -517,51 +566,68 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Date header
+            // Date header - Modern subtle design
             Padding(
-              padding: EdgeInsets.only(bottom: 16, top: index == 0 ? 0 : 20),
+              padding: EdgeInsets.only(bottom: 16, top: index == 0 ? 0 : 24),
               child: Row(
                 children: [
+                  // Vertical accent line
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    width: 3,
+                    height: 20,
                     decoration: BoxDecoration(
-                      gradient: AppColors.primaryGradient,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primary.withValues(alpha: 0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Text(
-                      dateKey,
-                      style: GoogleFonts.inter(
-                        color: Colors.white,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          AppColors.primary.withValues(alpha: 0.8),
+                          AppColors.primary.withValues(alpha: 0.3),
+                        ],
                       ),
+                      borderRadius: BorderRadius.circular(2),
                     ),
                   ),
                   const SizedBox(width: 12),
+                  // Date text
+                  Text(
+                    dateKey,
+                    style: GoogleFonts.inter(
+                      color: AppColors.text,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.2,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  // Scan count badge
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface.withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(6),
                       border: Border.all(
-                        color: AppColors.primary.withValues(alpha: 0.3),
+                        color: AppColors.border.withValues(alpha: 0.3),
                         width: 1,
                       ),
                     ),
-                    child: Text(
-                      '${dayActivities.length} ${dayActivities.length == 1 ? 'scan' : 'scans'}',
-                      style: GoogleFonts.inter(
-                        color: AppColors.primary,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.qr_code_scanner_rounded,
+                          size: 12,
+                          color: AppColors.textMuted,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${dayActivities.length}',
+                          style: GoogleFonts.inter(
+                            color: AppColors.textMuted,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -587,10 +653,10 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     );
   }
 
-  /// Build table header (like web panel)
+  /// Build table header (like web panel) with sorting
   Widget _buildTableHeader() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: AppColors.surface.withValues(alpha: 0.5),
         borderRadius: const BorderRadius.only(
@@ -607,59 +673,61 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           // Member column (with avatar space)
           SizedBox(
             width: 200,
-            child: Text(
-              'MEMBER',
-              style: GoogleFonts.inter(
-                color: AppColors.textMuted,
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.8,
-              ),
-            ),
+            child: _buildSortableHeader('MEMBER', 'member'),
           ),
           
           // Checked In column
           Expanded(
             flex: 2,
-            child: Text(
-              'CHECKED IN',
-              style: GoogleFonts.inter(
-                color: AppColors.textMuted,
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.8,
-              ),
-            ),
+            child: _buildSortableHeader('CHECKED IN', 'checkIn'),
           ),
           
           // Checked Out column
           Expanded(
             flex: 2,
-            child: Text(
-              'CHECKED OUT',
-              style: GoogleFonts.inter(
-                color: AppColors.textMuted,
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.8,
-              ),
-            ),
+            child: _buildSortableHeader('CHECKED OUT', 'checkOut'),
           ),
           
           // Duration column
           SizedBox(
             width: 120,
-            child: Text(
-              'DURATION',
+            child: _buildSortableHeader('DURATION', 'duration'),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildSortableHeader(String label, String sortKey) {
+    final isActive = _sortBy == sortKey;
+    
+    return InkWell(
+      onTap: () => _toggleSort(sortKey),
+      borderRadius: BorderRadius.circular(6),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
               style: GoogleFonts.inter(
-                color: AppColors.textMuted,
+                color: isActive ? AppColors.primary : AppColors.textMuted,
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.8,
               ),
             ),
-          ),
-        ],
+            const SizedBox(width: 4),
+            Icon(
+              isActive
+                  ? (_sortAscending ? Icons.arrow_upward : Icons.arrow_downward)
+                  : Icons.unfold_more,
+              size: 14,
+              color: isActive ? AppColors.primary : AppColors.textMuted.withValues(alpha: 0.5),
+            ),
+          ],
+        ),
       ),
     );
   }
