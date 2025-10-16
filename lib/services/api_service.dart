@@ -213,11 +213,21 @@ class ApiService {
                 }
               }
               
+              // Use the success field directly from the API response
+              final isSuccess = item['success'] as bool? ?? true;
+              
+              // For denied entries, clear check-in/check-out times since the scan was rejected
+              if (!isSuccess) {
+                checkInTime = null;
+                checkOutTime = null;
+                durationMinutes = null;
+              }
+              
               return ActivityLog(
                 memberName: item['member_name'] as String? ?? 'Unknown',
                 action: item['api_action'] as String? ?? 'session',
                 time: DateTime.parse(item['created_at'] as String),
-                success: true,
+                success: isSuccess,
                 memberId: item['member_id'] as String?,
                 avatarUrl: avatarUrl,
                 checkInTime: checkInTime,

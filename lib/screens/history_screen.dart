@@ -973,37 +973,26 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           // Duration column
           SizedBox(
             width: 120,
-            child: !activity.success
+            child: activity.checkInTime != null && activity.checkOutTime != null
                 ? Align(
                     alignment: Alignment.centerLeft,
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
-                        color: AppColors.error.withValues(alpha: 0.15),
+                        color: AppColors.success.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(
-                          color: AppColors.error.withValues(alpha: 0.3),
+                          color: AppColors.success.withValues(alpha: 0.2),
                           width: 1,
                         ),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.error_outline,
-                            size: 13,
-                            color: AppColors.error,
-                          ),
-                          const SizedBox(width: 5),
-                          Text(
-                            'Denied',
-                            style: GoogleFonts.inter(
-                              color: AppColors.error,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
+                      child: Text(
+                        activity.formattedDuration,
+                        style: GoogleFonts.inter(
+                          color: AppColors.success,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   )
@@ -1041,28 +1030,13 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                           ),
                         ),
                       )
-                    : Align(
-                        alignment: Alignment.centerLeft,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-                            color: AppColors.success.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(
-                              color: AppColors.success.withValues(alpha: 0.2),
-                              width: 1,
-                            ),
-                          ),
-        child: Text(
-                            activity.formattedDuration,
+                    : Text(
+                            '--',
                             style: GoogleFonts.inter(
-                              color: AppColors.success,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
+                              color: AppColors.textMuted,
+                              fontSize: 13,
                             ),
                           ),
-                        ),
-                      ),
           ),
         ],
       ),

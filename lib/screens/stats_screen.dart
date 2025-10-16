@@ -42,9 +42,9 @@ class StatsScreen extends ConsumerWidget {
         : 0.0;
 
     return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
           // Stats cards
           _buildStatsCards(totalScans, checkIns, checkOuts, denied),
           const SizedBox(height: 20),
@@ -62,9 +62,9 @@ class StatsScreen extends ConsumerWidget {
               // Peak hours
               Expanded(
                 child: _buildPeakHoursCard(todayActivities.toList()),
-              ),
-            ],
-          ),
+            ),
+          ],
+        ),
           const SizedBox(height: 20),
           
           // Recent check-ins list
@@ -552,7 +552,7 @@ class StatsScreen extends ConsumerWidget {
               children: [
                 // Avatar with status indicator
                 Stack(
-                  children: [
+      children: [
                     Container(
                       width: 40,
                       height: 40,
@@ -601,8 +601,8 @@ class StatsScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
-                const SizedBox(width: 12),
-                Expanded(
+        const SizedBox(width: 12),
+        Expanded(
                   child: Text(
                     activity.memberName,
                     style: GoogleFonts.inter(
@@ -716,11 +716,11 @@ class StatsScreen extends ConsumerWidget {
                           width: 1,
                         ),
                       ),
-                      child: Column(
+          child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
+            children: [
+              Text(
                             DateFormat('MMM d, yyyy').format(activity.checkOutTime!),
                             style: GoogleFonts.inter(
                               color: AppColors.textSecondary,
@@ -811,7 +811,7 @@ class StatsScreen extends ConsumerWidget {
                         : Text(
                             '--',
                             style: GoogleFonts.inter(
-                              color: AppColors.textMuted,
+                  color: AppColors.textMuted,
                               fontSize: 13,
                             ),
                           ),
@@ -820,37 +820,26 @@ class StatsScreen extends ConsumerWidget {
           // Duration column
           SizedBox(
             width: 120,
-            child: !activity.success
+            child: activity.checkInTime != null && activity.checkOutTime != null
                 ? Align(
                     alignment: Alignment.centerLeft,
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
-                        color: AppColors.error.withValues(alpha: 0.15),
+                        color: AppColors.success.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(
-                          color: AppColors.error.withValues(alpha: 0.3),
+                          color: AppColors.success.withValues(alpha: 0.2),
                           width: 1,
                         ),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.error_outline,
-                            size: 13,
-                            color: AppColors.error,
-                          ),
-                          const SizedBox(width: 5),
-                          Text(
-                            'Denied',
-                            style: GoogleFonts.inter(
-                              color: AppColors.error,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
+                      child: Text(
+                        activity.formattedDuration,
+                        style: GoogleFonts.inter(
+                          color: AppColors.success,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   )
@@ -880,7 +869,7 @@ class StatsScreen extends ConsumerWidget {
                                 'In Progress',
                                 style: GoogleFonts.inter(
                                   color: AppColors.warning,
-                                  fontSize: 12,
+                  fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -888,30 +877,15 @@ class StatsScreen extends ConsumerWidget {
                           ),
                         ),
                       )
-                    : Align(
-                        alignment: Alignment.centerLeft,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          decoration: BoxDecoration(
-                            color: AppColors.success.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(
-                              color: AppColors.success.withValues(alpha: 0.2),
-                              width: 1,
-                            ),
-                          ),
-                          child: Text(
-                            activity.formattedDuration,
+                    : Text(
+                            '--',
                             style: GoogleFonts.inter(
-                              color: AppColors.success,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
+                              color: AppColors.textMuted,
+                              fontSize: 13,
                             ),
-                          ),
-                        ),
-                      ),
           ),
-        ],
+        ),
+      ],
       ),
     );
   }
