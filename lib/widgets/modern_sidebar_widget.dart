@@ -253,18 +253,29 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(6),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  gradient: AppColors.primaryGradient,
-                  borderRadius: BorderRadius.circular(8),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      AppColors.primary.withValues(alpha: 0.2),
+                      AppColors.primary.withValues(alpha: 0.1),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
                 ),
-                child: const Icon(
-                  Icons.analytics_rounded,
-                  color: Colors.white,
-                  size: 16,
+                child: Icon(
+                  LucideIcons.barChart3,
+                  color: AppColors.primary,
+                  size: 18,
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 12),
               Text(
                 'Today\'s Stats',
                 style: GoogleFonts.inter(
@@ -278,28 +289,28 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
           const SizedBox(height: 20),
           
           _buildCompactStatRow(
-            icon: Icons.login_rounded,
+            icon: LucideIcons.userCheck,
             label: 'Check-ins',
             value: '$todayCheckIns',
             color: AppColors.success,
           ),
           const SizedBox(height: 12),
           _buildCompactStatRow(
-            icon: Icons.logout_rounded,
+            icon: LucideIcons.userMinus,
             label: 'Check-outs',
             value: '$todayCheckOuts',
             color: AppColors.warning,
           ),
           const SizedBox(height: 12),
           _buildCompactStatRow(
-            icon: Icons.block_rounded,
+            icon: LucideIcons.userX,
             label: 'Denied',
             value: '$todayDenied',
             color: AppColors.error,
           ),
           const SizedBox(height: 12),
           _buildCompactStatRow(
-            icon: Icons.qr_code_scanner_rounded,
+            icon: LucideIcons.scanLine,
             label: 'Total Scans',
             value: '$totalScans',
             color: AppColors.primary,

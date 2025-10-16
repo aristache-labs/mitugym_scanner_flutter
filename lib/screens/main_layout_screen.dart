@@ -226,31 +226,42 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
           ),
         ),
       ),
-      leading: Padding(
-        padding: const EdgeInsets.only(left: 16),
-        child: Container(
-          margin: const EdgeInsets.symmetric(vertical: 14),
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            gradient: AppColors.primaryGradient,
-            borderRadius: BorderRadius.circular(10),
+      leading: null,
+      leadingWidth: 0,
+      title: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 16, right: 12),
+            child: Image.asset(
+              'assets/images/logo.png',
+              height: 90,
+              fit: BoxFit.contain,
+            ),
           ),
-          child: const Icon(
-            Icons.qr_code_scanner_rounded,
-            color: Colors.white,
-            size: 22,
+          ShaderMask(
+            shaderCallback: (bounds) => LinearGradient(
+              colors: [
+                AppColors.primary,
+                AppColors.secondary,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ).createShader(bounds),
+            child: Text(
+              'MITUGYM',
+              style: GoogleFonts.rajdhani(
+                color: Colors.white,
+                fontWeight: FontWeight.w800,
+                fontSize: 28,
+                letterSpacing: 1.5,
+                height: 1.2,
+              ),
+            ),
           ),
-        ),
+        ],
       ),
-      title: Text(
-        'MITUGYM',
-        style: GoogleFonts.inter(
-          color: Colors.white,
-          fontWeight: FontWeight.w600,
-          fontSize: 20,
-          letterSpacing: 0.5,
-        ),
-      ),
+      titleSpacing: 0,
       actions: [
         // Online/Offline status indicator
         _buildStatusIndicator(offlineState),
