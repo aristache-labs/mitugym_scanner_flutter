@@ -189,6 +189,21 @@ class OfflineQueueNotifier extends Notifier<OfflineQueueState> {
   Future<void> refresh() async {
     await _loadPendingActions();
   }
+
+  /// Clear all pending actions (including failed/stuck ones)
+  Future<void> clearAllPending() async {
+    try {
+      final queueService = _getQueueService();
+      final count = await queueService.clearAllPendingActions();
+      _logger.i('Cleared $count pending actions');
+      
+      // Reload state
+      await _loadPendingActions();
+    } catch (e) {
+      _logger.e('Failed to clear all pending actions: $e');
+      state = state.copyWith(error: 'Failed to clear pending actions');
+    }
+  }
 }
 
 /// Provider for offline queue state

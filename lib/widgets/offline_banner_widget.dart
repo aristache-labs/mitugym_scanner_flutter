@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../config/app_colors.dart';
 import '../providers/offline_provider.dart';
+import '../providers/offline_queue_provider.dart';
 
 /// Offline mode banner that appears at the top when no internet connection
 class OfflineBannerWidget extends ConsumerWidget {
@@ -10,38 +12,60 @@ class OfflineBannerWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final offlineState = ref.watch(offlineProvider);
+    final queueState = ref.watch(offlineQueueProvider);
+    final pendingCount = queueState.pendingActions.length;
     
-    if (offlineState.isOnline) {
+    if (offlineState.isOnline && pendingCount == 0) {
       return const SizedBox.shrink();
     }
 
+    // Show banner if offline OR if there are pending actions
+    final showOfflineBanner = !offlineState.isOnline;
+    final showSyncingBanner = offlineState.isOnline && queueState.isSyncing;
+    final showPendingBanner = offlineState.isOnline && pendingCount > 0 && !queueState.isSyncing;
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
-      height: offlineState.isOnline ? 0 : 56,
+      height: (showOfflineBanner || showSyncingBanner || showPendingBanner) ? 60 : 0,
       child: Material(
         elevation: 4,
         child: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                AppColors.warning,
-                AppColors.warning.withValues(alpha: 0.8),
-              ],
+              colors: showOfflineBanner
+                  ? [
+                      AppColors.warning,
+                      AppColors.warning.withValues(alpha: 0.8),
+                    ]
+                  : showSyncingBanner
+                      ? [
+                          AppColors.primary,
+                          AppColors.primary.withValues(alpha: 0.8),
+                        ]
+                      : [
+                          AppColors.accent,
+                          AppColors.accent.withValues(alpha: 0.8),
+                        ],
             ),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Offline icon with pulse animation
+                // Icon
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
-                    Icons.cloud_off,
+                  child: Icon(
+                    showOfflineBanner
+                        ? Icons.cloud_off
+                        : showSyncingBanner
+                            ? Icons.sync
+                            : Icons.pending_actions,
                     color: Colors.white,
                     size: 20,
                   ),
@@ -54,40 +78,126 @@ class OfflineBannerWidget extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                        'Offline Mode',
-                        style: TextStyle(
+                      Text(
+                        showOfflineBanner
+                            ? 'Offline Mode'
+                            : showSyncingBanner
+                                ? 'Syncing...'
+                                : 'Pending Sync',
+                        style: GoogleFonts.inter(
                           color: Colors.white,
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      if (offlineState.pendingSyncCount > 0)
-                        Text(
-                          '${offlineState.pendingSyncCount} pending sync${offlineState.pendingSyncCount > 1 ? 's' : ''}',
-                          style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.9),
-                            fontSize: 12,
-                          ),
+                      Text(
+                        showOfflineBanner
+                            ? pendingCount > 0
+                                ? '$pendingCount action${pendingCount > 1 ? 's' : ''} queued for sync'
+                                : 'Scans will be saved locally'
+                            : showSyncingBanner
+                                ? 'Uploading ${queueState.syncedCount} of $pendingCount actions...'
+                                : '$pendingCount action${pendingCount > 1 ? 's' : ''} waiting to sync',
+                        style: GoogleFonts.inter(
+                          color: Colors.white.withValues(alpha: 0.9),
+                          fontSize: 12,
                         ),
+                      ),
                     ],
                   ),
                 ),
                 
-                // Sync button (if pending items)
-                if (offlineState.pendingSyncCount > 0)
-                  TextButton.icon(
-                    onPressed: () {
-                      ref.read(offlineProvider.notifier).syncNow();
+                // Action button
+                if (showOfflineBanner && pendingCount > 0)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.pending_actions,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          '$pendingCount',
+                          style: GoogleFonts.inter(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                
+                if (showPendingBanner) ...[
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      await ref.read(offlineQueueProvider.notifier).syncPendingActions();
                     },
                     icon: const Icon(Icons.sync, color: Colors.white, size: 18),
-                    label: const Text(
-                      'Retry',
-                      style: TextStyle(color: Colors.white),
+                    label: Text(
+                      'Sync Now',
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                    style: TextButton.styleFrom(
-                      backgroundColor: Colors.white.withValues(alpha: 0.2),
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white.withValues(alpha: 0.25),
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    onPressed: () async {
+                      // Show confirmation dialog
+                      final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Clear Queue'),
+                          content: Text('Clear all $pendingCount pending actions? This cannot be undone.'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              child: const Text('Clear', style: TextStyle(color: Colors.red)),
+                            ),
+                          ],
+                        ),
+                      );
+                      
+                      if (confirmed == true) {
+                        await ref.read(offlineQueueProvider.notifier).clearAllPending();
+                      }
+                    },
+                    icon: const Icon(Icons.delete_outline, color: Colors.white, size: 20),
+                    tooltip: 'Clear queue',
+                  ),
+                ],
+                
+                if (showSyncingBanner)
+                  SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Colors.white.withValues(alpha: 0.9),
+                      ),
                     ),
                   ),
               ],
@@ -106,8 +216,10 @@ class OfflineIndicatorWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final offlineState = ref.watch(offlineProvider);
+    final queueState = ref.watch(offlineQueueProvider);
+    final pendingCount = queueState.pendingActions.length;
     
-    if (offlineState.isOnline) {
+    if (offlineState.isOnline && pendingCount == 0) {
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -120,9 +232,9 @@ class OfflineIndicatorWidget extends ConsumerWidget {
             ),
           ),
           const SizedBox(width: 6),
-          const Text(
+          Text(
             'Online',
-            style: TextStyle(
+            style: GoogleFonts.inter(
               color: AppColors.success,
               fontSize: 12,
               fontWeight: FontWeight.w600,
@@ -135,38 +247,43 @@ class OfflineIndicatorWidget extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: AppColors.warning.withValues(alpha: 0.2),
+        color: offlineState.isOnline
+            ? AppColors.accent.withValues(alpha: 0.2)
+            : AppColors.warning.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.warning, width: 1),
+        border: Border.all(
+          color: offlineState.isOnline ? AppColors.accent : AppColors.warning,
+          width: 1,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
-            Icons.cloud_off,
-            color: AppColors.warning,
+          Icon(
+            offlineState.isOnline ? Icons.pending_actions : Icons.cloud_off,
+            color: offlineState.isOnline ? AppColors.accent : AppColors.warning,
             size: 14,
           ),
           const SizedBox(width: 6),
-          const Text(
-            'Offline',
-            style: TextStyle(
-              color: AppColors.warning,
+          Text(
+            offlineState.isOnline ? 'Pending' : 'Offline',
+            style: GoogleFonts.inter(
+              color: offlineState.isOnline ? AppColors.accent : AppColors.warning,
               fontSize: 11,
               fontWeight: FontWeight.bold,
             ),
           ),
-          if (offlineState.pendingSyncCount > 0) ...[
+          if (pendingCount > 0) ...[
             const SizedBox(width: 4),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: const BoxDecoration(
-                color: AppColors.warning,
+              decoration: BoxDecoration(
+                color: offlineState.isOnline ? AppColors.accent : AppColors.warning,
                 shape: BoxShape.circle,
               ),
               child: Text(
-                '${offlineState.pendingSyncCount}',
-                style: const TextStyle(
+                '$pendingCount',
+                style: GoogleFonts.inter(
                   color: Colors.white,
                   fontSize: 10,
                   fontWeight: FontWeight.bold,

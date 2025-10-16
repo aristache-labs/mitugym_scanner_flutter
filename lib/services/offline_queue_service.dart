@@ -138,6 +138,19 @@ class OfflineQueueService {
     }
   }
 
+  /// Clear ALL pending actions (including failed/stuck ones)
+  Future<int> clearAllPendingActions() async {
+    try {
+      final db = await _storage.database;
+      final count = await db.delete('pending_actions');
+      _logger.i('Cleared ALL $count pending actions');
+      return count;
+    } catch (e) {
+      _logger.e('Failed to clear all pending actions: $e');
+      return 0;
+    }
+  }
+
   /// Get all actions (for debugging)
   Future<List<PendingAction>> getAllActions() async {
     try {

@@ -8,6 +8,7 @@ import '../services/logger_service.dart';
 import 'config_provider.dart';
 import 'offline_provider.dart';
 import 'history_provider.dart';
+import 'offline_queue_provider.dart';
 
 /// Scan state class
 class ScanState {
@@ -84,15 +85,27 @@ class ScanNotifier extends Notifier<ScanState> {
       return; // Ignore scans during cooldown
     }
 
-    // Get config
+    // Get config and connectivity status
     final config = ref.read(configProvider);
+    final isOnline = ref.read(offlineProvider).isOnline;
+    
+    // Use location API key from settings (NOT user's personal API key)
+    // This is the API key for check-in/out operations
+    final locationApiKey = config.apiKey;
     
     // Update status
     state = state.copyWith(statusMessage: 'Processing...');
 
+    // If offline, queue the action
+    if (!isOnline) {
+      await _handleOfflineScan(qrCode, locationApiKey);
+      _startCooldown(config.debounceDuration);
+      return;
+    }
+
     try {
-      // Call API
-      final result = await _apiService.checkInOut(qrCode, config.apiKey);
+      // Call API with location API key
+      final result = await _apiService.checkInOut(qrCode, locationApiKey);
       
       // Update state with result
       state = state.copyWith(lastResult: result);
@@ -163,13 +176,24 @@ class ScanNotifier extends Notifier<ScanState> {
       // Start cooldown
       _startCooldown(config.debounceDuration);
     } catch (e) {
-      await _audioService.playError();
-      await _loggerService.logError('Exception during scan', e.toString());
-      
-      state = state.copyWith(
-        lastResult: ScanResult.error('Error processing scan: $e'),
-        statusMessage: 'Error: $e',
-      );
+      // Check if it's a connection error - if so, queue for later
+      final errorMessage = e.toString().toLowerCase();
+      if (errorMessage.contains('connection') || 
+          errorMessage.contains('network') ||
+          errorMessage.contains('host lookup')) {
+        // Connection error - queue for offline sync
+        await _loggerService.logError('Connection error', 'Queuing scan for later');
+        await _handleOfflineScan(qrCode, locationApiKey);
+      } else {
+        // Other error - handle normally
+        await _audioService.playError();
+        await _loggerService.logError('Exception during scan', e.toString());
+        
+        state = state.copyWith(
+          lastResult: ScanResult.error('Error processing scan: $e'),
+          statusMessage: 'Error: $e',
+        );
+      }
       
       _startCooldown(config.debounceDuration);
     }
@@ -216,6 +240,54 @@ class ScanNotifier extends Notifier<ScanState> {
   /// Clear activity log
   void clearActivity() {
     state = state.copyWith(recentActivity: []);
+  }
+
+  /// Handle scan when offline - queue for later sync
+  Future<void> _handleOfflineScan(String qrCode, String apiKey) async {
+    try {
+      // Queue the action for later sync
+      await ref.read(offlineQueueProvider.notifier).queueAction(
+        qrCode: qrCode,
+        apiKey: apiKey,
+      );
+      
+      // Play success sound for queuing
+      await _audioService.playSuccess();
+      
+      // Log the queued action
+      await _loggerService.logSuccess('Offline Scan', 'Queued for sync: $qrCode');
+      
+      // Add to activity log as "Pending"
+      final activityLog = ActivityLog(
+        memberName: 'Offline Scan',
+        action: 'Queued for sync',
+        time: DateTime.now(),
+        success: true,
+        avatarUrl: null,
+        memberId: null,
+        memberData: null,
+      );
+      _addActivityLog(activityLog);
+      
+      // Update state with success message
+      state = state.copyWith(
+        lastResult: ScanResult(
+          success: true,
+          message: 'Scan queued for sync',
+          data: null,
+        ),
+        statusMessage: 'Queued for sync when online',
+      );
+    } catch (e) {
+      // Handle error
+      await _audioService.playError();
+      await _loggerService.logError('Failed to queue offline scan', e.toString());
+      
+      state = state.copyWith(
+        lastResult: ScanResult.error('Failed to queue scan: $e'),
+        statusMessage: 'Error queuing scan',
+      );
+    }
   }
 
 }
