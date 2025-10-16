@@ -27,8 +27,16 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final offlineStorage = OfflineStorageService();
     _searchService = SearchService(offlineStorage: offlineStorage);
     
+    // Add listener for real-time search
+    _searchController.addListener(_onSearchChanged);
+    
     // Load all members on init
     _loadAllMembers();
+  }
+  
+  void _onSearchChanged() {
+    // Trigger search as user types
+    _performSearch();
   }
   
   Future<void> _loadAllMembers() async {
@@ -47,10 +55,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   List<MemberData> _searchResults = [];
   bool _isSearching = false;
   String _selectedStatus = 'all';
-  String _selectedPlan = 'all';
   
   @override
   void dispose() {
+    _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
     super.dispose();
   }
@@ -61,18 +69,18 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     setState(() => _isSearching = true);
 
     try {
+      List<MemberData> results;
+      
       if (query.isEmpty) {
         // Show all members from local database
-        final results = await _searchService.searchMembers('');
-        setState(() {
-          _searchResults = results;
-          _isSearching = false;
-        });
-        return;
+        results = await _searchService.searchMembers('');
+      } else {
+        // Search members
+        results = await _searchService.searchMembers(query);
       }
-
-      // Search members
-      final results = await _searchService.searchMembers(query);
+      
+      // Apply filters
+      results = _applyFilters(results);
 
       setState(() {
         _searchResults = results;
@@ -89,6 +97,19 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         );
       }
     }
+  }
+  
+  List<MemberData> _applyFilters(List<MemberData> members) {
+    var filtered = members;
+    
+    // Filter by status
+    if (_selectedStatus != 'all') {
+      filtered = filtered.where((member) {
+        return member.membershipStatus.toLowerCase() == _selectedStatus.toLowerCase();
+      }).toList();
+    }
+    
+    return filtered;
   }
 
   void _showMemberDetails(MemberData member) {
@@ -134,35 +155,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             ],
           ],
         ),
-        if (_searchController.text.isNotEmpty && _searchResults.isNotEmpty)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              gradient: AppColors.primaryGradient,
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.3),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.search_rounded, color: Colors.white, size: 16),
-                const SizedBox(width: 6),
-                Text(
-                  'Results',
-                  style: GoogleFonts.inter(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
       ],
     );
   }
@@ -186,15 +178,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         ),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Search field
           TextField(
             controller: _searchController,
-            onChanged: (_) => setState(() {}),
-            onSubmitted: (_) => _performSearch(),
             style: GoogleFonts.inter(color: AppColors.textPrimary),
             decoration: InputDecoration(
-              hintText: 'Search by name or ID...',
+              hintText: 'Search by name...',
               hintStyle: GoogleFonts.inter(
                 color: AppColors.textMuted,
                 fontSize: 14,
@@ -202,25 +193,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primary),
               suffixIcon: _searchController.text.isNotEmpty
                   ? IconButton(
-                      icon: const Icon(Icons.clear_rounded, color: AppColors.textMuted),
+                      icon: const Icon(Icons.clear, color: AppColors.textMuted),
                       onPressed: () {
                         _searchController.clear();
-                        setState(() => _searchResults = []);
+                        // Search will trigger automatically via listener
                       },
                     )
-                  : _isSearching
-                      ? Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: AppColors.primary,
-                            ),
-                          ),
-                        )
-                      : null,
+                  : null,
               filled: true,
               fillColor: AppColors.surface.withValues(alpha: 0.5),
               border: OutlineInputBorder(
@@ -232,59 +211,31 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           ),
           const SizedBox(height: 16),
           
-          // Filters row
-          Row(
-            children: [
-              Expanded(child: _buildModernFilterChip('Status', _selectedStatus, ['all', 'active', 'expired', 'inactive'], Icons.verified_user_rounded),),
-              const SizedBox(width: 12),
-              Expanded(child: _buildModernFilterChip('Plan', _selectedPlan, ['all', 'Monthly', 'Annual', 'Day Pass'], Icons.card_membership_rounded),),
-            ],
-          ),
-          const SizedBox(height: 16),
-          
-          // Search button
-          SizedBox(
-            width: double.infinity,
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: _isSearching ? null : _performSearch,
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  decoration: BoxDecoration(
-                    gradient: _isSearching ? null : AppColors.primaryGradient,
-                    color: _isSearching ? AppColors.border : null,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: _isSearching ? null : [
-                      BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.3),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        _isSearching ? Icons.hourglass_empty_rounded : Icons.search_rounded,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        _isSearching ? 'Searching...' : 'Search Members',
-                        style: GoogleFonts.inter(
-                          color: Colors.white,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
+          // Filter chips row
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _buildFilterChip(
+                  label: 'All',
+                  value: 'all',
+                  icon: Icons.list_rounded,
                 ),
-              ),
+                const SizedBox(width: 8),
+                _buildFilterChip(
+                  label: 'Active',
+                  value: 'active',
+                  icon: Icons.check_circle_rounded,
+                  color: AppColors.success,
+                ),
+                const SizedBox(width: 8),
+                _buildFilterChip(
+                  label: 'Expired',
+                  value: 'expired',
+                  icon: Icons.cancel_rounded,
+                  color: AppColors.error,
+                ),
+              ],
             ),
           ),
         ],
@@ -292,73 +243,53 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     );
   }
 
-  Widget _buildModernFilterChip(String label, String value, List<String> items, IconData icon) {
-    return PopupMenuButton<String>(
-      onSelected: (newValue) {
+  Widget _buildFilterChip({
+    required String label,
+    required String value,
+    required IconData icon,
+    Color? color,
+  }) {
+    final isSelected = _selectedStatus == value;
+    final chipColor = color ?? AppColors.primary;
+    
+    return InkWell(
+      onTap: () {
         setState(() {
-          if (label == 'Status') {
-            _selectedStatus = newValue;
-          } else {
-            _selectedPlan = newValue;
-          }
+          _selectedStatus = value;
         });
-        if (_searchController.text.isNotEmpty) {
-          _performSearch();
-        }
+        _performSearch();
       },
-      color: AppColors.card,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      borderRadius: BorderRadius.circular(10),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: AppColors.surface.withValues(alpha: 0.5),
+          color: isSelected ? chipColor.withValues(alpha: 0.15) : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: AppColors.border,
-            width: 1,
+            color: isSelected ? chipColor : AppColors.border,
+            width: isSelected ? 1.5 : 1,
           ),
         ),
         child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 16, color: AppColors.primary),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                value == 'all' ? 'All ${label}s' : value,
-                style: GoogleFonts.inter(
-                  color: AppColors.textPrimary,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                ),
-                overflow: TextOverflow.ellipsis,
+            Icon(
+              icon,
+              size: 16,
+              color: isSelected ? chipColor : AppColors.textMuted,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                color: isSelected ? chipColor : AppColors.textMuted,
+                fontSize: 13,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
               ),
             ),
-            Icon(Icons.arrow_drop_down_rounded, size: 20, color: AppColors.textMuted),
           ],
         ),
       ),
-      itemBuilder: (context) => items.map((item) {
-        return PopupMenuItem<String>(
-          value: item,
-          child: Row(
-            children: [
-              if (item == value)
-                Icon(Icons.check_rounded, size: 16, color: AppColors.primary)
-              else
-                const SizedBox(width: 16),
-              const SizedBox(width: 8),
-              Text(
-                item == 'all' ? 'All ${label}s' : item,
-                style: GoogleFonts.inter(
-                  color: item == value ? AppColors.primary : AppColors.textPrimary,
-                  fontSize: 14,
-                  fontWeight: item == value ? FontWeight.w600 : FontWeight.normal,
-                ),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
     );
   }
 
@@ -465,7 +396,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final isActive = member.membershipStatus.toLowerCase() == 'active';
     
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -475,9 +406,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             AppColors.surface.withValues(alpha: 0.5),
           ],
         ),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: statusColor.withValues(alpha: 0.3),
+          color: AppColors.border.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -485,12 +416,12 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _showMemberDetails(member),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(12),
             child: Row(
               children: [
-                // Avatar with status indicator (clickable to expand)
+                // Compact Avatar (clickable to expand)
                 GestureDetector(
                   onTap: () {
                     MemberAvatarModal.show(
@@ -498,65 +429,42 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                       avatarUrl: member.avatarUrl,
                       memberName: member.memberName,
                       memberId: member.memberId,
-                      planName: member.planName,
-                      expiresAt: member.expiresAt,
-                      membershipStatus: member.membershipStatus,
                     );
                   },
-                  child: Stack(
-                    children: [
-                      Container(
-                        width: 56,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: member.hasAvatar ? null : AppColors.primaryGradient,
-                          border: Border.all(
-                            color: statusColor.withValues(alpha: 0.3),
-                            width: 2,
-                          ),
-                          image: member.hasAvatar
-                              ? DecorationImage(
-                                  image: NetworkImage(member.avatarUrl!),
-                                  fit: BoxFit.cover,
-                                )
-                              : null,
-                        ),
-                        child: member.hasAvatar
-                            ? null
-                            : Center(
-                                child: Text(
-                                  member.initials,
-                                  style: GoogleFonts.inter(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
+                  child: Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: member.hasAvatar ? null : AppColors.primaryGradient,
+                      border: Border.all(
+                        color: statusColor.withValues(alpha: 0.3),
+                        width: 2,
                       ),
-                      Positioned(
-                        right: 0,
-                        bottom: 0,
-                        child: Container(
-                          width: 16,
-                          height: 16,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: statusColor,
-                            border: Border.all(
-                              color: AppColors.card,
-                              width: 2,
+                      image: member.hasAvatar
+                          ? DecorationImage(
+                              image: NetworkImage(member.avatarUrl!),
+                              fit: BoxFit.cover,
+                            )
+                          : null,
+                    ),
+                    child: member.hasAvatar
+                        ? null
+                        : Center(
+                            child: Text(
+                              member.initials,
+                              style: GoogleFonts.inter(
+                                color: Colors.white,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    ],
                   ),
                 ),
-                const SizedBox(width: 14),
+                const SizedBox(width: 12),
                 
-                // Member info
+                // Member info - Compact
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -565,66 +473,57 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                         member.memberName,
                         style: GoogleFonts.inter(
                           color: AppColors.textPrimary,
-                          fontSize: 16,
+                          fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          Icon(Icons.card_membership_rounded, size: 14, color: AppColors.textMuted),
-                          const SizedBox(width: 4),
-                          Text(
-                            member.planName,
-                            style: GoogleFonts.inter(
-                              color: AppColors.textMuted,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
+                        overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(Icons.calendar_today_rounded, size: 14, color: AppColors.textMuted),
-                          const SizedBox(width: 4),
-                          Text(
-                            member.formattedExpiryDate,
-                            style: GoogleFonts.inter(
-                              color: AppColors.textMuted,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
+                      Text(
+                        member.planName,
+                        style: GoogleFonts.inter(
+                          color: AppColors.textMuted,
+                          fontSize: 12,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Expires: ${member.formattedExpiryDate}',
+                        style: GoogleFonts.inter(
+                          color: AppColors.textMuted,
+                          fontSize: 11,
+                        ),
                       ),
                     ],
                   ),
                 ),
                 
-                // Status badge
+                // Status badge - Compact
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: statusColor.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(6),
                     border: Border.all(
                       color: statusColor.withValues(alpha: 0.3),
                       width: 1,
                     ),
                   ),
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
                         isActive ? Icons.check_circle_rounded : Icons.cancel_rounded,
-                        size: 14,
+                        size: 12,
                         color: statusColor,
                       ),
-                      const SizedBox(width: 6),
+                      const SizedBox(width: 4),
                       Text(
                         member.membershipStatus.toUpperCase(),
                         style: GoogleFonts.inter(
                           color: statusColor,
-                          fontSize: 11,
+                          fontSize: 10,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
