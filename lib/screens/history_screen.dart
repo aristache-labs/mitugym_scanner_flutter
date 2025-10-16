@@ -6,6 +6,7 @@ import '../config/app_colors.dart';
 import '../models/activity_log.dart';
 import '../providers/history_provider.dart';
 import '../services/export_service.dart';
+import '../widgets/member_avatar_modal.dart';
 
 /// History screen with filtering and modern design
 class HistoryScreen extends ConsumerStatefulWidget {
@@ -599,8 +600,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
               borderRadius: BorderRadius.circular(8),
               child: Padding(
                 padding: EdgeInsets.only(bottom: 16, top: index == 0 ? 0 : 24, left: 4, right: 4),
-                child: Row(
-                  children: [
+              child: Row(
+                children: [
                     // Expand/collapse icon
                     Icon(
                       isExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right,
@@ -609,10 +610,10 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     ),
                     const SizedBox(width: 8),
                     // Vertical accent line
-                    Container(
+                  Container(
                       width: 3,
                       height: 20,
-                      decoration: BoxDecoration(
+                    decoration: BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
@@ -627,16 +628,16 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     const SizedBox(width: 12),
                     // Date text
                     Expanded(
-                      child: Text(
-                        dateKey,
+                    child: Text(
+                      dateKey,
                         style: GoogleFonts.inter(
                           color: isExpanded ? AppColors.text : AppColors.textMuted,
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.2,
-                        ),
                       ),
                     ),
+                  ),
                     const SizedBox(width: 12),
                     // Scan count badge
                     Container(
@@ -658,15 +659,15 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                             color: AppColors.textMuted,
                           ),
                           const SizedBox(width: 4),
-                          Text(
+                  Text(
                             '${dayActivities.length}',
                             style: GoogleFonts.inter(
                               color: AppColors.textMuted,
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
+                    ),
+                  ),
+                ],
                       ),
                     ),
                   ],
@@ -676,7 +677,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             
             // Activities for this date (only show if expanded)
             if (isExpanded)
-              ...dayActivities.map((activity) => _buildActivityCard(activity)),
+            ...dayActivities.map((activity) => _buildActivityCard(activity)),
           ],
         );
       },
@@ -709,8 +710,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           width: 1,
         ),
       ),
-      child: Row(
-        children: [
+        child: Row(
+          children: [
           // Member column (with avatar space)
           SizedBox(
             width: 200,
@@ -718,7 +719,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           ),
           
           // Checked In column
-          Expanded(
+            Expanded(
             flex: 2,
             child: _buildSortableHeader('CHECKED IN', 'checkIn'),
           ),
@@ -749,8 +750,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
         child: Row(
           mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
+                children: [
+                  Text(
               label,
               style: GoogleFonts.inter(
                 color: isActive ? AppColors.primary : AppColors.textMuted,
@@ -760,11 +761,11 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
               ),
             ),
             const SizedBox(width: 4),
-            Icon(
+                      Icon(
               isActive
                   ? (_sortAscending ? Icons.arrow_upward : Icons.arrow_downward)
                   : Icons.unfold_more,
-              size: 14,
+                        size: 14,
               color: isActive ? AppColors.primary : AppColors.textMuted.withValues(alpha: 0.5),
             ),
           ],
@@ -812,71 +813,81 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             width: 200,
         child: Row(
           children: [
-                // Avatar with status indicator
-                Stack(
-                children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: activity.hasAvatar ? null : AppColors.primaryGradient,
-                        border: Border.all(
-                          color: AppColors.primary.withValues(alpha: 0.3),
-                          width: 2,
-                        ),
-                        image: activity.hasAvatar
-                            ? DecorationImage(
-                                image: NetworkImage(activity.avatarUrl!),
-                                fit: BoxFit.cover,
-                              )
-                            : null,
-                      ),
-                      child: activity.hasAvatar
-                          ? null
-                          : Center(
-                              child: Text(
-                                activity.initials,
-                                style: GoogleFonts.inter(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                            ),
-                    ),
-                    Positioned(
-                      right: 0,
-                      bottom: 0,
-                      child: Container(
-                        width: 12,
-                        height: 12,
+                // Avatar with status indicator (clickable)
+                GestureDetector(
+                  onTap: () {
+                    MemberAvatarModal.show(
+                      context,
+                      avatarUrl: activity.avatarUrl,
+                      memberName: activity.memberName,
+                      memberId: activity.memberId,
+                    );
+                  },
+                  child: Stack(
+                  children: [
+                      Container(
+                        width: 40,
+                        height: 40,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                        color: statusColor,
+                          gradient: activity.hasAvatar ? null : AppColors.primaryGradient,
                           border: Border.all(
-                            color: AppColors.card,
+                            color: AppColors.primary.withValues(alpha: 0.3),
                             width: 2,
                           ),
+                          image: activity.hasAvatar
+                              ? DecorationImage(
+                                  image: NetworkImage(activity.avatarUrl!),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
+                        ),
+                        child: activity.hasAvatar
+                            ? null
+                            : Center(
+                                child: Text(
+                                  activity.initials,
+                                  style: GoogleFonts.inter(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                              ),
+                      ),
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: Container(
+                          width: 12,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                        color: statusColor,
+                            border: Border.all(
+                              color: AppColors.card,
+                              width: 2,
+                            ),
+                            ),
                           ),
+                        ),
+                      ],
+                    ),
+                ),
+                const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                    activity.memberName,
+                    style: GoogleFonts.inter(
+                      color: AppColors.textPrimary,
+                            fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                          ),
+                    overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
                   ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    activity.memberName,
-                    style: GoogleFonts.inter(
-                      color: AppColors.textPrimary,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
             ),
             
           // Checked In column
@@ -899,7 +910,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
+                  Text(
                             DateFormat('MMM d, yyyy').format(activity.checkInTime!),
                             style: GoogleFonts.inter(
                               color: AppColors.textSecondary,
@@ -911,13 +922,13 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                             DateFormat('h:mm a').format(activity.checkInTime!),
                             style: GoogleFonts.inter(
                               color: AppColors.primary,
-                              fontSize: 12,
+                      fontSize: 12,
                               fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
                     ),
+                  ),
+                ],
+              ),
+            ),
                   )
                 : !activity.success
                     ? Align(
@@ -970,7 +981,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     alignment: Alignment.centerLeft,
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                      decoration: BoxDecoration(
+      decoration: BoxDecoration(
                         color: AppColors.warning.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(
@@ -1087,7 +1098,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     alignment: Alignment.centerLeft,
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                      decoration: BoxDecoration(
+      decoration: BoxDecoration(
                         color: AppColors.success.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(
@@ -1095,7 +1106,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                           width: 1,
                         ),
                       ),
-                      child: Text(
+        child: Text(
                         activity.formattedDuration,
                         style: GoogleFonts.inter(
                           color: AppColors.success,

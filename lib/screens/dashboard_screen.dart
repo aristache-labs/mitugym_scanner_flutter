@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../config/app_colors.dart';
 import '../providers/history_provider.dart';
+import '../widgets/member_avatar_modal.dart';
 
 /// Dashboard screen - Overview and quick stats
 class DashboardScreen extends ConsumerWidget {
@@ -22,7 +23,7 @@ class DashboardScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           
           // Recent activity
-          _buildRecentActivity(historyState),
+          _buildRecentActivity(historyState, context),
         ],
       ),
     );
@@ -213,7 +214,7 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildRecentActivity(HistoryState historyState) {
+  Widget _buildRecentActivity(HistoryState historyState, BuildContext context) {
     // Get only today's activities (matching check-ins page)
     final now = DateTime.now();
     final todayStart = DateTime(now.year, now.month, now.day);
@@ -268,7 +269,7 @@ class DashboardScreen extends ConsumerWidget {
             )
           else ...[
             _buildActivityTableHeader(),
-            ...recentActivities.map((activity) => _buildActivityItem(activity)),
+            ...recentActivities.map((activity) => _buildActivityItem(activity, context)),
           ],
         ],
       ),
@@ -351,7 +352,7 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   /// Build activity item (matching history page layout)
-  Widget _buildActivityItem(dynamic activity) {
+  Widget _buildActivityItem(dynamic activity, BuildContext context) {
     final isSuccess = activity.success;
     final statusColor = isSuccess ? AppColors.success : AppColors.error;
     
@@ -380,56 +381,66 @@ class DashboardScreen extends ConsumerWidget {
             width: 200,
             child: Row(
               children: [
-                // Avatar with status indicator
-                Stack(
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: activity.hasAvatar ? null : AppColors.primaryGradient,
-                        border: Border.all(
-                          color: AppColors.primary.withValues(alpha: 0.3),
-                          width: 2,
-                        ),
-                        image: activity.hasAvatar
-                            ? DecorationImage(
-                                image: NetworkImage(activity.avatarUrl!),
-                                fit: BoxFit.cover,
-                              )
-                            : null,
-                      ),
-                      child: activity.hasAvatar
-                          ? null
-                          : Center(
-                              child: Text(
-                                activity.initials,
-                                style: GoogleFonts.inter(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                    ),
-                    Positioned(
-                      right: 0,
-                      bottom: 0,
-                      child: Container(
-                        width: 12,
-                        height: 12,
+                // Avatar with status indicator (clickable)
+                GestureDetector(
+                  onTap: () {
+                    MemberAvatarModal.show(
+                      context,
+                      avatarUrl: activity.avatarUrl,
+                      memberName: activity.memberName,
+                      memberId: activity.memberId,
+                    );
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: statusColor,
+                          gradient: activity.hasAvatar ? null : AppColors.primaryGradient,
                           border: Border.all(
-                            color: AppColors.card,
+                            color: AppColors.primary.withValues(alpha: 0.3),
                             width: 2,
+                          ),
+                          image: activity.hasAvatar
+                              ? DecorationImage(
+                                  image: NetworkImage(activity.avatarUrl!),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
+                        ),
+                        child: activity.hasAvatar
+                            ? null
+                            : Center(
+                                child: Text(
+                                  activity.initials,
+                                  style: GoogleFonts.inter(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                      ),
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: Container(
+                          width: 12,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: statusColor,
+                            border: Border.all(
+                              color: AppColors.card,
+                              width: 2,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(

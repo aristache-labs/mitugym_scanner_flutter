@@ -5,6 +5,7 @@ import '../config/app_colors.dart';
 import '../models/member_data.dart';
 import '../services/search_service.dart';
 import '../services/offline_storage_service.dart';
+import '../widgets/member_avatar_modal.dart';
 
 /// Member search screen with modern design
 class SearchScreen extends ConsumerStatefulWidget {
@@ -493,56 +494,69 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                // Avatar with status indicator
-                Stack(
-                  children: [
-                    Container(
-                      width: 56,
-                      height: 56,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: member.hasAvatar ? null : AppColors.primaryGradient,
-                        border: Border.all(
-                          color: statusColor.withValues(alpha: 0.3),
-                          width: 2,
-                        ),
-                        image: member.hasAvatar
-                            ? DecorationImage(
-                                image: NetworkImage(member.avatarUrl!),
-                                fit: BoxFit.cover,
-                              )
-                            : null,
-                      ),
-                      child: member.hasAvatar
-                          ? null
-                          : Center(
-                              child: Text(
-                                member.initials,
-                                style: GoogleFonts.inter(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                    ),
-                    Positioned(
-                      right: 0,
-                      bottom: 0,
-                      child: Container(
-                        width: 16,
-                        height: 16,
+                // Avatar with status indicator (clickable to expand)
+                GestureDetector(
+                  onTap: () {
+                    MemberAvatarModal.show(
+                      context,
+                      avatarUrl: member.avatarUrl,
+                      memberName: member.memberName,
+                      memberId: member.memberId,
+                      planName: member.planName,
+                      expiresAt: member.expiresAt,
+                      membershipStatus: member.membershipStatus,
+                    );
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: 56,
+                        height: 56,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: statusColor,
+                          gradient: member.hasAvatar ? null : AppColors.primaryGradient,
                           border: Border.all(
-                            color: AppColors.card,
+                            color: statusColor.withValues(alpha: 0.3),
                             width: 2,
+                          ),
+                          image: member.hasAvatar
+                              ? DecorationImage(
+                                  image: NetworkImage(member.avatarUrl!),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
+                        ),
+                        child: member.hasAvatar
+                            ? null
+                            : Center(
+                                child: Text(
+                                  member.initials,
+                                  style: GoogleFonts.inter(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                      ),
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: Container(
+                          width: 16,
+                          height: 16,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: statusColor,
+                            border: Border.all(
+                              color: AppColors.card,
+                              width: 2,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 const SizedBox(width: 14),
                 
