@@ -5,6 +5,7 @@ import '../models/member_data.dart';
 import '../models/activity_log.dart';
 import '../models/gym_schedule.dart';
 
+
 /// API Service for MituGym backend
 /// Handles all HTTP requests to the check-in/check-out API
 class ApiService {
@@ -315,6 +316,98 @@ class ApiService {
       _logger.e('Unexpected error fetching gym schedule: $e');
       return null;
     }
+  }
+
+  /// Test API connectivity and validate all endpoints
+  /// Returns a map of endpoint status results
+  Future<Map<String, dynamic>> testAllApiEndpoints() async {
+    final results = <String, dynamic>{
+      'timestamp': DateTime.now().toIso8601String(),
+      'baseUrl': _dio.options.baseUrl,
+      'endpoints': <String, dynamic>{},
+    };
+
+    // Test 1: Gym Schedule API
+    try {
+      _logger.i('Testing gym schedule API...');
+      final schedule = await fetchGymSchedule();
+      results['endpoints']['gym_schedule'] = {
+        'status': 'success',
+        'available': schedule != null,
+        'data': schedule != null ? {
+          'day': schedule.dayOfWeek,
+          'open': schedule.openTime,
+          'close': schedule.closeTime,
+          'isClosed': schedule.isClosed,
+        } : null,
+      };
+    } catch (e) {
+      results['endpoints']['gym_schedule'] = {
+        'status': 'error',
+        'error': e.toString(),
+      };
+    }
+
+    // Test 2: History API
+    try {
+      _logger.i('Testing history API...');
+      // Fetch history from last 7 days to avoid parameter issues
+      final testDate = DateTime.now().subtract(const Duration(days: 7));
+      final history = await fetchHistoryFromServer(
+        sinceDate: testDate,
+        limit: 5,
+      );
+      results['endpoints']['history'] = {
+        'status': 'success',
+        'recordCount': history.length,
+        'available': true,
+      };
+    } catch (e) {
+      results['endpoints']['history'] = {
+        'status': 'error',
+        'error': e.toString(),
+      };
+    }
+
+    // Test 3: Check-in API (we can't test without a real QR code, but we can test connectivity)
+    try {
+      _logger.i('Testing check-in API connectivity...');
+      // Just test that the endpoint responds (even with an error for invalid QR)
+      // This validates the API is reachable
+      final testResponse = await _dio.post(
+        '/api/checkin',
+        data: {
+          'qr_code': 'test_connectivity_check',
+          'api_key': apiKey,
+          'action': 'auto',
+        },
+        options: Options(
+          validateStatus: (status) => true, // Accept any status code
+        ),
+      );
+      
+      results['endpoints']['checkin'] = {
+        'status': 'reachable',
+        'statusCode': testResponse.statusCode,
+        'note': 'Endpoint is reachable',
+      };
+    } catch (e) {
+      results['endpoints']['checkin'] = {
+        'status': 'error',
+        'error': e.toString(),
+      };
+    }
+
+    // Overall health
+    final allEndpointsOk = (results['endpoints'] as Map<String, dynamic>)
+        .values
+        .every((result) => 
+            (result as Map<String, dynamic>)['status'] != 'error');
+    
+    results['overallHealth'] = allEndpointsOk ? 'healthy' : 'degraded';
+
+    _logger.i('API health check complete: ${results['overallHealth']}');
+    return results;
   }
 
   /// Dispose resources

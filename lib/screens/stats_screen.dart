@@ -26,8 +26,8 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
   @override
   void initState() {
     super.initState();
-    // Fetch gym schedule when screen loads
-    _fetchSchedule();
+    // Fetch initial data (schedule + history)
+    _fetchData();
     // Start hourly sync timer
     _startHourlySync();
   }
@@ -40,22 +40,36 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
 
   /// Start hourly sync timer
   void _startHourlySync() {
-    // Sync every hour (3600 seconds)
+    // Sync every hour (3600 seconds) - fetches both schedule and history
     _syncTimer = Timer.periodic(const Duration(hours: 1), (timer) {
-      _fetchSchedule();
+      // Only fetch if widget is still mounted
+      if (mounted) {
+        _fetchData();
+      }
     });
   }
 
-  /// Fetch gym schedule
-  void _fetchSchedule() {
-    Future.microtask(() => ref.read(gymScheduleProvider.notifier).fetchSchedule());
+  /// Fetch gym schedule and history data
+  void _fetchData() {
+    // Check if widget is still mounted before using ref
+    if (!mounted) return;
+    
+    Future.microtask(() async {
+      // Double-check mounted state before using ref
+      if (!mounted) return;
+      
+      // Fetch gym schedule
+      await ref.read(gymScheduleProvider.notifier).fetchSchedule();
+      // Sync history from server to get latest activity data
+      await ref.read(historyProvider.notifier).syncFromServer();
+    });
   }
 
-  /// Refresh data (schedule and history)
+  /// Refresh data (schedule and history) - used by pull-to-refresh
   Future<void> _refreshData() async {
     // Fetch latest gym schedule
     await ref.read(gymScheduleProvider.notifier).fetchSchedule();
-    // Refresh history
+    // Refresh history to get latest check-ins/check-outs
     await ref.read(historyProvider.notifier).syncFromServer();
   }
 
@@ -149,19 +163,50 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
     );
   }
   
+  /// Calculate how many people are IN the gym at a specific hour
+  /// This considers check-ins and check-outs to show actual occupancy
+  int _calculateOccupancyAtHour(List<dynamic> activities, int targetHour) {
+    int count = 0;
+    
+    for (var activity in activities) {
+      // Only count successful check-ins
+      if (!activity.success || activity.checkInTime == null) continue;
+      
+      final checkInHour = activity.checkInTime!.hour;
+      final checkOutHour = activity.checkOutTime?.hour;
+      
+      // Person is in the gym at targetHour if:
+      // 1. They checked in at or before targetHour
+      // 2. They haven't checked out yet OR they checked out AFTER targetHour
+      if (checkInHour <= targetHour) {
+        if (checkOutHour == null || checkOutHour > targetHour) {
+          count++;
+        }
+      }
+    }
+    
+    return count;
+  }
+  
   /// Calculate peak occupancy throughout the day
   int _calculatePeakOccupancy(List<dynamic> activities) {
     if (activities.isEmpty) return 0;
     
-    // Track occupancy for each hour
-    final hourlyOccupancy = <int, int>{};
+    final scheduleNotifier = ref.read(gymScheduleProvider.notifier);
+    final openHour = scheduleNotifier.openHour ?? 0;
+    final closeHour = scheduleNotifier.closeHour ?? 23;
     
-    for (var activity in activities) {
-      final hour = activity.time.hour;
-      hourlyOccupancy[hour] = (hourlyOccupancy[hour] ?? 0) + 1;
+    int peak = 0;
+    
+    // Check occupancy at each hour during opening hours
+    for (int hour = openHour; hour <= closeHour; hour++) {
+      if (scheduleNotifier.isOpenAtHour(hour)) {
+        final occupancy = _calculateOccupancyAtHour(activities, hour);
+        if (occupancy > peak) peak = occupancy;
+      }
     }
     
-    return hourlyOccupancy.values.isEmpty ? 0 : hourlyOccupancy.values.reduce((a, b) => a > b ? a : b);
+    return peak;
   }
   
   /// Build Today's Traffic Chart
@@ -329,15 +374,17 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
     final closeHour = scheduleNotifier.closeHour ?? 23;
     
     // Calculate occupancy for each hour (only for opening hours)
+    // We include all opening hours to show the complete timeline
     final hourlyData = List.generate(24, (hour) {
       // Only show data for opening hours
       if (!scheduleNotifier.isOpenAtHour(hour)) {
-        return FlSpot(hour.toDouble(), double.nan); // NaN will be filtered out
+        return null; // Skip closed hours
       }
       
-      final hourActivities = activities.where((a) => a.time.hour == hour).length;
-      return FlSpot(hour.toDouble(), hourActivities.toDouble());
-    }).where((spot) => !spot.y.isNaN).toList(); // Filter out closed hours
+      // Calculate how many people are IN the gym at this hour
+      final occupancy = _calculateOccupancyAtHour(activities, hour);
+      return FlSpot(hour.toDouble(), occupancy.toDouble());
+    }).whereType<FlSpot>().toList(); // Filter out null (closed hours)
     
     final now = DateTime.now();
     final currentHour = now.hour;
@@ -346,7 +393,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
     final liveData = hourlyData.where((spot) => spot.x <= currentHour).toList();
     final futureData = hourlyData.where((spot) => spot.x > currentHour).toList();
     
-    // Add connection point
+    // Add connection point between live and future data
     if (liveData.isNotEmpty && futureData.isNotEmpty) {
       futureData.insert(0, liveData.last);
     }
@@ -396,19 +443,18 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
             sideTitles: SideTitles(
               showTitles: true,
               reservedSize: 32,
-              interval: 2,
+              interval: 1,
               getTitlesWidget: (value, meta) {
                 final hour = value.toInt();
                 // Only show labels for opening hours
                 if (hour < openHour || hour > closeHour) return const SizedBox.shrink();
-                if (hour % 2 != 0) return const SizedBox.shrink();
                 return Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child: Text(
                     '${hour.toString().padLeft(2, '0')}:00',
                     style: GoogleFonts.inter(
                       color: AppColors.primary.withValues(alpha: 0.5),
-                      fontSize: 11,
+                      fontSize: 10,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

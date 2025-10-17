@@ -34,6 +34,8 @@ class AppColors {
   static const Color warningLight = Color(0xFFFFE367);   // Light yellow
   static const Color error = Color(0xFFFF6B6B);          // Red (admin panel)
   static const Color errorLight = Color(0xFFFF8989);     // Light red
+  static const Color info = Color(0xFF5BA3FF);           // Blue info color
+  static const Color infoLight = Color(0xFF7DB8FF);      // Light blue
   
   // UI element colors - Dark theme borders
   static const Color border = Color(0xFF2A3535);         // Border color (dark cyan tint)

@@ -68,10 +68,12 @@ class GymSchedule {
     
     // Handle overnight schedules (e.g., 22:00 - 02:00)
     if (close < open) {
-      return hour >= open || hour < close;
+      return hour >= open || hour <= close;
     }
     
-    return hour >= open && hour < close;
+    // Include both opening and closing hour
+    // e.g., if gym is open 07:00-23:59, show hours 7 through 23
+    return hour >= open && hour <= close;
   }
 
   /// Get today's day of week in lowercase (monday, tuesday, etc.)

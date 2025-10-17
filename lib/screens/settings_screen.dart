@@ -5,7 +5,10 @@ import 'package:intl/intl.dart';
 import '../config/app_colors.dart';
 import '../providers/config_provider.dart';
 import '../providers/history_provider.dart';
+import '../providers/gym_schedule_provider.dart';
 import '../providers/windows_scanner_provider.dart';
+import '../services/api_service.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 /// Modern settings screen - Dashboard style
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -358,6 +361,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
               icon: Icons.key,
               obscure: true,
             ),
+            const SizedBox(height: 16),
+            _buildTestApiButton(),
           ],
         ),
         const SizedBox(height: 24),
@@ -530,7 +535,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                         children: [
               Row(
                 children: [
-                  const Icon(Icons.storage_rounded, color: AppColors.primary, size: 18),
+                  const Icon(LucideIcons.fileText, color: AppColors.primary, size: 18),
                   const SizedBox(width: 8),
                           Text(
                     'Total Records: $count',
@@ -546,7 +551,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                             const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Icon(Icons.sync_rounded, color: AppColors.textMuted, size: 16),
+                    const Icon(LucideIcons.refreshCw, color: AppColors.textMuted, size: 16),
                     const SizedBox(width: 8),
                     Text(
                       'Last Synced: ${DateFormat('MMM d, h:mm a').format(lastSync)}',
@@ -569,7 +574,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   Widget _buildCleanupButton() {
     return ElevatedButton.icon(
       onPressed: _performCleanup,
-      icon: const Icon(Icons.delete_sweep_rounded),
+      icon: const Icon(LucideIcons.trash2),
       label: const Text('Cleanup Old History'),
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.warning.withValues(alpha: 0.15),
@@ -585,6 +590,439 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     );
   }
   
+  /// Build test API button
+  Widget _buildTestApiButton() {
+    return ElevatedButton.icon(
+      onPressed: _testApiEndpoints,
+      icon: const Icon(LucideIcons.network),
+      label: const Text('Test API Connection'),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.info.withValues(alpha: 0.15),
+        foregroundColor: AppColors.info,
+        minimumSize: const Size(double.infinity, 48),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: AppColors.info.withValues(alpha: 0.3),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Test all API endpoints
+  Future<void> _testApiEndpoints() async {
+    if (!mounted) return;
+    
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.card,
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CircularProgressIndicator(color: AppColors.info),
+            const SizedBox(height: 16),
+            Text(
+              'Testing API endpoints...',
+              style: GoogleFonts.inter(color: AppColors.textPrimary),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    try {
+      final config = ref.read(configProvider);
+      final apiService = ApiService(
+        apiUrl: _apiUrlController.text.isNotEmpty 
+            ? _apiUrlController.text 
+            : config.apiUrl,
+        apiKey: _apiKeyController.text.isNotEmpty 
+            ? _apiKeyController.text 
+            : config.apiKey,
+      );
+
+      final results = await apiService.testAllApiEndpoints();
+      
+      if (mounted) {
+        Navigator.of(context).pop(); // Close loading dialog
+        
+        // Show results dialog
+        _showApiTestResults(results);
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.of(context).pop(); // Close loading dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Test failed: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
+  }
+
+  /// Show API test results dialog with modern design
+  void _showApiTestResults(Map<String, dynamic> results) {
+    final endpoints = results['endpoints'] as Map<String, dynamic>;
+    final overallHealth = results['overallHealth'] as String;
+    final isHealthy = overallHealth == 'healthy';
+    
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierColor: Colors.black.withValues(alpha: 0.7),
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 500),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.card.withValues(alpha: 0.95),
+                AppColors.surface.withValues(alpha: 0.95),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: AppColors.border.withValues(alpha: 0.3),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.5),
+                blurRadius: 40,
+                offset: const Offset(0, 20),
+                spreadRadius: -5,
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Header with gradient background
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      (isHealthy ? AppColors.success : AppColors.warning)
+                          .withValues(alpha: 0.15),
+                      (isHealthy ? AppColors.successLight : AppColors.warningLight)
+                          .withValues(alpha: 0.1),
+                    ],
+                  ),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(24),
+                    topRight: Radius.circular(24),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    // Animated icon with glow effect
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        gradient: isHealthy 
+                            ? AppColors.successGradient 
+                            : AppColors.warningGradient,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: (isHealthy ? AppColors.success : AppColors.warning)
+                                .withValues(alpha: 0.4),
+                            blurRadius: 16,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        isHealthy ? LucideIcons.badgeCheck : LucideIcons.alertCircle,
+                        color: Colors.white,
+                        size: 28,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'API Test Results',
+                            style: GoogleFonts.inter(
+                              color: AppColors.textPrimary,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.3,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: (isHealthy ? AppColors.success : AppColors.warning)
+                                  .withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: (isHealthy ? AppColors.success : AppColors.warning)
+                                    .withValues(alpha: 0.4),
+                              ),
+                            ),
+                            child: Text(
+                              overallHealth.toUpperCase(),
+                              style: GoogleFonts.inter(
+                                color: isHealthy ? AppColors.success : AppColors.warning,
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              // Content with endpoints
+              Flexible(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'ENDPOINT STATUS',
+                        style: GoogleFonts.inter(
+                          color: AppColors.textMuted,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      
+                      // Endpoint results with modern cards
+                      ...endpoints.entries.map((entry) {
+                        final endpointName = entry.key;
+                        final result = entry.value as Map<String, dynamic>;
+                        final status = result['status'] as String;
+                        final isSuccess = status == 'success' || status == 'reachable';
+                        
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                AppColors.surface.withValues(alpha: 0.6),
+                                AppColors.surface.withValues(alpha: 0.4),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: (isSuccess ? AppColors.success : AppColors.error)
+                                  .withValues(alpha: 0.3),
+                              width: 1.5,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: (isSuccess ? AppColors.success : AppColors.error)
+                                    .withValues(alpha: 0.1),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    // Status icon
+                                    Container(
+                                      padding: const EdgeInsets.all(6),
+                                      decoration: BoxDecoration(
+                                        color: (isSuccess ? AppColors.success : AppColors.error)
+                                            .withValues(alpha: 0.15),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Icon(
+                                        isSuccess 
+                                            ? LucideIcons.badgeCheck 
+                                            : LucideIcons.alertCircle,
+                                        color: isSuccess ? AppColors.success : AppColors.error,
+                                        size: 18,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            endpointName.replaceAll('_', ' ').toUpperCase(),
+                                            style: GoogleFonts.inter(
+                                              color: AppColors.textPrimary,
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 13,
+                                              letterSpacing: 0.5,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 2),
+                                          Text(
+                                            status.toUpperCase(),
+                                            style: GoogleFonts.inter(
+                                              color: isSuccess 
+                                                  ? AppColors.success 
+                                                  : AppColors.error,
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w600,
+                                              letterSpacing: 0.8,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                
+                                // Additional info
+                                if (result['recordCount'] != null || result['error'] != null) ...[
+                                  const SizedBox(height: 12),
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.background.withValues(alpha: 0.5),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        if (result['recordCount'] != null) ...[
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                LucideIcons.fileText,
+                                                color: AppColors.primary,
+                                                size: 14,
+                                              ),
+                                              const SizedBox(width: 6),
+                                              Text(
+                                                'Records: ${result['recordCount']}',
+                                                style: GoogleFonts.inter(
+                                                  color: AppColors.textSecondary,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                        if (result['error'] != null) ...[
+                                          Row(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Icon(
+                                                LucideIcons.info,
+                                                color: AppColors.textMuted,
+                                                size: 14,
+                                              ),
+                                              const SizedBox(width: 6),
+                                              Expanded(
+                                                child: Text(
+                                                  (result['error'] as String).split('\n').first,
+                                                  style: GoogleFonts.inter(
+                                                    color: AppColors.textMuted,
+                                                    fontSize: 11,
+                                                    height: 1.4,
+                                                  ),
+                                                  maxLines: 2,
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
+                ),
+              ),
+              
+              // Footer with close button
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  border: Border(
+                    top: BorderSide(
+                      color: AppColors.border.withValues(alpha: 0.3),
+                      width: 1,
+                    ),
+                  ),
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () => Navigator.of(context).pop(),
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      height: 48,
+                      decoration: BoxDecoration(
+                        gradient: AppColors.primaryGradient,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Close',
+                          style: GoogleFonts.inter(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   /// Build sync button
   Widget _buildSyncButton() {
     final historyState = ref.watch(historyProvider);
@@ -600,8 +1038,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 valueColor: AlwaysStoppedAnimation(AppColors.primary),
               ),
             )
-          : const Icon(Icons.cloud_sync_rounded),
-      label: Text(historyState.isLoading ? 'Syncing...' : 'Sync from Server'),
+          : const Icon(LucideIcons.download),
+      label: Text(historyState.isLoading ? 'Syncing...' : 'Sync All Data from Server'),
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primary.withValues(alpha: 0.15),
         foregroundColor: AppColors.primary,
@@ -663,25 +1101,91 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     }
   }
   
-  /// Perform sync
+  /// Perform comprehensive sync (history, schedule, and all API data)
   Future<void> _performSync() async {
-    // Clear and sync fresh history from server
-    await ref.read(historyProvider.notifier).clearAndSyncFromServer();
+    if (!mounted) return;
     
-    if (mounted) {
-      final historyState = ref.read(historyProvider);
-      if (historyState.error != null) {
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.card,
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CircularProgressIndicator(color: AppColors.primary),
+            const SizedBox(height: 16),
+            Text(
+              'Syncing from server...',
+              style: GoogleFonts.inter(color: AppColors.textPrimary),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    try {
+      // 1. Sync history from server
+      await ref.read(historyProvider.notifier).clearAndSyncFromServer();
+      
+      // 2. Sync gym schedule from server
+      await ref.read(gymScheduleProvider.notifier).fetchSchedule();
+      
+      // 3. Update last sync timestamp
+      await ref.read(configProvider.notifier).updateLastHistorySync(DateTime.now());
+      
+      if (mounted) {
+        Navigator.of(context).pop(); // Close loading dialog
+        
+        final historyState = ref.read(historyProvider);
+        if (historyState.error != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Sync error: ${historyState.error}'),
+              backgroundColor: AppColors.error,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: const Icon(Icons.check_rounded, color: Colors.white, size: 16),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'All data synced successfully from server',
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              backgroundColor: AppColors.success,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.of(context).pop(); // Close loading dialog
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(historyState.error!),
+            content: Text('Sync failed: $e'),
             backgroundColor: AppColors.error,
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('History synced successfully'),
-            backgroundColor: AppColors.success,
           ),
         );
       }
