@@ -168,18 +168,22 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
   int _calculateOccupancyAtHour(List<dynamic> activities, int targetHour) {
     int count = 0;
     
+    // Create a DateTime for the target hour (start of that hour)
+    final now = DateTime.now();
+    final targetTime = DateTime(now.year, now.month, now.day, targetHour, 0, 0);
+    
     for (var activity in activities) {
       // Only count successful check-ins
       if (!activity.success || activity.checkInTime == null) continue;
       
-      final checkInHour = activity.checkInTime!.hour;
-      final checkOutHour = activity.checkOutTime?.hour;
+      final checkInTime = activity.checkInTime!;
+      final checkOutTime = activity.checkOutTime;
       
       // Person is in the gym at targetHour if:
-      // 1. They checked in at or before targetHour
-      // 2. They haven't checked out yet OR they checked out AFTER targetHour
-      if (checkInHour <= targetHour) {
-        if (checkOutHour == null || checkOutHour > targetHour) {
+      // 1. They checked in at or before the target hour
+      // 2. They haven't checked out yet OR they checked out AFTER the target hour
+      if (checkInTime.isBefore(targetTime) || checkInTime.hour == targetHour) {
+        if (checkOutTime == null || checkOutTime.isAfter(targetTime)) {
           count++;
         }
       }
