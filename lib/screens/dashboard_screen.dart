@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../config/app_colors.dart';
 import '../providers/history_provider.dart';
 import '../widgets/member_avatar_modal.dart';
@@ -382,7 +383,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           
           // Duration column
           SizedBox(
-            width: 120,
+            width: 140,
             child: _buildSortableHeader('DURATION', 'duration'),
           ),
         ],
@@ -595,27 +596,35 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                           width: 1,
                         ),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            DateFormat('MMM d, yyyy').format(activity.checkInTime!),
-                            style: GoogleFonts.inter(
-                              color: AppColors.textSecondary,
-                              fontSize: 11,
+                      child: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: DateFormat('h:mm a').format(activity.checkInTime!),
+                              style: GoogleFonts.inter(
+                                color: AppColors.primary,
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            DateFormat('h:mm a').format(activity.checkInTime!),
-                            style: GoogleFonts.inter(
-                              color: AppColors.primary,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
+                            TextSpan(
+                              text: ' - ',
+                              style: GoogleFonts.inter(
+                                color: AppColors.textMuted,
+                                fontSize: 11,
+                                fontWeight: FontWeight.normal,
+                              ),
                             ),
-                          ),
-                        ],
+                            TextSpan(
+                              text: DateFormat('MMM d, yyyy').format(activity.checkInTime!),
+                              style: GoogleFonts.inter(
+                                color: AppColors.textSecondary,
+                                fontSize: 12,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   )
@@ -678,27 +687,35 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                           width: 1,
                         ),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            DateFormat('MMM d, yyyy').format(activity.checkOutTime!),
-                            style: GoogleFonts.inter(
-                              color: AppColors.textSecondary,
-                              fontSize: 11,
+                      child: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: DateFormat('h:mm a').format(activity.checkOutTime!),
+                              style: GoogleFonts.inter(
+                                color: AppColors.warning,
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            DateFormat('h:mm a').format(activity.checkOutTime!),
-                            style: GoogleFonts.inter(
-                              color: AppColors.warning,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
+                            TextSpan(
+                              text: ' - ',
+                              style: GoogleFonts.inter(
+                                color: AppColors.textMuted,
+                                fontSize: 11,
+                                fontWeight: FontWeight.normal,
+                              ),
                             ),
-                          ),
-                        ],
+                            TextSpan(
+                              text: DateFormat('MMM d, yyyy').format(activity.checkOutTime!),
+                              style: GoogleFonts.inter(
+                                color: AppColors.textSecondary,
+                                fontSize: 12,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   )
@@ -759,7 +776,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                       ),
                                       const SizedBox(width: 5),
                                       Text(
-                                        'Active Session',
+                                        'Still in GYM',
                                         style: GoogleFonts.inter(
                                           color: AppColors.success,
                                           fontSize: 12,
@@ -768,7 +785,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                       ),
                                     ],
                                   ),
-                                ),
+                                )
+                                  .animate(onPlay: (controller) => controller.repeat())
+                                  .fadeIn(duration: 800.ms, curve: Curves.easeInOut)
+                                  .then()
+                                  .fadeOut(duration: 800.ms, curve: Curves.easeInOut),
                               )
                             : Text(
                                 '--',
@@ -781,7 +802,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           
           // Duration column
           SizedBox(
-            width: 120,
+            width: 140,
             child: activity.checkInTime != null && activity.checkOutTime != null
                 ? Align(
                     alignment: Alignment.centerLeft,
@@ -822,13 +843,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                Icons.access_time_rounded,
+                                Icons.trending_up_rounded,
                                 size: 13,
                                 color: AppColors.warning,
                               ),
                               const SizedBox(width: 5),
                               Text(
-                                'In Progress',
+                                'Active Session',
                                 style: GoogleFonts.inter(
                                   color: AppColors.warning,
                                   fontSize: 12,

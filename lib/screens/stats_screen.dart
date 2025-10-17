@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../config/app_colors.dart';
 import '../providers/history_provider.dart';
 import '../providers/gym_schedule_provider.dart';
@@ -55,22 +56,45 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
     if (!mounted) return;
     
     Future.microtask(() async {
-      // Double-check mounted state before using ref
-      if (!mounted) return;
-      
-      // Fetch gym schedule
-      await ref.read(gymScheduleProvider.notifier).fetchSchedule();
-      // Sync history from server to get latest activity data
-      await ref.read(historyProvider.notifier).syncFromServer();
+      try {
+        // Double-check mounted state before using ref
+        if (!mounted) return;
+        
+        // Fetch gym schedule
+        await ref.read(gymScheduleProvider.notifier).fetchSchedule();
+        
+        // Check mounted state again before next operation
+        if (!mounted) return;
+        
+        // Sync history from server to get latest activity data
+        await ref.read(historyProvider.notifier).syncFromServer();
+      } catch (e) {
+        // Silently catch errors if widget is disposed
+        if (mounted) {
+          // Only log if still mounted
+          debugPrint('Error fetching data: $e');
+        }
+      }
     });
   }
 
   /// Refresh data (schedule and history) - used by pull-to-refresh
   Future<void> _refreshData() async {
-    // Fetch latest gym schedule
-    await ref.read(gymScheduleProvider.notifier).fetchSchedule();
-    // Refresh history to get latest check-ins/check-outs
-    await ref.read(historyProvider.notifier).syncFromServer();
+    try {
+      if (!mounted) return;
+      
+      // Fetch latest gym schedule
+      await ref.read(gymScheduleProvider.notifier).fetchSchedule();
+      
+      if (!mounted) return;
+      
+      // Refresh history to get latest check-ins/check-outs
+      await ref.read(historyProvider.notifier).syncFromServer();
+    } catch (e) {
+      if (mounted) {
+        debugPrint('Error refreshing data: $e');
+      }
+    }
   }
 
   void _toggleSort(String sortKey) {
@@ -856,7 +880,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
           
           // Duration column
           SizedBox(
-            width: 120,
+            width: 140,
             child: _buildSortableHeader('DURATION', 'duration'),
           ),
         ],
@@ -1069,27 +1093,35 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
                           width: 1,
                         ),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            DateFormat('MMM d, yyyy').format(activity.checkInTime!),
-                            style: GoogleFonts.inter(
-                              color: AppColors.textSecondary,
-                              fontSize: 11,
+                      child: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: DateFormat('h:mm a').format(activity.checkInTime!),
+                              style: GoogleFonts.inter(
+                                color: AppColors.primary,
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            DateFormat('h:mm a').format(activity.checkInTime!),
-                            style: GoogleFonts.inter(
-                              color: AppColors.primary,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
+                            TextSpan(
+                              text: ' - ',
+                              style: GoogleFonts.inter(
+                                color: AppColors.textMuted,
+                                fontSize: 11,
+                                fontWeight: FontWeight.normal,
+                              ),
                             ),
-                          ),
-                        ],
+                            TextSpan(
+                              text: DateFormat('MMM d, yyyy').format(activity.checkInTime!),
+                              style: GoogleFonts.inter(
+                                color: AppColors.textSecondary,
+                                fontSize: 12,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   )
@@ -1152,27 +1184,35 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
                           width: 1,
                         ),
                       ),
-          child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                            DateFormat('MMM d, yyyy').format(activity.checkOutTime!),
-                            style: GoogleFonts.inter(
-                              color: AppColors.textSecondary,
-                              fontSize: 11,
+                      child: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: DateFormat('h:mm a').format(activity.checkOutTime!),
+                              style: GoogleFonts.inter(
+                                color: AppColors.warning,
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            DateFormat('h:mm a').format(activity.checkOutTime!),
-                            style: GoogleFonts.inter(
-                              color: AppColors.warning,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
+                            TextSpan(
+                              text: ' - ',
+                              style: GoogleFonts.inter(
+                                color: AppColors.textMuted,
+                                fontSize: 11,
+                                fontWeight: FontWeight.normal,
+                              ),
                             ),
-                          ),
-                        ],
+                            TextSpan(
+                              text: DateFormat('MMM d, yyyy').format(activity.checkOutTime!),
+                              style: GoogleFonts.inter(
+                                color: AppColors.textSecondary,
+                                fontSize: 12,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   )
@@ -1233,7 +1273,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
                                   ),
                                   const SizedBox(width: 5),
                                   Text(
-                                    'Active Session',
+                                    'Still in GYM',
                                     style: GoogleFonts.inter(
                                       color: AppColors.success,
                                       fontSize: 12,
@@ -1242,7 +1282,11 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
                                   ),
                                 ],
                               ),
-                            ),
+                            )
+                              .animate(onPlay: (controller) => controller.repeat())
+                              .fadeIn(duration: 800.ms, curve: Curves.easeInOut)
+                              .then()
+                              .fadeOut(duration: 800.ms, curve: Curves.easeInOut),
                           )
                         : Text(
                             '--',
@@ -1255,7 +1299,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
           
           // Duration column
           SizedBox(
-            width: 120,
+            width: 140,
             child: activity.checkInTime != null && activity.checkOutTime != null
                 ? Align(
                     alignment: Alignment.centerLeft,
@@ -1296,20 +1340,20 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                Icons.access_time_rounded,
+                                Icons.trending_up_rounded,
                                 size: 13,
                                 color: AppColors.warning,
                               ),
                               const SizedBox(width: 5),
-              Text(
-                                'In Progress',
+                              Text(
+                                'Active Session',
                                 style: GoogleFonts.inter(
                                   color: AppColors.warning,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       )
