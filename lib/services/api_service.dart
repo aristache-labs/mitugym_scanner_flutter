@@ -331,16 +331,24 @@ class ApiService {
     try {
       _logger.i('Testing gym schedule API...');
       final schedule = await fetchGymSchedule();
-      results['endpoints']['gym_schedule'] = {
-        'status': 'success',
-        'available': schedule != null,
-        'data': schedule != null ? {
-          'day': schedule.dayOfWeek,
-          'open': schedule.openTime,
-          'close': schedule.closeTime,
-          'isClosed': schedule.isClosed,
-        } : null,
-      };
+      
+      if (schedule != null) {
+        results['endpoints']['gym_schedule'] = {
+          'status': 'success',
+          'available': true,
+          'data': {
+            'day': schedule.dayOfWeek,
+            'open': schedule.openTime,
+            'close': schedule.closeTime,
+            'isClosed': schedule.isClosed,
+          },
+        };
+      } else {
+        results['endpoints']['gym_schedule'] = {
+          'status': 'error',
+          'error': 'Failed to fetch gym schedule - returned null',
+        };
+      }
     } catch (e) {
       results['endpoints']['gym_schedule'] = {
         'status': 'error',
@@ -349,62 +357,123 @@ class ApiService {
     }
 
     // Test 2: History API
+    bool historySuccess = false;
+    String? historyError;
+    int historyCount = 0;
+    
     try {
       _logger.i('Testing history API...');
       // Fetch history from last 7 days to avoid parameter issues
       final testDate = DateTime.now().subtract(const Duration(days: 7));
-      final history = await fetchHistoryFromServer(
-        sinceDate: testDate,
-        limit: 5,
+      
+      // Direct API call to check if endpoint is working
+      final response = await _dio.get(
+        '/api/history',
+        queryParameters: {
+          'api_key': apiKey,
+          'limit': 5,
+          'created_at': 'gte.${testDate.toIso8601String()}',
+        },
       );
+      
+      if (response.statusCode == 200) {
+        final responseData = response.data;
+        if (responseData is Map<String, dynamic> && responseData['success'] == true) {
+          final data = responseData['data'];
+          if (data is List) {
+            historySuccess = true;
+            historyCount = data.length;
+          }
+        }
+      }
+    } catch (e) {
+      historyError = e.toString();
+    }
+    
+    if (historySuccess) {
       results['endpoints']['history'] = {
         'status': 'success',
-        'recordCount': history.length,
+        'recordCount': historyCount,
         'available': true,
       };
-    } catch (e) {
+    } else {
       results['endpoints']['history'] = {
         'status': 'error',
-        'error': e.toString(),
+        'error': historyError ?? 'Failed to fetch history',
       };
     }
 
     // Test 3: Check-in API (we can't test without a real QR code, but we can test connectivity)
     try {
       _logger.i('Testing check-in API connectivity...');
-      // Just test that the endpoint responds (even with an error for invalid QR)
-      // This validates the API is reachable
-      final testResponse = await _dio.post(
+      
+      // First, try GET request to check if endpoint exists (backend has GET method)
+      final getResponse = await _dio.get(
         '/api/checkin',
-        data: {
-          'qr_code': 'test_connectivity_check',
-          'api_key': apiKey,
-          'action': 'auto',
-        },
         options: Options(
           validateStatus: (status) => true, // Accept any status code
         ),
       );
       
-      results['endpoints']['checkin'] = {
-        'status': 'reachable',
-        'statusCode': testResponse.statusCode,
-        'note': 'Endpoint is reachable',
-      };
+      _logger.d('Check-in GET test response: ${getResponse.statusCode}');
+      
+      // If GET returns 200, the endpoint exists and is operational
+      if (getResponse.statusCode == 200) {
+        results['endpoints']['checkin'] = {
+          'status': 'reachable',
+          'statusCode': getResponse.statusCode,
+          'note': 'Endpoint is operational',
+        };
+      } else if (getResponse.statusCode == 404) {
+        // 404 means the endpoint doesn't exist (wrong URL or not deployed)
+        results['endpoints']['checkin'] = {
+          'status': 'error',
+          'error': 'Endpoint not found (404) - check API URL',
+          'statusCode': getResponse.statusCode,
+        };
+      } else if (getResponse.statusCode != null && getResponse.statusCode! >= 500) {
+        // 5xx means server error
+        results['endpoints']['checkin'] = {
+          'status': 'error',
+          'error': 'Server error (${getResponse.statusCode})',
+          'statusCode': getResponse.statusCode,
+        };
+      } else {
+        // Any other response means endpoint exists
+        results['endpoints']['checkin'] = {
+          'status': 'reachable',
+          'statusCode': getResponse.statusCode,
+          'note': 'Endpoint responded (${getResponse.statusCode})',
+        };
+      }
     } catch (e) {
+      _logger.e('Check-in test error: $e');
       results['endpoints']['checkin'] = {
         'status': 'error',
         'error': e.toString(),
       };
     }
 
-    // Overall health
-    final allEndpointsOk = (results['endpoints'] as Map<String, dynamic>)
-        .values
-        .every((result) => 
-            (result as Map<String, dynamic>)['status'] != 'error');
+    // Overall health - Check critical endpoints
+    final endpoints = results['endpoints'] as Map<String, dynamic>;
     
-    results['overallHealth'] = allEndpointsOk ? 'healthy' : 'degraded';
+    // Critical endpoints that must succeed for healthy status
+    final gymScheduleOk = endpoints['gym_schedule']?['status'] == 'success';
+    final historyOk = endpoints['history']?['status'] == 'success';
+    final checkinReachable = endpoints['checkin']?['status'] == 'reachable' || 
+                             endpoints['checkin']?['status'] == 'success';
+    
+    // Overall health: degraded if ANY critical endpoint fails
+    final criticalEndpointsFailed = !gymScheduleOk || !historyOk;
+    final allEndpointsDown = !gymScheduleOk && !historyOk && !checkinReachable;
+    
+    if (allEndpointsDown) {
+      results['overallHealth'] = 'offline';
+    } else if (criticalEndpointsFailed) {
+      results['overallHealth'] = 'degraded';
+    } else {
+      results['overallHealth'] = 'healthy';
+    }
 
     _logger.i('API health check complete: ${results['overallHealth']}');
     return results;

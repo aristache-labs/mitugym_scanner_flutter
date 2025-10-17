@@ -671,6 +671,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     final endpoints = results['endpoints'] as Map<String, dynamic>;
     final overallHealth = results['overallHealth'] as String;
     final isHealthy = overallHealth == 'healthy';
+    final isOffline = overallHealth == 'offline';
     
     showDialog(
       context: context,
@@ -715,9 +716,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      (isHealthy ? AppColors.success : AppColors.warning)
+                      (isHealthy 
+                          ? AppColors.success 
+                          : isOffline 
+                              ? AppColors.error 
+                              : AppColors.warning)
                           .withValues(alpha: 0.15),
-                      (isHealthy ? AppColors.successLight : AppColors.warningLight)
+                      (isHealthy 
+                          ? AppColors.successLight 
+                          : isOffline 
+                              ? AppColors.errorLight 
+                              : AppColors.warningLight)
                           .withValues(alpha: 0.1),
                     ],
                   ),
@@ -734,11 +743,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                       decoration: BoxDecoration(
                         gradient: isHealthy 
                             ? AppColors.successGradient 
-                            : AppColors.warningGradient,
+                            : isOffline
+                                ? AppColors.errorGradient
+                                : AppColors.warningGradient,
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
-                            color: (isHealthy ? AppColors.success : AppColors.warning)
+                            color: (isHealthy 
+                                ? AppColors.success 
+                                : isOffline 
+                                    ? AppColors.error 
+                                    : AppColors.warning)
                                 .withValues(alpha: 0.4),
                             blurRadius: 16,
                             offset: const Offset(0, 4),
@@ -746,7 +761,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                         ],
                       ),
                       child: Icon(
-                        isHealthy ? LucideIcons.badgeCheck : LucideIcons.alertCircle,
+                        isHealthy 
+                            ? LucideIcons.badgeCheck 
+                            : isOffline 
+                                ? LucideIcons.wifiOff 
+                                : LucideIcons.alertCircle,
                         color: Colors.white,
                         size: 28,
                       ),
@@ -772,18 +791,30 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: (isHealthy ? AppColors.success : AppColors.warning)
+                              color: (isHealthy 
+                                  ? AppColors.success 
+                                  : isOffline 
+                                      ? AppColors.error 
+                                      : AppColors.warning)
                                   .withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: (isHealthy ? AppColors.success : AppColors.warning)
+                                color: (isHealthy 
+                                    ? AppColors.success 
+                                    : isOffline 
+                                        ? AppColors.error 
+                                        : AppColors.warning)
                                     .withValues(alpha: 0.4),
                               ),
                             ),
                             child: Text(
                               overallHealth.toUpperCase(),
                               style: GoogleFonts.inter(
-                                color: isHealthy ? AppColors.success : AppColors.warning,
+                                color: isHealthy 
+                                    ? AppColors.success 
+                                    : isOffline 
+                                        ? AppColors.error 
+                                        : AppColors.warning,
                                 fontSize: 11,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 1,
