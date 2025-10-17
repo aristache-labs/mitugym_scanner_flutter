@@ -835,7 +835,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
 
   /// Build recent check-ins list
   Widget _buildRecentCheckIns(List activities, BuildContext context) {
-    var recent = activities.take(5).toList();
+    var recent = activities.toList();
     
     // Apply sorting
     recent = _applySorting(recent);
