@@ -36,7 +36,6 @@ class SearchService {
         return _sortByRelevance(localResults, query);
       }
       
-      // TODO: Add API search endpoint when available
       // For now, just return local results
       return _sortByRelevance(localResults, query);
     } catch (e) {
