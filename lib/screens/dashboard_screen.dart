@@ -414,8 +414,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             const SizedBox(width: 4),
             Icon(
               isActive
-                  ? (_sortAscending ? Icons.arrow_upward : Icons.arrow_downward)
-                  : Icons.unfold_more,
+                  ? (_sortAscending ? LucideIcons.arrowUp : LucideIcons.arrowDown)
+                  : LucideIcons.arrowUpDown,
               size: 14,
               color: isActive ? AppColors.primary : AppColors.textMuted.withValues(alpha: 0.5),
             ),
@@ -645,7 +645,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                Icons.cancel_outlined,
+                                LucideIcons.xCircle,
                                 size: 13,
                                 color: AppColors.error,
                               ),
@@ -736,7 +736,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Icon(
-                                    Icons.block_rounded,
+                                    LucideIcons.shieldAlert,
                                     size: 13,
                                     color: AppColors.error,
                                   ),
@@ -770,7 +770,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Icon(
-                                        Icons.fitness_center_rounded,
+                                        LucideIcons.dumbbell,
                                         size: 13,
                                         color: AppColors.success,
                                       ),
@@ -843,7 +843,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                Icons.trending_up_rounded,
+                                LucideIcons.trendingUp,
                                 size: 13,
                                 color: AppColors.warning,
                               ),

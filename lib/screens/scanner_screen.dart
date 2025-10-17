@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../config/app_colors.dart';
 import '../providers/scan_provider.dart';
 import '../providers/windows_scanner_provider.dart';
@@ -110,7 +111,7 @@ class ScannerScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(
-                    Icons.camera_alt,
+                    LucideIcons.camera,
                     color: Colors.white,
                     size: 18,
                   ),
@@ -219,7 +220,7 @@ class ScannerScreen extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(
-                  Icons.person,
+                  LucideIcons.user,
                   color: Colors.white,
                   size: 18,
                 ),
@@ -275,7 +276,7 @@ class ScannerScreen extends ConsumerWidget {
               shape: BoxShape.circle,
             ),
             child: Icon(
-              Icons.qr_code_scanner_rounded,
+              LucideIcons.qrCode,
               size: 48,
               color: AppColors.primary.withValues(alpha: 0.5),
             ),
@@ -377,7 +378,7 @@ class ScannerScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                isScanning ? Icons.stop_rounded : Icons.play_arrow_rounded,
+                isScanning ? LucideIcons.square : LucideIcons.play,
                 color: Colors.white,
                 size: 24,
               ),

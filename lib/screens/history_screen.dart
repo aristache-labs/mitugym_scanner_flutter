@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../config/app_colors.dart';
 import '../models/activity_log.dart';
 import '../providers/history_provider.dart';
@@ -280,7 +281,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         ),
         ElevatedButton.icon(
           onPressed: _exportHistory,
-          icon: const Icon(Icons.download_rounded, size: 18),
+          icon: const Icon(LucideIcons.download, size: 18),
           label: Text(
             'Export',
             style: GoogleFonts.inter(
@@ -335,10 +336,10 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                 color: AppColors.textMuted,
                 fontSize: 14,
               ),
-              prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primary),
+              prefixIcon: const Icon(LucideIcons.search, color: AppColors.primary),
               suffixIcon: _searchController.text.isNotEmpty
                   ? IconButton(
-                      icon: const Icon(Icons.clear, color: AppColors.textMuted),
+                      icon: const Icon(LucideIcons.x, color: AppColors.textMuted),
                       onPressed: () {
                         _searchController.clear();
                         setState(() {});
@@ -365,20 +366,20 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                 _buildFilterChip(
                   label: 'All',
                   value: 'all',
-                  icon: Icons.list_rounded,
+                  icon: LucideIcons.list,
                 ),
                 const SizedBox(width: 8),
                 _buildFilterChip(
                   label: 'Success',
                   value: 'success',
-                  icon: Icons.check_circle_rounded,
+                  icon: LucideIcons.checkCircle,
                   color: AppColors.success,
                 ),
                 const SizedBox(width: 8),
                 _buildFilterChip(
                   label: 'Denied',
                   value: 'failed',
-                  icon: Icons.block_rounded,
+                  icon: LucideIcons.shieldAlert,
                   color: AppColors.error,
                 ),
                 const SizedBox(width: 8),
@@ -458,7 +459,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              Icons.calendar_month_rounded,
+              LucideIcons.calendar,
         size: 16,
               color: isSelected ? AppColors.warning : AppColors.textMuted,
             ),
@@ -494,7 +495,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.clear_rounded, size: 16, color: AppColors.error),
+            const Icon(LucideIcons.x, size: 16, color: AppColors.error),
             const SizedBox(width: 6),
             Text(
               'Clear',
@@ -516,7 +517,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.history,
+            LucideIcons.history,
             size: 80,
             color: AppColors.muted.withValues(alpha: 0.3),
           ),
@@ -614,7 +615,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                 children: [
                     // Expand/collapse icon
                     Icon(
-                      isExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right,
+                      isExpanded ? LucideIcons.chevronDown : LucideIcons.chevronRight,
                       size: 20,
                       color: AppColors.primary,
                     ),
@@ -664,7 +665,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            Icons.qr_code_scanner_rounded,
+                            LucideIcons.qrCode,
                             size: 12,
                             color: AppColors.textMuted,
                           ),
@@ -773,8 +774,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             const SizedBox(width: 4),
                       Icon(
               isActive
-                  ? (_sortAscending ? Icons.arrow_upward : Icons.arrow_downward)
-                  : Icons.unfold_more,
+                  ? (_sortAscending ? LucideIcons.arrowUp : LucideIcons.arrowDown)
+                  : LucideIcons.arrowUpDown,
                         size: 14,
               color: isActive ? AppColors.primary : AppColors.textMuted.withValues(alpha: 0.5),
             ),
@@ -975,7 +976,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                Icons.cancel_outlined,
+                                LucideIcons.xCircle,
                                 size: 13,
                                 color: AppColors.error,
                               ),
@@ -1066,7 +1067,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                Icons.block_rounded,
+                                LucideIcons.shieldAlert,
                                 size: 13,
                                 color: AppColors.error,
                               ),
@@ -1100,7 +1101,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Icon(
-                                    Icons.fitness_center_rounded,
+                                    LucideIcons.dumbbell,
                                     size: 13,
                                     color: AppColors.success,
                                   ),
@@ -1173,7 +1174,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                Icons.trending_up_rounded,
+                                LucideIcons.trendingUp,
                                 size: 13,
                                 color: AppColors.warning,
                               ),

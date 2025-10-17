@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../config/app_colors.dart';
 import '../providers/history_provider.dart';
 import '../providers/gym_schedule_provider.dart';
@@ -757,7 +758,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(
-                  Icons.access_time_rounded,
+                  LucideIcons.clock,
                   color: Colors.white,
                   size: 18,
                 ),
@@ -958,8 +959,8 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
             const SizedBox(width: 4),
             Icon(
               isActive
-                  ? (_sortAscending ? Icons.arrow_upward : Icons.arrow_downward)
-                  : Icons.unfold_more,
+                  ? (_sortAscending ? LucideIcons.arrowUp : LucideIcons.arrowDown)
+                  : LucideIcons.arrowUpDown,
               size: 14,
               color: isActive ? AppColors.primary : AppColors.textMuted.withValues(alpha: 0.5),
             ),
@@ -1189,7 +1190,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                Icons.cancel_outlined,
+                                LucideIcons.xCircle,
                                 size: 13,
                                 color: AppColors.error,
                               ),
@@ -1280,7 +1281,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                Icons.block_rounded,
+                                LucideIcons.shieldAlert,
                                 size: 13,
                                 color: AppColors.error,
                               ),
@@ -1314,7 +1315,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Icon(
-                                    Icons.fitness_center_rounded,
+                                    LucideIcons.dumbbell,
                                     size: 13,
                                     color: AppColors.success,
                                   ),
@@ -1387,7 +1388,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                Icons.trending_up_rounded,
+                                LucideIcons.trendingUp,
                                 size: 13,
                                 color: AppColors.warning,
                               ),

@@ -388,7 +388,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
         IconButton(
           onPressed: () {},
           icon: const Icon(
-            Icons.notifications_outlined,
+            LucideIcons.bell,
             color: Colors.white70,
             size: 22,
           ),
@@ -551,7 +551,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
                     
                     // Dropdown icon
                     Icon(
-                      Icons.keyboard_arrow_down_rounded,
+                      LucideIcons.chevronDown,
                       color: Colors.white.withValues(alpha: 0.7),
                       size: 18,
                     ),
@@ -576,7 +576,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
           child: Row(
             children: [
               Icon(
-                Icons.settings_outlined,
+                LucideIcons.settings,
                 size: 18,
                 color: AppColors.primary,
               ),
@@ -591,7 +591,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
               ),
               const Spacer(),
               Icon(
-                Icons.open_in_new,
+                LucideIcons.externalLink,
                 size: 14,
                 color: AppColors.textMuted,
               ),
@@ -616,7 +616,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
           child: Row(
             children: [
               Icon(
-                Icons.logout_outlined,
+                LucideIcons.logOut,
                 size: 18,
                 color: AppColors.error,
               ),
@@ -798,7 +798,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
               Navigator.pop(context);
               await _exportActivities(context, ref, 'csv', themeColors);
             },
-            icon: const Icon(Icons.table_chart, size: 18),
+            icon: const Icon(LucideIcons.table, size: 18),
             label: const Text('CSV'),
           ),
           ElevatedButton.icon(
@@ -810,7 +810,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
               Navigator.pop(context);
               await _exportActivities(context, ref, 'text', themeColors);
             },
-            icon: const Icon(Icons.description, size: 18),
+            icon: const Icon(LucideIcons.fileText, size: 18),
             label: const Text('Text'),
           ),
         ],

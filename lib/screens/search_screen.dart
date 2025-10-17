@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../config/app_colors.dart';
 import '../models/member_data.dart';
 import '../services/search_service.dart';
@@ -239,10 +240,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 color: AppColors.textMuted,
                 fontSize: 14,
               ),
-              prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primary),
+              prefixIcon: const Icon(LucideIcons.search, color: AppColors.primary),
                     suffixIcon: _searchController.text.isNotEmpty
                         ? IconButton(
-                      icon: const Icon(Icons.clear, color: AppColors.textMuted),
+                      icon: const Icon(LucideIcons.x, color: AppColors.textMuted),
                             onPressed: () {
                               _searchController.clear();
                         // Search will trigger automatically via listener
@@ -268,20 +269,20 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 _buildFilterChip(
                   label: 'All',
                   value: 'all',
-                  icon: Icons.list_rounded,
+                  icon: LucideIcons.list,
                 ),
                 const SizedBox(width: 8),
                 _buildFilterChip(
                   label: 'Active',
                   value: 'active',
-                  icon: Icons.check_circle_rounded,
+                  icon: LucideIcons.checkCircle,
                   color: AppColors.success,
                 ),
                 const SizedBox(width: 8),
                 _buildFilterChip(
                   label: 'Expired',
                   value: 'expired',
-                  icon: Icons.cancel_rounded,
+                  icon: LucideIcons.xCircle,
                   color: AppColors.error,
                 ),
               ],
@@ -363,7 +364,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                Icons.qr_code_scanner_rounded,
+                LucideIcons.qrCode,
                 size: 64,
                 color: AppColors.primary.withValues(alpha: 0.5),
               ),
@@ -403,7 +404,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                Icons.person_off_rounded,
+                LucideIcons.userX,
                 size: 64,
                 color: AppColors.error.withValues(alpha: 0.5),
               ),
@@ -524,8 +525,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             const SizedBox(width: 4),
             Icon(
               isActive
-                  ? (_sortAscending ? Icons.arrow_upward : Icons.arrow_downward)
-                  : Icons.unfold_more,
+                  ? (_sortAscending ? LucideIcons.arrowUp : LucideIcons.arrowDown)
+                  : LucideIcons.arrowUpDown,
               size: 14,
               color: isActive ? AppColors.primary : AppColors.textMuted.withValues(alpha: 0.5),
             ),
@@ -671,7 +672,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          isActive ? Icons.check_circle_rounded : Icons.cancel_rounded,
+                          isActive ? LucideIcons.checkCircle : LucideIcons.xCircle,
                           size: 12,
                           color: statusColor,
                         ),

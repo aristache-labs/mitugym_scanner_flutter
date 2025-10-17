@@ -104,7 +104,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                   color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: const Icon(Icons.check_rounded, color: Colors.white, size: 16),
+                child: const Icon(LucideIcons.check, color: Colors.white, size: 16),
               ),
               const SizedBox(width: 12),
               Text(
@@ -318,7 +318,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                      const Icon(Icons.save_rounded, size: 18, color: Colors.white),
+                      const Icon(LucideIcons.save, size: 18, color: Colors.white),
                     const SizedBox(width: 8),
                     Text(
                       'Save Settings',
@@ -345,20 +345,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
       children: [
         _buildSection(
           'API Configuration',
-          Icons.cloud,
+          LucideIcons.cloud,
           [
             _buildTextField(
               controller: _apiUrlController,
               label: 'API URL',
               hint: 'https://api.example.com',
-              icon: Icons.link,
+              icon: LucideIcons.link,
             ),
             const SizedBox(height: 16),
             _buildTextField(
               controller: _apiKeyController,
               label: 'API Key',
               hint: 'Your API key',
-              icon: Icons.key,
+              icon: LucideIcons.key,
               obscure: true,
             ),
             const SizedBox(height: 16),
@@ -368,7 +368,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
         const SizedBox(height: 24),
         _buildSection(
           'Camera',
-          Icons.camera_alt,
+          LucideIcons.camera,
           [
             _buildSlider(
               label: 'Camera Device',
@@ -401,7 +401,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
       children: [
         _buildSection(
           'Scanner',
-          Icons.qr_code_scanner,
+          LucideIcons.qrCode,
           [
             _buildSlider(
               label: 'Scan Cooldown',
@@ -435,7 +435,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
       children: [
         _buildSection(
           'Sound Settings',
-          Icons.volume_up,
+          LucideIcons.volume2,
           [
             _buildSwitch(
               label: 'Enable Audio Feedback',
@@ -466,7 +466,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
       children: [
         _buildSection(
           'Data Management',
-          Icons.storage,
+          LucideIcons.database,
           [
             _buildSlider(
               label: 'Log Retention',
@@ -489,7 +489,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
         const SizedBox(height: 24),
         _buildSection(
           'History Management',
-          Icons.history,
+          LucideIcons.history,
           [
             _buildSlider(
               label: 'History Retention',
@@ -1225,7 +1225,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                       color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(6),
                     ),
-                    child: const Icon(Icons.check_rounded, color: Colors.white, size: 16),
+                    child: const Icon(LucideIcons.check, color: Colors.white, size: 16),
                   ),
                   const SizedBox(width: 12),
                   Expanded(

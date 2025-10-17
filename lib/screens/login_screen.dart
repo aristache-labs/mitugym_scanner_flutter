@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../config/app_colors.dart';
 import '../providers/auth_provider.dart';
 import '../providers/offline_provider.dart';
@@ -136,7 +137,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         errorBuilder: (context, error, stackTrace) {
           // Fallback to icon if image not found
           return Icon(
-            Icons.fitness_center,
+            LucideIcons.dumbbell,
             size: 90,
             color: AppColors.primary,
           );
@@ -313,7 +314,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             hintText: '',
             suffixIcon: IconButton(
               icon: Icon(
-                _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                _obscurePassword ? LucideIcons.eye : LucideIcons.eyeOff,
                 color: AppColors.textMuted,
                 size: 20,
               ),
@@ -416,7 +417,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            Icons.wifi_off,
+            LucideIcons.wifiOff,
             color: AppColors.warning,
             size: 20,
           ),
