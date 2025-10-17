@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../config/app_themes.dart';
 import '../config/app_colors.dart';
 import '../providers/config_provider.dart';
@@ -295,7 +296,11 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
                 ),
               ],
             ),
-          ),
+          )
+            .animate(onPlay: (controller) => controller.repeat())
+            .fadeIn(duration: 1000.ms, curve: Curves.easeInOut)
+            .then()
+            .fadeOut(duration: 1000.ms, curve: Curves.easeInOut),
           const SizedBox(width: 8),
           Text(
             isOnline ? 'Online' : 'Offline',

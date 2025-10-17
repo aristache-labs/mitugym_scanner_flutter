@@ -19,14 +19,32 @@ class StatsScreen extends ConsumerStatefulWidget {
   ConsumerState<StatsScreen> createState() => _StatsScreenState();
 }
 
-class _StatsScreenState extends ConsumerState<StatsScreen> {
+class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProviderStateMixin {
   String _sortBy = ''; // No default sorting - clean state
   bool _sortAscending = true;
   Timer? _syncTimer;
+  late AnimationController _progressController;
+  late Animation<double> _progressAnimation;
+  late Animation<double> _percentageAnimation;
+  double _currentRate = 0.0;
 
   @override
   void initState() {
     super.initState();
+    
+    // Initialize animation controller
+    _progressController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    );
+    
+    _progressAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _progressController, curve: Curves.easeOutCubic),
+    );
+    
+    _percentageAnimation = Tween<double>(begin: 0.0, end: 100.0).animate(
+      CurvedAnimation(parent: _progressController, curve: Curves.easeOutCubic),
+    );
     // Fetch initial data (schedule + history)
     _fetchData();
     // Start hourly sync timer
@@ -36,6 +54,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
   @override
   void dispose() {
     _syncTimer?.cancel();
+    _progressController.dispose();
     super.dispose();
   }
 
@@ -145,6 +164,24 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
     final successRate = totalScans > 0 
         ? (successfulSessions / totalScans * 100) 
         : 0.0;
+    
+    // Trigger animation when success rate changes
+    if (_currentRate != successRate) {
+      _currentRate = successRate;
+      _percentageAnimation = Tween<double>(
+        begin: 0.0,
+        end: successRate,
+      ).animate(
+        CurvedAnimation(parent: _progressController, curve: Curves.easeOutCubic),
+      );
+      _progressAnimation = Tween<double>(
+        begin: 0.0,
+        end: successRate / 100,
+      ).animate(
+        CurvedAnimation(parent: _progressController, curve: Curves.easeOutCubic),
+      );
+      _progressController.forward(from: 0.0);
+    }
 
     // Calculate peak occupancy
     final peakOccupancy = _calculatePeakOccupancy(todayActivities.toList());
@@ -580,7 +617,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
     );
   }
 
-  /// Build success rate card
+  /// Build success rate card with animations
   Widget _buildSuccessRateCard(double rate, int checkIns, int checkOuts, int denied) {
     return Container(
       padding: const EdgeInsets.all(24),
@@ -613,31 +650,41 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Text(
-                '${rate.toStringAsFixed(1)}%',
-                style: GoogleFonts.inter(
-                  color: AppColors.textPrimary,
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                ),
+              AnimatedBuilder(
+                animation: _percentageAnimation,
+                builder: (context, child) {
+                  return Text(
+                    '${_percentageAnimation.value.toStringAsFixed(1)}%',
+                    style: GoogleFonts.inter(
+                      color: AppColors.textPrimary,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  );
+                },
               ),
             ],
           ),
           const SizedBox(height: 20),
           
-          // Progress bar
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: LinearProgressIndicator(
-              value: rate / 100,
-              minHeight: 10,
-              backgroundColor: AppColors.surface,
-              valueColor: AlwaysStoppedAnimation<Color>(
-                rate >= 80 ? AppColors.success :
-                rate >= 50 ? AppColors.warning :
-                AppColors.error,
-              ),
-            ),
+          // Progress bar with animation
+          AnimatedBuilder(
+            animation: _progressAnimation,
+            builder: (context, child) {
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: LinearProgressIndicator(
+                  value: _progressAnimation.value,
+                  minHeight: 10,
+                  backgroundColor: AppColors.surface,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    rate >= 80 ? AppColors.success :
+                    rate >= 50 ? AppColors.warning :
+                    AppColors.error,
+                  ),
+                ),
+              );
+            },
           ),
           
           const SizedBox(height: 20),
