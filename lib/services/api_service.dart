@@ -457,6 +457,21 @@ class ApiService {
     // Overall health - Check critical endpoints
     final endpoints = results['endpoints'] as Map<String, dynamic>;
     
+    // Check if there are authentication errors (401) in other endpoints
+    final gymScheduleError = endpoints['gym_schedule']?['error'] as String?;
+    final historyErrorMsg = endpoints['history']?['error'] as String?;
+    final hasAuthError = (gymScheduleError?.contains('401') == true) || 
+                        (historyErrorMsg?.contains('401') == true);
+    
+    // If authentication failed on other endpoints, mark check-in with a warning
+    if (hasAuthError && endpoints['checkin']?['status'] == 'reachable') {
+      endpoints['checkin'] = {
+        'status': 'warning',
+        'statusCode': endpoints['checkin']?['statusCode'],
+        'note': 'Endpoint reachable but API key may be invalid',
+      };
+    }
+    
     // Critical endpoints that must succeed for healthy status
     final gymScheduleOk = endpoints['gym_schedule']?['status'] == 'success';
     final historyOk = endpoints['history']?['status'] == 'success';

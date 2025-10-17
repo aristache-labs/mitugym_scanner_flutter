@@ -852,6 +852,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                         final result = entry.value as Map<String, dynamic>;
                         final status = result['status'] as String;
                         final isSuccess = status == 'success' || status == 'reachable';
+                        final isWarning = status == 'warning';
+                        
+                        // Determine status color
+                        final statusColor = isSuccess 
+                            ? AppColors.success 
+                            : isWarning 
+                                ? AppColors.warning 
+                                : AppColors.error;
+                        
+                        // Determine status icon
+                        final statusIcon = isSuccess 
+                            ? LucideIcons.badgeCheck 
+                            : isWarning 
+                                ? LucideIcons.alertTriangle 
+                                : LucideIcons.alertCircle;
                         
                         return Container(
                           margin: const EdgeInsets.only(bottom: 12),
@@ -864,14 +879,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                             ),
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: (isSuccess ? AppColors.success : AppColors.error)
-                                  .withValues(alpha: 0.3),
+                              color: statusColor.withValues(alpha: 0.3),
                               width: 1.5,
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: (isSuccess ? AppColors.success : AppColors.error)
-                                    .withValues(alpha: 0.1),
+                                color: statusColor.withValues(alpha: 0.1),
                                 blurRadius: 8,
                                 offset: const Offset(0, 2),
                               ),
@@ -888,15 +901,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                                     Container(
                                       padding: const EdgeInsets.all(6),
                                       decoration: BoxDecoration(
-                                        color: (isSuccess ? AppColors.success : AppColors.error)
-                                            .withValues(alpha: 0.15),
+                                        color: statusColor.withValues(alpha: 0.15),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Icon(
-                                        isSuccess 
-                                            ? LucideIcons.badgeCheck 
-                                            : LucideIcons.alertCircle,
-                                        color: isSuccess ? AppColors.success : AppColors.error,
+                                        statusIcon,
+                                        color: statusColor,
                                         size: 18,
                                       ),
                                     ),
@@ -918,9 +928,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                                           Text(
                                             status.toUpperCase(),
                                             style: GoogleFonts.inter(
-                                              color: isSuccess 
-                                                  ? AppColors.success 
-                                                  : AppColors.error,
+                                              color: statusColor,
                                               fontSize: 10,
                                               fontWeight: FontWeight.w600,
                                               letterSpacing: 0.8,
@@ -933,7 +941,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                                 ),
                                 
                                 // Additional info
-                                if (result['recordCount'] != null || result['error'] != null) ...[
+                                if (result['recordCount'] != null || result['error'] != null || result['note'] != null) ...[
                                   const SizedBox(height: 12),
                                   Container(
                                     padding: const EdgeInsets.all(10),
@@ -964,7 +972,36 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                                             ],
                                           ),
                                         ],
+                                        if (result['note'] != null) ...[
+                                          if (result['recordCount'] != null)
+                                            const SizedBox(height: 8),
+                                          Row(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Icon(
+                                                LucideIcons.info,
+                                                color: AppColors.warning,
+                                                size: 14,
+                                              ),
+                                              const SizedBox(width: 6),
+                                              Expanded(
+                                                child: Text(
+                                                  result['note'] as String,
+                                                  style: GoogleFonts.inter(
+                                                    color: AppColors.textSecondary,
+                                                    fontSize: 11,
+                                                    height: 1.4,
+                                                  ),
+                                                  maxLines: 2,
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
                                         if (result['error'] != null) ...[
+                                          if (result['recordCount'] != null || result['note'] != null)
+                                            const SizedBox(height: 8),
                                           Row(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
