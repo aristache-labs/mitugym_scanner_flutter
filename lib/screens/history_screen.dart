@@ -11,6 +11,7 @@ import '../providers/config_provider.dart';
 import '../services/export_service.dart';
 import '../widgets/member_avatar_modal.dart';
 import '../widgets/member_details_modal.dart';
+import '../widgets/date_range_picker_modal.dart';
 
 /// History screen with filtering and modern design
 class HistoryScreen extends ConsumerStatefulWidget {
@@ -120,24 +121,11 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   }
 
   Future<void> _selectDateRange() async {
-    final picked = await showDateRangePicker(
-      context: context,
+    final picked = await DateRangePickerModal.show(
+      context,
+      initialDateRange: _dateRange,
       firstDate: DateTime.now().subtract(const Duration(days: 365)),
       lastDate: DateTime.now(),
-      initialDateRange: _dateRange,
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.dark(
-              primary: AppColors.primary,
-              onPrimary: AppColors.background,
-              surface: AppColors.surface,
-              onSurface: AppColors.text,
-            ),
-          ),
-          child: child!,
-        );
-      },
     );
 
     if (picked != null) {
