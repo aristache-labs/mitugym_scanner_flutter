@@ -396,9 +396,15 @@ class OfflineStorageService {
       final whereArgs = <dynamic>[];
       
       if (startDate != null && endDate != null) {
+        // Adjust dates to include the full day range
+        // Start date: beginning of day (00:00:00)
+        final adjustedStartDate = DateTime(startDate.year, startDate.month, startDate.day);
+        // End date: end of day (23:59:59.999)
+        final adjustedEndDate = DateTime(endDate.year, endDate.month, endDate.day, 23, 59, 59, 999);
+        
         whereConditions.add('timestamp BETWEEN ? AND ?');
-        whereArgs.add(startDate.millisecondsSinceEpoch);
-        whereArgs.add(endDate.millisecondsSinceEpoch);
+        whereArgs.add(adjustedStartDate.millisecondsSinceEpoch);
+        whereArgs.add(adjustedEndDate.millisecondsSinceEpoch);
       }
       
       if (searchQuery != null && searchQuery.isNotEmpty) {

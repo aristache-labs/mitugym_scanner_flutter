@@ -39,6 +39,7 @@ class HistoryState {
     String? searchQuery,
     String? statusFilter,
     DateTimeRange? dateRange,
+    bool clearDateRange = false,
   }) {
     return HistoryState(
       items: items ?? this.items,
@@ -48,7 +49,7 @@ class HistoryState {
       error: error,
       searchQuery: searchQuery ?? this.searchQuery,
       statusFilter: statusFilter ?? this.statusFilter,
-      dateRange: dateRange ?? this.dateRange,
+      dateRange: clearDateRange ? null : (dateRange ?? this.dateRange),
     );
   }
 }
@@ -152,7 +153,7 @@ class HistoryNotifier extends Notifier<HistoryState> {
     state = state.copyWith(
       searchQuery: '',
       statusFilter: 'all',
-      dateRange: null,
+      clearDateRange: true,
       offset: 0,
     );
 
