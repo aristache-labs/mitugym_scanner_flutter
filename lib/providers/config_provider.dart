@@ -105,6 +105,12 @@ class ConfigNotifier extends Notifier<AppConfig> {
     await state.saveToPreferences();
   }
 
+  /// Update verbose logging
+  Future<void> updateVerboseLogging(bool enabled) async {
+    state = state.copyWith(verboseLogging: enabled);
+    await state.saveToPreferences();
+  }
+
   /// Update entire configuration
   Future<void> updateConfig(AppConfig config) async {
     state = config;

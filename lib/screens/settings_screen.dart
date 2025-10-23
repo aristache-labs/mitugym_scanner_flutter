@@ -36,6 +36,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   late bool _autoStartScanning;
   late bool _cameraVisible;
   late int _historyRetentionDays;
+  late bool _verboseLogging;
 
   @override
   void initState() {
@@ -56,6 +57,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     _autoStartScanning = config.autoStartScanning;
     _cameraVisible = config.cameraVisible;
     _historyRetentionDays = config.historyRetentionDays;
+    _verboseLogging = config.verboseLogging;
   }
 
   @override
@@ -88,6 +90,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     await ref.read(configProvider.notifier).updateCameraFrameRate(_cameraFrameRate);
     await ref.read(configProvider.notifier).updateLogRetentionDays(_logRetentionDays);
     await ref.read(configProvider.notifier).updateExportFormat(_exportFormat);
+    await ref.read(configProvider.notifier).updateVerboseLogging(_verboseLogging);
     
     // Update scanner service with new settings
     ref.read(windowsScannerControllerProvider.notifier).updateDebounceDuration(_debounceDuration);
@@ -483,6 +486,49 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
               value: _exportFormat,
               items: const ['csv', 'text'],
               onChanged: (v) => setState(() => _exportFormat = v!),
+            ),
+          ],
+        ),
+        const SizedBox(height: 24),
+        _buildSection(
+          'Logging',
+          LucideIcons.fileText,
+          [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSwitch(
+                  label: 'Verbose Logging',
+                  value: _verboseLogging,
+                  onChanged: (v) => setState(() => _verboseLogging = v),
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.info.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: AppColors.info.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(LucideIcons.info, color: AppColors.info, size: 16),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'When enabled, all app logs including debug, warning, and trace information will be saved to daily .log files. Helpful for troubleshooting issues.',
+                          style: GoogleFonts.inter(
+                            color: AppColors.textSecondary,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ],
         ),

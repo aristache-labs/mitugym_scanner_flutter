@@ -5,9 +5,11 @@ import 'package:path_provider/path_provider.dart';
 
 /// Logger Service
 /// Handles logging to daily log files
+/// Supports both standard logging and verbose logging modes
 class LoggerService {
   final Logger _logger = Logger();
   String? _logDirectory;
+  bool _verboseLoggingEnabled = false;
 
   /// Initialize the logger service
   Future<void> initialize() async {
@@ -26,6 +28,15 @@ class LoggerService {
       _logger.e('Failed to initialize logger service: $e');
     }
   }
+
+  /// Enable or disable verbose logging
+  void setVerboseLogging(bool enabled) {
+    _verboseLoggingEnabled = enabled;
+    _logger.i('Verbose logging ${enabled ? "enabled" : "disabled"}');
+  }
+
+  /// Check if verbose logging is enabled
+  bool get isVerboseLoggingEnabled => _verboseLoggingEnabled;
 
   /// Get today's log file path
   String _getTodayLogFilePath() {
@@ -68,6 +79,36 @@ class LoggerService {
   Future<void> logInfo(String message) async {
     _logger.i(message);
     await _writeToFile('INFO - $message');
+  }
+
+  /// Log debug information (only when verbose logging is enabled)
+  Future<void> logDebug(String message, {String? source}) async {
+    final formattedMessage = source != null ? '[$source] $message' : message;
+    _logger.d(formattedMessage);
+    
+    if (_verboseLoggingEnabled) {
+      await _writeToFile('DEBUG - $formattedMessage');
+    }
+  }
+
+  /// Log warning (only when verbose logging is enabled)
+  Future<void> logWarning(String message, {String? source}) async {
+    final formattedMessage = source != null ? '[$source] $message' : message;
+    _logger.w(formattedMessage);
+    
+    if (_verboseLoggingEnabled) {
+      await _writeToFile('WARNING - $formattedMessage');
+    }
+  }
+
+  /// Log trace information (only when verbose logging is enabled)
+  Future<void> logTrace(String message, {String? source}) async {
+    final formattedMessage = source != null ? '[$source] $message' : message;
+    _logger.t(formattedMessage);
+    
+    if (_verboseLoggingEnabled) {
+      await _writeToFile('TRACE - $formattedMessage');
+    }
   }
 
   /// Get log file for a specific date

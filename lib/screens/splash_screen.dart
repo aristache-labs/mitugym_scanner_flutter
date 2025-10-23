@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_colors.dart';
+import '../config/app_config.dart';
 import '../services/audio_service.dart';
 import '../providers/auth_provider.dart';
 import '../providers/offline_provider.dart';
 import '../providers/history_provider.dart';
 import '../providers/gym_schedule_provider.dart';
+import '../providers/config_provider.dart';
+import '../providers/logger_provider.dart' as logger_provider;
 import 'main_layout_screen.dart';
 import 'login_screen.dart';
 
@@ -30,9 +33,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   Future<void> _initializeAndNavigate() async {
     try {
-      // Run initialization tasks in parallel during splash animation
+      // Load configuration first (required by other services)
+      await _preloadConfiguration();
+      
+      // Run other initialization tasks in parallel during splash animation
       await Future.wait([
-        _preloadConfiguration(),
         _initializeServices(),
         _checkAuthentication(),
         Future.delayed(const Duration(seconds: 3)), // Minimum splash time
@@ -91,9 +96,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       setState(() => _loadingText = 'Loading configuration...');
     }
     
-    // Configuration loads automatically via provider
-    // Just give it time to complete
-    await Future.delayed(const Duration(milliseconds: 500));
+    // Load configuration from SharedPreferences
+    final loadedConfig = await AppConfig.loadFromPreferences();
+    
+    // Update the provider with the loaded config
+    await ref.read(configProvider.notifier).updateConfig(loadedConfig);
+    
+    debugPrint('Configuration loaded: API URL = ${loadedConfig.apiUrl.substring(0, 30)}..., Verbose Logging = ${loadedConfig.verboseLogging}');
   }
 
   Future<void> _initializeServices() async {
@@ -101,8 +110,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       setState(() => _loadingText = 'Preparing services...');
     }
     
-    // Preload audio files for instant playback
-    await _preloadAudio();
+    // Initialize services
+    await Future.wait([
+      _preloadAudio(),
+      _initializeLogger(),
+    ]);
   }
 
   Future<void> _preloadAudio() async {
@@ -114,6 +126,24 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       debugPrint('Audio service initialized');
     } catch (e) {
       debugPrint('Audio preload error: $e');
+    }
+  }
+
+  Future<void> _initializeLogger() async {
+    try {
+      // Initialize global logger service
+      await logger_provider.initializeLoggerService();
+      
+      // Provider will automatically set verbose logging based on config
+      final config = ref.read(configProvider);
+      debugPrint('Logger service initialized (verbose: ${config.verboseLogging})');
+      
+      // Log initialization
+      final logger = ref.read(logger_provider.loggerServiceProvider);
+      await logger.logInfo('App startup - Logger service initialized');
+      await logger.logDebug('Verbose logging: ${config.verboseLogging}', source: 'SplashScreen');
+    } catch (e) {
+      debugPrint('Logger initialization error: $e');
     }
   }
 

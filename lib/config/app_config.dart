@@ -21,6 +21,9 @@ class AppConfig {
   final String theme;
   final int cameraFrameRate;
   
+  // Logging settings
+  final bool verboseLogging;
+  
   // History settings
   final int historyRetentionDays;
   final DateTime? lastHistorySync;
@@ -41,6 +44,7 @@ class AppConfig {
     this.cameraVisible = true,
     this.theme = 'cyan',
     this.cameraFrameRate = 10,
+    this.verboseLogging = false,
     this.historyRetentionDays = 90,
     this.lastHistorySync,
   });
@@ -63,6 +67,7 @@ class AppConfig {
       cameraVisible: true,
       theme: 'cyan',
       cameraFrameRate: 10,
+      verboseLogging: false,
       historyRetentionDays: 90,
       lastHistorySync: null,
     );
@@ -94,6 +99,7 @@ class AppConfig {
       cameraVisible: prefs.getBool('cameraVisible') ?? true,
       theme: prefs.getString('theme') ?? 'cyan',
       cameraFrameRate: prefs.getInt('cameraFrameRate') ?? 10,
+      verboseLogging: prefs.getBool('verboseLogging') ?? false,
       historyRetentionDays: prefs.getInt('history_retention_days') ?? 90,
       lastHistorySync: lastHistorySync,
     );
@@ -118,6 +124,7 @@ class AppConfig {
     await prefs.setBool('cameraVisible', cameraVisible);
     await prefs.setString('theme', theme);
     await prefs.setInt('cameraFrameRate', cameraFrameRate);
+    await prefs.setBool('verboseLogging', verboseLogging);
     await prefs.setInt('history_retention_days', historyRetentionDays);
     if (lastHistorySync != null) {
       await prefs.setInt('last_history_sync', lastHistorySync!.millisecondsSinceEpoch);
@@ -141,6 +148,7 @@ class AppConfig {
     bool? cameraVisible,
     String? theme,
     int? cameraFrameRate,
+    bool? verboseLogging,
     int? historyRetentionDays,
     DateTime? lastHistorySync,
   }) {
@@ -160,6 +168,7 @@ class AppConfig {
       cameraVisible: cameraVisible ?? this.cameraVisible,
       theme: theme ?? this.theme,
       cameraFrameRate: cameraFrameRate ?? this.cameraFrameRate,
+      verboseLogging: verboseLogging ?? this.verboseLogging,
       historyRetentionDays: historyRetentionDays ?? this.historyRetentionDays,
       lastHistorySync: lastHistorySync ?? this.lastHistorySync,
     );
