@@ -598,7 +598,16 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
             ),
             tooltipPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             getTooltipItems: (touchedSpots) {
-              return touchedSpots.map((spot) {
+              return touchedSpots.asMap().entries.map((entry) {
+                final index = entry.key;
+                final spot = entry.value;
+                
+                // Only show tooltip for the first line (live occupancy)
+                // Skip the second line (future hours - dashed line)
+                if (index > 0) {
+                  return null;
+                }
+                
                 final hour = spot.x.toInt();
                 final count = spot.y.toInt();
                 return LineTooltipItem(

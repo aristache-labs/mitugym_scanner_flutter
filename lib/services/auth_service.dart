@@ -1,22 +1,27 @@
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import '../models/auth_session.dart';
+import 'logger_service.dart';
 
 /// Authentication service for login and session management
 class AuthService {
   final Dio _dio;
   final Logger _logger = Logger();
+  final LoggerService? _verboseLogger;
   final String apiUrl;
 
   AuthService({
     required this.apiUrl,
-  }) : _dio = Dio() {
+    LoggerService? verboseLogger,
+  }) : _dio = Dio(), _verboseLogger = verboseLogger {
     _dio.options.baseUrl = apiUrl;
     _dio.options.connectTimeout = const Duration(seconds: 15);
     _dio.options.receiveTimeout = const Duration(seconds: 15);
     _dio.options.headers = {
       'Content-Type': 'application/json',
     };
+    
+    _verboseLogger?.logDebug('AuthService initialized with URL: $apiUrl', source: 'AuthService');
   }
 
   /// Login with email and password
@@ -28,7 +33,10 @@ class AuthService {
   }) async {
     try {
       _logger.i('Attempting login for: $email');
+      _verboseLogger?.logDebug('Starting login request for email: $email', source: 'AuthService');
+      _verboseLogger?.logDebug('Device name: ${deviceName ?? "Scanner App"}', source: 'AuthService');
 
+      final stopwatch = Stopwatch()..start();
       final response = await _dio.post(
         '/api/auth/login',
         data: {
@@ -37,12 +45,16 @@ class AuthService {
           'device_name': deviceName ?? 'Scanner App',
         },
       );
+      stopwatch.stop();
+
+      _verboseLogger?.logDebug('Login response received in ${stopwatch.elapsedMilliseconds}ms - Status: ${response.statusCode}', source: 'AuthService');
 
       if (response.statusCode == 200) {
         final data = response.data as Map<String, dynamic>;
 
         if (data['success'] == true) {
           _logger.i('Login successful for: $email');
+          _verboseLogger?.logDebug('Parsing login response data', source: 'AuthService');
 
           final session = AuthSession(
             email: data['email'] as String,
@@ -54,8 +66,11 @@ class AuthService {
             lastValidated: DateTime.now(),
           );
 
+          _verboseLogger?.logDebug('Created session for user: ${session.userName} at location: ${session.locationName}', source: 'AuthService');
+
           // Save session
           await session.save();
+          _verboseLogger?.logDebug('Session saved successfully', source: 'AuthService');
 
           return session;
         } else {
@@ -88,19 +103,25 @@ class AuthService {
   Future<bool> validateSession(String apiKey) async {
     try {
       _logger.i('Validating session...');
+      _verboseLogger?.logDebug('Starting session validation', source: 'AuthService');
 
+      final stopwatch = Stopwatch()..start();
       final response = await _dio.post(
         '/api/auth/validate',
         data: {
           'api_key': apiKey,
         },
       );
+      stopwatch.stop();
+
+      _verboseLogger?.logDebug('Validation response received in ${stopwatch.elapsedMilliseconds}ms - Status: ${response.statusCode}', source: 'AuthService');
 
       if (response.statusCode == 200) {
         final data = response.data as Map<String, dynamic>;
 
         if (data['valid'] == true) {
           _logger.i('Session validation successful');
+          _verboseLogger?.logDebug('Session is valid', source: 'AuthService');
 
           // Update last validated timestamp
           final session = await AuthSession.load();

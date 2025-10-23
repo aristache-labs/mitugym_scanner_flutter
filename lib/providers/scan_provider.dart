@@ -9,6 +9,7 @@ import 'config_provider.dart';
 import 'offline_provider.dart';
 import 'history_provider.dart';
 import 'offline_queue_provider.dart';
+import 'logger_provider.dart' as logger_provider;
 
 /// Scan state class
 class ScanState {
@@ -95,12 +96,17 @@ class ScanNotifier extends Notifier<ScanState> {
   /// Process a scanned QR code
   Future<void> processScan(String qrCode) async {
     if (state.cooldownActive) {
+      _loggerService.logDebug('Scan ignored - cooldown active', source: 'ScanProvider');
       return; // Ignore scans during cooldown
     }
+
+    _loggerService.logDebug('Processing scan for QR: $qrCode', source: 'ScanProvider');
 
     // Get config and connectivity status
     final config = ref.read(configProvider);
     final isOnline = ref.read(offlineProvider).isOnline;
+    
+    _loggerService.logDebug('Online status: $isOnline', source: 'ScanProvider');
     
     // Use location API key from settings (NOT user's personal API key)
     // This is the API key for check-in/out operations
@@ -111,20 +117,25 @@ class ScanNotifier extends Notifier<ScanState> {
 
     // If offline, queue the action
     if (!isOnline) {
+      _loggerService.logDebug('Device offline - queueing scan', source: 'ScanProvider');
       await _handleOfflineScan(qrCode, locationApiKey);
       _startCooldown(config.debounceDuration);
       return;
     }
 
     try {
+      _loggerService.logDebug('Calling API checkInOut...', source: 'ScanProvider');
       // Call API with location API key
       final result = await _apiService.checkInOut(qrCode, locationApiKey);
       
       // Update state with result
       state = state.copyWith(lastResult: result);
+      
+      _loggerService.logDebug('Scan result: ${result.success ? "SUCCESS" : "FAILED"} - ${result.message}', source: 'ScanProvider');
 
       // Save member data to local database for search
       if (result.data != null) {
+        _loggerService.logDebug('Saving member data locally: ${result.data!.memberName}', source: 'ScanProvider');
         final storage = ref.read(offlineStorageServiceProvider);
         await storage.saveMemberLocally(result.data!);
       }
@@ -137,6 +148,7 @@ class ScanNotifier extends Notifier<ScanState> {
         final memberName = result.data?.memberName ?? 'Unknown';
         final action = result.message;
         await _loggerService.logSuccess(memberName, action);
+        _loggerService.logDebug('Audio feedback: SUCCESS sound played', source: 'ScanProvider');
         
         // Add to in-memory activity log (max 10 for dashboard display)
         final activityLog = ActivityLog(
@@ -340,7 +352,12 @@ class ScanNotifier extends Notifier<ScanState> {
 /// Provider for API Service
 final apiServiceProvider = Provider<ApiService>((ref) {
   final config = ref.watch(configProvider);
-  return ApiService(apiUrl: config.apiUrl, apiKey: config.apiKey);
+  final logger = ref.watch(logger_provider.loggerServiceProvider);
+  return ApiService(
+    apiUrl: config.apiUrl,
+    apiKey: config.apiKey,
+    verboseLogger: logger,
+  );
 });
 
 /// Provider for Audio Service

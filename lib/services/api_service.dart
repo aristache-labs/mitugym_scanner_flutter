@@ -4,6 +4,7 @@ import '../models/scan_result.dart';
 import '../models/member_data.dart';
 import '../models/activity_log.dart';
 import '../models/gym_schedule.dart';
+import 'logger_service.dart';
 
 
 /// API Service for MituGym backend
@@ -12,17 +13,22 @@ class ApiService {
   final Dio _dio;
   final Logger _logger = Logger();
   final String apiKey;
+  final LoggerService? _verboseLogger;
 
   ApiService({
     String? apiUrl,
     required this.apiKey,
-  }) : _dio = Dio() {
+    LoggerService? verboseLogger,
+  }) : _dio = Dio(), _verboseLogger = verboseLogger {
     _dio.options.baseUrl = apiUrl ?? 'https://mitugym-app-webpanel.vercel.app';
     _dio.options.connectTimeout = const Duration(seconds: 15);
     _dio.options.receiveTimeout = const Duration(seconds: 15);
     _dio.options.headers = {
       'Content-Type': 'application/json',
     };
+    
+    // Log API service initialization
+    _verboseLogger?.logDebug('ApiService initialized with baseUrl: ${_dio.options.baseUrl}', source: 'ApiService');
   }
 
   /// Update the base URL
@@ -44,6 +50,8 @@ class ApiService {
   }) async {
     try {
       _logger.i('Attempting check-in/out for QR: $qrCode (offline: $isOfflineScan)');
+      _verboseLogger?.logDebug('Starting check-in/out request for QR: $qrCode', source: 'ApiService');
+      _verboseLogger?.logDebug('Offline scan mode: $isOfflineScan', source: 'ApiService');
 
       final requestData = <String, dynamic>{
         'qr_code': qrCode,
@@ -54,24 +62,33 @@ class ApiService {
       // Add offline scan flag if true
       if (isOfflineScan) {
         requestData['is_offline_scan'] = true;
+        _verboseLogger?.logDebug('Added offline scan flag to request', source: 'ApiService');
       }
 
+      _verboseLogger?.logDebug('Sending POST request to /api/checkin', source: 'ApiService');
+      final stopwatch = Stopwatch()..start();
+      
       final response = await _dio.post(
         '/api/checkin',
         data: requestData,
       );
 
+      stopwatch.stop();
       _logger.i('API Response: ${response.statusCode}');
+      _verboseLogger?.logDebug('Response received in ${stopwatch.elapsedMilliseconds}ms - Status: ${response.statusCode}', source: 'ApiService');
 
       if (response.statusCode == 200) {
         final data = response.data as Map<String, dynamic>;
+        _verboseLogger?.logDebug('Parsing response data', source: 'ApiService');
         
         // Check if the response contains membership_status
         final membershipStatus = data['membership_status'] as String?;
+        _verboseLogger?.logDebug('Membership status: ${membershipStatus ?? "not provided"}', source: 'ApiService');
         
         // If membership is expired or inactive, create error result with member data
         if (membershipStatus == 'expired') {
           _logger.w('Membership expired for: ${data['member_name']}');
+          _verboseLogger?.logWarning('Member ${data['member_name']} has expired membership', source: 'ApiService');
           final memberData = MemberData.fromJson(data);
           return ScanResult(
             success: false,
@@ -81,6 +98,7 @@ class ApiService {
           );
         } else if (membershipStatus == 'inactive') {
           _logger.w('Membership inactive for: ${data['member_name']}');
+          _verboseLogger?.logWarning('Member ${data['member_name']} has inactive membership', source: 'ApiService');
           final memberData = MemberData.fromJson(data);
           return ScanResult(
             success: false,
@@ -93,6 +111,7 @@ class ApiService {
         // Otherwise, parse as normal success
         final result = ScanResult.fromJson(data);
         _logger.i('Check-in/out successful: ${result.message}');
+        _verboseLogger?.logDebug('Successfully parsed ScanResult: ${result.message}', source: 'ApiService');
         return result;
       } else {
         _logger.w('Unexpected status code: ${response.statusCode}');
@@ -100,10 +119,15 @@ class ApiService {
       }
     } on DioException catch (e) {
       _logger.e('DioException: ${e.type} - ${e.message}');
+      _verboseLogger?.logDebug('DioException caught: Type=${e.type}, Message=${e.message}', source: 'ApiService');
+      
       // Log response data if available for debugging
       if (e.response?.data != null) {
         _logger.d('Response data: ${e.response!.data}');
+        _verboseLogger?.logDebug('Error response data: ${e.response!.data}', source: 'ApiService');
       }
+      
+      _verboseLogger?.logDebug('Handling Dio error...', source: 'ApiService');
       return _handleDioError(e);
     } catch (e) {
       _logger.e('Unexpected error: $e');
@@ -178,6 +202,7 @@ class ApiService {
   }) async {
     try {
       _logger.i('Fetching history from server since: $sinceDate');
+      _verboseLogger?.logDebug('Starting history fetch - sinceDate: $sinceDate, limit: $limit', source: 'ApiService');
 
       // Build query parameters
       final queryParams = <String, dynamic>{
@@ -187,23 +212,32 @@ class ApiService {
 
       if (sinceDate != null) {
         queryParams['created_at'] = 'gte.${sinceDate.toIso8601String()}';
+        _verboseLogger?.logDebug('Added date filter: ${sinceDate.toIso8601String()}', source: 'ApiService');
       }
 
+      _verboseLogger?.logDebug('Sending GET request to /api/history', source: 'ApiService');
+      final stopwatch = Stopwatch()..start();
+      
       // Fetch from api_logs endpoint
       final response = await _dio.get(
         '/api/history',
         queryParameters: queryParams,
       );
+      
+      stopwatch.stop();
+      _verboseLogger?.logDebug('History response received in ${stopwatch.elapsedMilliseconds}ms', source: 'ApiService');
 
       if (response.statusCode == 200) {
         final responseData = response.data;
+        _verboseLogger?.logDebug('Parsing history response data', source: 'ApiService');
         
         // Handle the new API response format
         if (responseData is Map<String, dynamic> && responseData['success'] == true) {
           final data = responseData['data'];
+          _verboseLogger?.logDebug('Found ${data is List ? data.length : 0} history records', source: 'ApiService');
           
           if (data is List) {
-            return data.map((item) {
+            final activities = data.map((item) {
               // Parse session entry to ActivityLog
               final responseDataObj = item['response_data'];
               String? avatarUrl;
@@ -261,17 +295,23 @@ class ApiService {
                 memberData: memberData, // Store full member data for details modal
               );
             }).toList();
+            
+            _verboseLogger?.logDebug('Successfully parsed ${activities.length} activity logs', source: 'ApiService');
+            return activities;
           }
         }
       }
 
       _logger.w('Failed to fetch history: ${response.statusCode}');
+      _verboseLogger?.logWarning('History fetch failed with status ${response.statusCode}', source: 'ApiService');
       return [];
     } on DioException catch (e) {
       _logger.e('Failed to fetch history from server: ${e.message}');
+      _verboseLogger?.logDebug('DioException during history fetch: ${e.type} - ${e.message}', source: 'ApiService');
       return [];
     } catch (e) {
       _logger.e('Unexpected error fetching history: $e');
+      _verboseLogger?.logDebug('Unexpected error during history fetch: $e', source: 'ApiService');
       return [];
     }
   }

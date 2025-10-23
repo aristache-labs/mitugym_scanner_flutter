@@ -2,14 +2,16 @@ import 'package:logger/logger.dart';
 import 'package:sqflite/sqflite.dart';
 import '../models/pending_action.dart';
 import 'offline_storage_service.dart';
+import 'logger_service.dart';
 
 /// Service for managing offline action queue
 /// Stores QR scans when offline and syncs when connection is restored
 class OfflineQueueService {
   final OfflineStorageService _storage;
   final Logger _logger = Logger();
+  final LoggerService? _verboseLogger;
 
-  OfflineQueueService(this._storage);
+  OfflineQueueService(this._storage, {LoggerService? verboseLogger}) : _verboseLogger = verboseLogger;
 
   /// Queue a scan action for later sync
   Future<PendingAction> queueAction({
@@ -19,12 +21,16 @@ class OfflineQueueService {
     bool isOfflineScan = true, // Default to true for queued actions
   }) async {
     try {
+      _verboseLogger?.logDebug('Queueing offline action for QR: $qrCode', source: 'OfflineQueue');
+      
       final pendingAction = PendingAction.create(
         qrCode: qrCode,
         apiKey: apiKey,
         type: action,
         isOfflineScan: isOfflineScan,
       );
+
+      _verboseLogger?.logDebug('Created pending action with ID: ${pendingAction.id}', source: 'OfflineQueue');
 
       final db = await _storage.database;
       await db.insert(
@@ -34,9 +40,11 @@ class OfflineQueueService {
       );
 
       _logger.i('Queued action: ${pendingAction.id} for QR: $qrCode');
+      _verboseLogger?.logDebug('Successfully inserted action into database', source: 'OfflineQueue');
       return pendingAction;
     } catch (e) {
       _logger.e('Failed to queue action: $e');
+      _verboseLogger?.logDebug('Error queueing action: $e', source: 'OfflineQueue');
       rethrow;
     }
   }
@@ -44,6 +52,7 @@ class OfflineQueueService {
   /// Get all pending (unsynced) actions
   Future<List<PendingAction>> getPendingActions() async {
     try {
+      _verboseLogger?.logDebug('Fetching pending actions from database', source: 'OfflineQueue');
       final db = await _storage.database;
       final results = await db.query(
         'pending_actions',
@@ -52,9 +61,12 @@ class OfflineQueueService {
         orderBy: 'timestamp ASC',
       );
 
-      return results.map((map) => PendingAction.fromMap(map)).toList();
+      final actions = results.map((map) => PendingAction.fromMap(map)).toList();
+      _verboseLogger?.logDebug('Found ${actions.length} pending actions', source: 'OfflineQueue');
+      return actions;
     } catch (e) {
       _logger.e('Failed to get pending actions: $e');
+      _verboseLogger?.logDebug('Error fetching pending actions: $e', source: 'OfflineQueue');
       return [];
     }
   }
@@ -66,7 +78,9 @@ class OfflineQueueService {
       final result = await db.rawQuery(
         'SELECT COUNT(*) as count FROM pending_actions WHERE synced = 0',
       );
-      return Sqflite.firstIntValue(result) ?? 0;
+      final count = Sqflite.firstIntValue(result) ?? 0;
+      _verboseLogger?.logTrace('Pending actions count: $count', source: 'OfflineQueue');
+      return count;
     } catch (e) {
       _logger.e('Failed to get pending count: $e');
       return 0;
@@ -76,6 +90,7 @@ class OfflineQueueService {
   /// Mark an action as synced
   Future<void> markAsSynced(String actionId) async {
     try {
+      _verboseLogger?.logDebug('Marking action $actionId as synced', source: 'OfflineQueue');
       final db = await _storage.database;
       await db.update(
         'pending_actions',

@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import '../models/activity_log.dart';
 import '../services/api_service.dart';
+import '../services/logger_service.dart';
 import 'offline_provider.dart';
 import 'config_provider.dart';
+import 'logger_provider.dart' as logger_provider;
 
 /// History state
 class HistoryState {
@@ -55,6 +57,8 @@ class HistoryState {
 class HistoryNotifier extends Notifier<HistoryState> {
   static const int pageSize = 50;
   final Logger _logger = Logger();
+  
+  LoggerService get _verboseLogger => ref.read(logger_provider.loggerServiceProvider);
 
   @override
   HistoryState build() {
@@ -63,9 +67,11 @@ class HistoryNotifier extends Notifier<HistoryState> {
 
   /// Load initial history from database
   Future<void> loadInitialHistory() async {
+    _verboseLogger.logDebug('Loading initial history from database', source: 'HistoryProvider');
     state = state.copyWith(isLoading: true, error: null, offset: 0);
 
     try {
+      _verboseLogger.logDebug('Fetching history - limit: $pageSize, offset: 0', source: 'HistoryProvider');
       final storage = ref.read(offlineStorageServiceProvider);
       final items = await storage.getCheckInHistory(
         limit: pageSize,
@@ -76,6 +82,7 @@ class HistoryNotifier extends Notifier<HistoryState> {
         statusFilter: state.statusFilter,
       );
 
+      _verboseLogger.logDebug('Loaded ${items.length} history items', source: 'HistoryProvider');
       state = state.copyWith(
         items: items,
         isLoading: false,
@@ -84,6 +91,7 @@ class HistoryNotifier extends Notifier<HistoryState> {
       );
     } catch (e) {
       _logger.e('Failed to load history: $e');
+      _verboseLogger.logDebug('Error loading history: $e', source: 'HistoryProvider');
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),
@@ -202,6 +210,7 @@ class HistoryNotifier extends Notifier<HistoryState> {
 
   /// Sync from server (incremental - fetch only new records)
   Future<void> syncFromServer() async {
+    _verboseLogger.logDebug('Starting incremental sync from server', source: 'HistoryProvider');
     state = state.copyWith(isLoading: true, error: null);
 
     try {
@@ -209,11 +218,14 @@ class HistoryNotifier extends Notifier<HistoryState> {
       final apiService = ApiService(
         apiUrl: config.apiUrl,
         apiKey: config.apiKey,
+        verboseLogger: _verboseLogger,
       );
 
       // Get last sync timestamp
       final lastSync = config.lastHistorySync ?? 
           DateTime.now().subtract(const Duration(days: 7));
+      
+      _verboseLogger.logDebug('Last sync was: $lastSync', source: 'HistoryProvider');
 
       // Fetch history from server
       final serverHistory = await apiService.fetchHistoryFromServer(
@@ -221,11 +233,15 @@ class HistoryNotifier extends Notifier<HistoryState> {
         limit: 500,
       );
 
+      _verboseLogger.logDebug('Received ${serverHistory.length} records from server', source: 'HistoryProvider');
+
       // Save to local database
       final storage = ref.read(offlineStorageServiceProvider);
       for (final activity in serverHistory) {
         await storage.saveCheckInHistory(activity, synced: true);
       }
+
+      _verboseLogger.logDebug('Saved all records to local database', source: 'HistoryProvider');
 
       // Update last sync timestamp
       await ref.read(configProvider.notifier).updateLastHistorySync(DateTime.now());
@@ -234,8 +250,10 @@ class HistoryNotifier extends Notifier<HistoryState> {
       await loadInitialHistory();
 
       _logger.i('Synced ${serverHistory.length} records from server');
+      _verboseLogger.logDebug('Sync completed successfully', source: 'HistoryProvider');
     } catch (e) {
       _logger.e('Failed to sync from server: $e');
+      _verboseLogger.logDebug('Sync failed: $e', source: 'HistoryProvider');
       state = state.copyWith(
         isLoading: false,
         error: 'Sync failed: ${e.toString()}',
