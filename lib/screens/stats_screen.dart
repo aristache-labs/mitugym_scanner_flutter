@@ -326,20 +326,27 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: AppColors.background,
-                  borderRadius: BorderRadius.circular(20),
+                  color: AppColors.primary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: AppColors.primary.withValues(alpha: 0.2),
+                    color: AppColors.primary.withValues(alpha: 0.25),
+                    width: 1,
                   ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    Icon(
+                      LucideIcons.trendingUp,
+                      color: AppColors.primary,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 8),
                     Text(
                       'Peak: ',
                       style: GoogleFonts.inter(
                         fontSize: 12,
-                        color: AppColors.textMuted,
+                        color: AppColors.textSecondary,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -356,7 +363,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
                       'people',
                       style: GoogleFonts.inter(
                         fontSize: 12,
-                        color: AppColors.textMuted,
+                        color: AppColors.textSecondary,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -760,15 +767,19 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  gradient: AppColors.primaryGradient,
-                  borderRadius: BorderRadius.circular(8),
+                  color: AppColors.primary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.25),
+                    width: 1,
+                  ),
                 ),
                 child: const Icon(
                   LucideIcons.clock,
-                  color: Colors.white,
-                  size: 18,
+                  color: AppColors.primary,
+                  size: 20,
                 ),
               ),
               const SizedBox(width: 12),

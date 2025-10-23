@@ -1342,12 +1342,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    gradient: AppColors.primaryGradient,
-                    borderRadius: BorderRadius.circular(8),
+                    color: AppColors.primary.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: AppColors.primary.withValues(alpha: 0.25),
+                      width: 1,
+                    ),
                   ),
-                  child: Icon(icon, color: Colors.white, size: 18),
+                  child: Icon(icon, color: AppColors.primary, size: 20),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -1424,10 +1428,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                   margin: const EdgeInsets.all(8),
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    gradient: AppColors.primaryGradient,
-                    borderRadius: BorderRadius.circular(8),
+                    color: AppColors.primary.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: AppColors.primary.withValues(alpha: 0.25),
+                      width: 1,
+                    ),
                   ),
-                  child: Icon(icon, color: Colors.white, size: 16),
+                  child: Icon(icon, color: AppColors.primary, size: 16),
                 ),
                 filled: true,
                 fillColor: AppColors.surface.withValues(alpha: 0.8),
