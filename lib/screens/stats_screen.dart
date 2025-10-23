@@ -46,9 +46,8 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
     _percentageAnimation = Tween<double>(begin: 0.0, end: 100.0).animate(
       CurvedAnimation(parent: _progressController, curve: Curves.easeOutCubic),
     );
-    // Fetch initial data (schedule + history)
-    _fetchData();
-    // Start hourly sync timer
+    // Skip initial fetch - data already loaded in splash screen
+    // Start hourly sync timer for periodic updates
     _startHourlySync();
   }
 

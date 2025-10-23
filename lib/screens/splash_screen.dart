@@ -5,6 +5,8 @@ import '../config/app_colors.dart';
 import '../services/audio_service.dart';
 import '../providers/auth_provider.dart';
 import '../providers/offline_provider.dart';
+import '../providers/history_provider.dart';
+import '../providers/gym_schedule_provider.dart';
 import 'main_layout_screen.dart';
 import 'login_screen.dart';
 
@@ -35,6 +37,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         _checkAuthentication(),
         Future.delayed(const Duration(seconds: 3)), // Minimum splash time
       ]);
+      
+      // After authentication, preload app data if authenticated
+      final authState = ref.read(authProvider);
+      if (authState.isAuthenticated) {
+        await _preloadAppData();
+      }
     } catch (e) {
       // Log error but continue
       debugPrint('Initialization error: $e');
@@ -120,6 +128,43 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       debugPrint('Authentication check completed');
     } catch (e) {
       debugPrint('Authentication check error: $e');
+    }
+  }
+
+  /// Preload app data (history, gym schedule, etc.)
+  Future<void> _preloadAppData() async {
+    try {
+      // Check if online before loading from server
+      final isOnline = ref.read(offlineProvider).isOnline;
+      
+      if (isOnline) {
+        if (mounted) {
+          setState(() => _loadingText = 'Loading history from server...');
+        }
+        
+        // Sync history from server (last 90 days)
+        await ref.read(historyProvider.notifier).syncFromServer();
+        debugPrint('✅ History synced from server during splash');
+        
+        if (mounted) {
+          setState(() => _loadingText = 'Loading gym schedule...');
+        }
+        
+        // Load gym schedule for today
+        await ref.read(gymScheduleProvider.notifier).fetchSchedule();
+        debugPrint('✅ Gym schedule loaded during splash');
+      } else {
+        // Offline - load from local database
+        if (mounted) {
+          setState(() => _loadingText = 'Loading cached data...');
+        }
+        
+        await ref.read(historyProvider.notifier).loadInitialHistory();
+        debugPrint('✅ History loaded from cache during splash (offline)');
+      }
+    } catch (e) {
+      debugPrint('App data preload error: $e');
+      // Don't block navigation on error, just log it
     }
   }
 

@@ -12,7 +12,6 @@ import '../providers/config_provider.dart';
 import '../providers/scan_provider.dart';
 import '../providers/windows_scanner_provider.dart';
 import '../providers/offline_provider.dart';
-import '../providers/history_provider.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/modern_sidebar_widget.dart';
 import '../widgets/offline_banner_widget.dart';
@@ -54,8 +53,8 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
         ref.read(windowsScannerControllerProvider.notifier).startScanner();
       }
       
-      // Initialize history sync service
-      _initializeHistoryServices();
+      // Start periodic sync service (history already loaded in splash screen)
+      _initializeHistorySyncService();
     });
     
     // Start timer to update clock every second
@@ -72,14 +71,13 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
     super.dispose();
   }
   
-  /// Initialize history services
-  Future<void> _initializeHistoryServices() async {
-    // Clear and sync fresh history from server on app startup
-    await ref.read(historyProvider.notifier).clearAndSyncFromServer();
-    
-    // Start periodic sync service for incremental updates
+  /// Initialize periodic history sync service
+  /// Note: Initial history load is done in splash screen for faster startup
+  void _initializeHistorySyncService() {
+    // Start periodic sync service for incremental updates every 30 minutes
     final syncService = ref.read(historySyncServiceProvider);
     syncService.startPeriodicSync();
+    debugPrint('✅ Periodic history sync service started');
   }
 
   // List of pages/screens

@@ -16,6 +16,7 @@ class HistorySyncService {
   HistorySyncService(this.ref);
 
   /// Start periodic sync (every 30 minutes)
+  /// Note: Initial sync is done in splash screen, so this only starts periodic updates
   void startPeriodicSync() {
     if (_isRunning) {
       _logger.w('Sync service already running');
@@ -25,8 +26,8 @@ class HistorySyncService {
     _isRunning = true;
     _logger.i('Starting periodic history sync service');
 
-    // Perform initial sync
-    Future.microtask(() => _performSync());
+    // Skip initial sync - already done in splash screen
+    // This service only handles periodic updates
 
     // Schedule periodic sync every 30 minutes
     _syncTimer = Timer.periodic(const Duration(minutes: 30), (timer) {
