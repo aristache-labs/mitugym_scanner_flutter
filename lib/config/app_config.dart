@@ -27,6 +27,12 @@ class AppConfig {
   // History settings
   final int historyRetentionDays;
   final DateTime? lastHistorySync;
+  
+  // USB Scanner settings
+  final bool useUsbScanner;
+  final String usbScannerMode; // 'real' or 'mock'
+  final String usbScannerHost;
+  final int usbScannerPort;
 
   const AppConfig({
     required this.apiUrl,
@@ -47,6 +53,10 @@ class AppConfig {
     this.verboseLogging = false,
     this.historyRetentionDays = 90,
     this.lastHistorySync,
+    this.useUsbScanner = false,
+    this.usbScannerMode = 'mock',
+    this.usbScannerHost = 'localhost',
+    this.usbScannerPort = 9876,
   });
 
   /// Default configuration
@@ -70,6 +80,10 @@ class AppConfig {
       verboseLogging: false,
       historyRetentionDays: 90,
       lastHistorySync: null,
+      useUsbScanner: false,
+      usbScannerMode: 'mock',
+      usbScannerHost: 'localhost',
+      usbScannerPort: 9876,
     );
   }
 
@@ -102,6 +116,10 @@ class AppConfig {
       verboseLogging: prefs.getBool('verboseLogging') ?? false,
       historyRetentionDays: prefs.getInt('history_retention_days') ?? 90,
       lastHistorySync: lastHistorySync,
+      useUsbScanner: prefs.getBool('use_usb_scanner') ?? false,
+      usbScannerMode: prefs.getString('usb_scanner_mode') ?? 'mock',
+      usbScannerHost: prefs.getString('usb_scanner_host') ?? 'localhost',
+      usbScannerPort: prefs.getInt('usb_scanner_port') ?? 9876,
     );
   }
 
@@ -129,6 +147,10 @@ class AppConfig {
     if (lastHistorySync != null) {
       await prefs.setInt('last_history_sync', lastHistorySync!.millisecondsSinceEpoch);
     }
+    await prefs.setBool('use_usb_scanner', useUsbScanner);
+    await prefs.setString('usb_scanner_mode', usbScannerMode);
+    await prefs.setString('usb_scanner_host', usbScannerHost);
+    await prefs.setInt('usb_scanner_port', usbScannerPort);
   }
 
   /// Create a copy with updated fields
@@ -151,6 +173,10 @@ class AppConfig {
     bool? verboseLogging,
     int? historyRetentionDays,
     DateTime? lastHistorySync,
+    bool? useUsbScanner,
+    String? usbScannerMode,
+    String? usbScannerHost,
+    int? usbScannerPort,
   }) {
     return AppConfig(
       apiUrl: apiUrl ?? this.apiUrl,
@@ -171,6 +197,10 @@ class AppConfig {
       verboseLogging: verboseLogging ?? this.verboseLogging,
       historyRetentionDays: historyRetentionDays ?? this.historyRetentionDays,
       lastHistorySync: lastHistorySync ?? this.lastHistorySync,
+      useUsbScanner: useUsbScanner ?? this.useUsbScanner,
+      usbScannerMode: usbScannerMode ?? this.usbScannerMode,
+      usbScannerHost: usbScannerHost ?? this.usbScannerHost,
+      usbScannerPort: usbScannerPort ?? this.usbScannerPort,
     );
   }
 }
