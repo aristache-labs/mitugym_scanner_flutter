@@ -15,7 +15,7 @@ A **premium** Windows desktop QR code scanner application for gym member check-i
 - [Dependencies & Technologies](#-dependencies--technologies)
 - [Design System](#-design-system)
 - [Export Formats](#-export-formats)
-- [Logs & Data Storage](#-logs)
+- [Logs & Data Storage](#-logs--data-storage)
 - [Project Architecture](#-project-architecture)
 - [Core Functionalities](#-core-functionalities)
 - [Technical Implementation](#-technical-implementation)
@@ -52,6 +52,7 @@ A **premium** Windows desktop QR code scanner application for gym member check-i
 - **Duplicate Prevention** - Smart duplicate detection within cooldown period
 - **Conflict Resolution** - Automatic handling of offline/online conflicts
 - **Persistent History** - Configurable retention (7-365 days)
+- **Verbose Logging** - Optional detailed logging for debugging
 
 ### 📊 Dashboard & Analytics
 - **Real-time Stats** - Total scans, check-ins, check-outs, denied access
@@ -60,15 +61,22 @@ A **premium** Windows desktop QR code scanner application for gym member check-i
 - **Today's Activity** - Detailed view with sortable columns
 - **Member Duration Tracking** - Automatic calculation of gym session time
 - **Active Session Monitoring** - Track members currently in the gym
+- **Live Occupancy Chart** - Real-time line chart showing gym occupancy by hour
+- **Peak Occupancy Tracking** - Display maximum gym occupancy for the day
+- **Gym Schedule Integration** - Shows occupancy only during gym operating hours
+- **Hourly Auto-Sync** - Automatic data refresh every hour
 
 ### 📜 History & Search
 - **Complete History View** - All activity logs with pagination
 - **Advanced Filtering** - By status (all/success/failed), date range, member name
 - **Date Grouping** - Activities grouped by date with expand/collapse
-- **Sortable Columns** - Sort by member, check-in, check-out, duration
+- **Sortable Columns** - Sort by member, check-in, check-out, duration, time
 - **Member Search** - Real-time search across all members
 - **Status Filtering** - Filter by active/expired membership
 - **Export Functionality** - CSV and Text format exports
+- **Date Range Picker** - Modern compact modal with quick presets (today, yesterday, last 7 days, last 30 days, this month, last month)
+- **Visual Date Selection** - Interactive calendar with range selection
+- **Filter Chips** - Visual filter indicators with clear all option
 
 ### 👥 Member Management
 - **Member Database** - Local SQLite cache of all members
@@ -89,6 +97,9 @@ A **premium** Windows desktop QR code scanner application for gym member check-i
   - Scan cooldown duration (2-15 seconds)
   - Show camera by default toggle
   - Auto-start scanning toggle
+  - Font size adjustment
+  - Animation speed control
+  - Theme selection
   
 - **Audio Tab**
   - Enable/disable audio feedback
@@ -100,6 +111,8 @@ A **premium** Windows desktop QR code scanner application for gym member check-i
   - Export format (CSV/Text)
   - Database cleanup tools
   - Server sync functionality
+  - Verbose logging toggle
+  - Minimize to tray option
 
 ### 🔐 Authentication & Security
 - **Session-based Auth** - Secure authentication with session tokens
@@ -156,18 +169,31 @@ A **premium** Windows desktop QR code scanner application for gym member check-i
 - **Peak Hours Analysis**: Morning, afternoon, evening breakdown
 - **Recent Activity**: Last 5 activities with full details
 - **Sortable Table**: Same structure as dashboard
+- **Live Occupancy Chart**: Real-time line chart with fl_chart
+  - Shows current gym occupancy by hour
+  - Live data (solid line) vs projected data (dashed line)
+  - Filtered by gym schedule (opening/closing hours)
+  - Peak occupancy indicator
+  - Updates hourly automatically
+  - Interactive tooltips with hour and occupancy count
 
 ### 6. History Screen
 - **Search & Filters**:
   - Real-time search by member name
   - Filter chips: All, Success, Denied
-  - Date range picker
+  - Modern date range picker modal with quick presets
   - Clear filters button
 - **Date Grouping**: Activities grouped by date with expand/collapse
-- **Sortable Columns**: Member, check-in, check-out, duration
-- **Pagination**: Lazy loading with "load more" functionality
+- **Sortable Columns**: Member, check-in, check-out, duration, time
+- **Pagination**: Lazy loading with infinite scroll (loads more at 90% scroll)
 - **Export Button**: Export filtered results to CSV or Text
 - **Activity Details**: Click member to view full details
+- **Date Range Picker Modal**:
+  - Quick presets: Today, Yesterday, Last 7 Days, Last 30 Days, This Month, Last Month
+  - Interactive calendar with visual date selection
+  - Range selection with start and end dates
+  - Month navigation
+  - Modern Material Design 3 UI with gradients
 
 ### 7. Search Screen (Members)
 - **Search Bar**: Real-time search across all members
@@ -303,9 +329,10 @@ Content-Type: application/json
 - **cached_network_image** (^3.4.1) - Network image caching
 - **shimmer** (^3.0.0) - Loading shimmer effects
 - **badges** (^3.1.2) - Badge widgets for notifications
-- **fl_chart** (^1.1.1) - Charts and graphs (currently unused)
+- **fl_chart** (^1.1.1) - Charts and graphs for live occupancy visualization
 - **flutter_animate** (^4.5.0) - Animation utilities
 - **flutter_staggered_animations** (^1.1.1) - Staggered list animations
+- **lucide_icons** (^0.257.0) - Modern icon library
 
 ### Desktop Support
 - **window_manager** (^0.5.1) - Window control for desktop platforms
@@ -406,6 +433,7 @@ lib/
 ├── models/                        # Data models & entities
 │   ├── activity_log.dart          # Activity/scan log model
 │   ├── auth_session.dart          # Authentication session model
+│   ├── gym_schedule.dart          # Gym schedule model (opening/closing hours)
 │   ├── member_data.dart           # Member information model
 │   ├── pending_action.dart        # Offline queue action model
 │   └── scan_result.dart           # QR scan result model
@@ -413,7 +441,9 @@ lib/
 ├── providers/                     # Riverpod state management
 │   ├── auth_provider.dart         # Authentication state
 │   ├── config_provider.dart       # App configuration state
+│   ├── gym_schedule_provider.dart # Gym schedule state
 │   ├── history_provider.dart      # Activity history state
+│   ├── logger_provider.dart       # Logger service provider
 │   ├── offline_provider.dart      # Offline mode state
 │   ├── offline_queue_provider.dart # Offline queue state
 │   ├── scan_provider.dart         # Scan state & logic
@@ -449,6 +479,7 @@ lib/
 │   ├── collapsible_camera_widget.dart # Camera preview with collapse
 │   ├── control_buttons.dart       # Scanner control buttons
 │   ├── countdown_timer.dart       # Cooldown timer widget
+│   ├── date_range_picker_modal.dart # Modern date range picker modal
 │   ├── member_avatar_modal.dart   # Avatar expansion modal
 │   ├── member_details_modal.dart  # Member info modal
 │   ├── member_info_card.dart      # Member information card
@@ -477,7 +508,9 @@ windows/                           # Windows platform configuration
 #### State Management (Providers)
 - **AuthProvider**: Manages authentication state and session persistence
 - **ConfigProvider**: Handles app settings and preferences
+- **GymScheduleProvider**: Manages gym schedule (opening/closing hours) and occupancy tracking
 - **HistoryProvider**: Manages activity logs with pagination and filtering
+- **LoggerProvider**: Provides singleton logger service with verbose logging configuration
 - **OfflineProvider**: Tracks online/offline connectivity status
 - **OfflineQueueProvider**: Manages queued actions when offline
 - **ScanProvider**: Controls QR scanning state and results
@@ -499,6 +532,7 @@ windows/                           # Windows platform configuration
 #### Data Models
 - **ActivityLog**: Represents a member check-in/check-out event
 - **AuthSession**: Stores authentication session data
+- **GymSchedule**: Gym schedule model with opening/closing hours and occupancy calculations
 - **MemberData**: Member profile information
 - **PendingAction**: Queued action for offline sync
 - **ScanResult**: Result from QR code scan operation
@@ -508,9 +542,11 @@ windows/                           # Windows platform configuration
 - **MemberInfoCard**: Displays member details after scan
 - **MemberDetailsModal**: Full member profile modal
 - **MemberAvatarModal**: Expandable avatar viewer
+- **DateRangePickerModal**: Modern date range picker with presets and calendar
 - **OfflineBannerWidget**: Shows offline status and sync queue
 - **CollapsibleCameraWidget**: Camera preview with show/hide
 - **CountdownTimer**: Visual cooldown timer
+- **ActivityListWidget**: Reusable activity list component
 
 ## 🔑 Core Functionalities
 
@@ -559,6 +595,16 @@ windows/                           # Windows platform configuration
 4. **Auto-Login**: Automatic login if valid session exists
 5. **Logout**: Clean session termination
 6. **Expiry Handling**: Automatic logout on session expiry
+
+### Gym Schedule & Occupancy Tracking
+1. **Schedule Fetching**: Automatic retrieval of daily gym schedule from API
+2. **Opening Hours**: Dynamic opening and closing hour tracking
+3. **Occupancy Calculation**: Real-time calculation of gym occupancy by hour
+4. **Chart Visualization**: Live occupancy displayed via fl_chart line graph
+5. **Peak Tracking**: Identification and display of peak occupancy times
+6. **Schedule Integration**: Chart displays only during gym operating hours
+7. **Hourly Updates**: Automatic data refresh every hour
+8. **Closed Day Handling**: Support for gym closure days
 
 ## 🛠️ Technical Implementation
 
@@ -616,8 +662,9 @@ CREATE TABLE offline_queue (
 #### Endpoints Used:
 - `POST /api/auth/login` - User authentication
 - `POST /api/auth/logout` - Session termination
-- `POST /api/checkin` - Check-in/checkout with TOTP validation
+- `POST /api/checkin` - Check-in/checkout with TOTP validation (supports offline scan flag)
 - `GET /api/checkins/history` - Fetch activity history
+- `GET /api/gym-schedule` - Fetch daily gym schedule (opening/closing hours)
 
 ### Configuration Storage
 All settings stored in SharedPreferences:
@@ -635,6 +682,11 @@ All settings stored in SharedPreferences:
 - `camera_visible`: Show camera preview by default
 - `session_token`: Authentication session token
 - `last_history_sync`: Last sync timestamp
+- `font_size`: UI font size adjustment
+- `animation_speed`: Animation speed multiplier
+- `theme`: Theme selection
+- `verbose_logging`: Detailed debug logging toggle
+- `minimize_to_tray`: Minimize to system tray option
 
 ## 🤝 Contributing
 
@@ -673,14 +725,21 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - ✅ Server synchronization
 - ✅ Member search functionality
 - ✅ Duplicate prevention system
+- ✅ Live occupancy tracking with fl_chart
+- ✅ Gym schedule integration
+- ✅ Modern date range picker modal
+- ✅ Verbose logging system
+- ✅ Lucide icons integration
+- ✅ Hourly auto-sync for stats
 
 ### Future Enhancements
 - [ ] Multi-platform support (macOS, Linux)
-- [ ] Real-time dashboard charts with fl_chart
 - [ ] Member photo capture
 - [ ] Export to PDF
 - [ ] Multi-language support
 - [ ] Dark/Light theme toggle
+- [ ] Advanced chart filtering options
+- [ ] Email reporting functionality
 
 ## 🙏 Acknowledgments
 
