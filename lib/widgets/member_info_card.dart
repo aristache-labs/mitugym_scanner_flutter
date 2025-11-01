@@ -202,12 +202,12 @@ class MemberInfoCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: borderColor.withValues(alpha: 0.3),
-          width: 2,
+          color: borderColor.withValues(alpha: 0.15),
+          width: 1.5,
         ),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(18.5),
         child: data.hasAvatar
             ? CachedNetworkImage(
                 imageUrl: data.avatarUrl!,
