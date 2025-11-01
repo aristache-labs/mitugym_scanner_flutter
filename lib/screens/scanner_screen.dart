@@ -128,9 +128,9 @@ class ScannerScreen extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: scannerState.isActive 
-                        ? AppColors.success.withValues(alpha: 0.15)
-                        : AppColors.primary.withValues(alpha: 0.15),
+                    color: (scannerState.isActive 
+                        ? AppColors.success
+                        : AppColors.primary).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -432,16 +432,17 @@ class ScannerScreen extends ConsumerWidget {
     );
   }
 
-  /// Build countdown card with modern, compact design
+  /// Build countdown card with compact design
   Widget _buildCountdownCard(ScanState scanState) {
     return Container(
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppColors.warning.withValues(alpha: 0.15),
-            AppColors.warningLight.withValues(alpha: 0.08),
+            AppColors.warning.withValues(alpha: 0.12),
+            AppColors.warningLight.withValues(alpha: 0.06),
           ],
         ),
         borderRadius: BorderRadius.circular(AppColors.radiusMedium),
@@ -450,69 +451,8 @@ class ScannerScreen extends ConsumerWidget {
           width: 1,
         ),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Compact header
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  AppColors.warning.withValues(alpha: 0.2),
-                  const Color(0xFF0D0D0D).withValues(alpha: 0.8),
-                ],
-              ),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(16),
-              ),
-              border: Border(
-                bottom: BorderSide(
-                  color: AppColors.warning.withValues(alpha: 0.25),
-                  width: 1,
-                ),
-              ),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: AppColors.warning.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Icon(
-                    LucideIcons.clock,
-                    color: AppColors.warning,
-                    size: 14,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  'Cooldown Active',
-                  style: GoogleFonts.inter(
-                    color: AppColors.warning,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.2,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          
-          // Countdown timer content
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: CountdownTimer(
-              remainingSeconds: scanState.cooldownRemaining,
-              totalSeconds: scanState.cooldownRemaining,
-            ),
-          ),
-        ],
+      child: CountdownTimer(
+        remainingSeconds: scanState.cooldownRemaining,
       ),
     )
         .animate()

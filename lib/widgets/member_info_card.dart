@@ -194,38 +194,30 @@ class MemberInfoCard extends StatelessWidget {
 
   /// Build modern avatar with better styling
   Widget _buildModernAvatar(MemberData data, bool isSuccess) {
-    final borderGradient = LinearGradient(
-      colors: isSuccess 
-          ? [AppColors.success, AppColors.successLight]
-          : [AppColors.error, AppColors.errorLight],
-    );
+    final borderColor = isSuccess ? AppColors.success : AppColors.error;
 
     return Container(
       width: 80,
       height: 80,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        gradient: borderGradient,
-      ),
-      child: Container(
-        margin: const EdgeInsets.all(3), // Use margin instead of padding
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(17),
-          color: AppColors.surface,
+        border: Border.all(
+          color: borderColor.withValues(alpha: 0.3),
+          width: 2,
         ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18),
         child: data.hasAvatar
-            ? ClipRRect(
-                borderRadius: BorderRadius.circular(17),
-                child: CachedNetworkImage(
-                  imageUrl: data.avatarUrl!,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => Shimmer.fromColors(
-                    baseColor: AppColors.surface,
-                    highlightColor: AppColors.primary.withValues(alpha: 0.3),
-                    child: Container(color: AppColors.surface),
-                  ),
-                  errorWidget: (context, url, error) => _buildFallbackAvatar(data),
+            ? CachedNetworkImage(
+                imageUrl: data.avatarUrl!,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Shimmer.fromColors(
+                  baseColor: AppColors.surface,
+                  highlightColor: AppColors.primary.withValues(alpha: 0.3),
+                  child: Container(color: AppColors.surface),
                 ),
+                errorWidget: (context, url, error) => _buildFallbackAvatar(data),
               )
             : _buildFallbackAvatar(data),
       ),
@@ -236,7 +228,6 @@ class MemberInfoCard extends StatelessWidget {
   Widget _buildFallbackAvatar(MemberData data) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(17),
         gradient: AppColors.primaryGradient,
       ),
       child: Center(
