@@ -19,33 +19,7 @@ class CountdownTimer extends StatefulWidget {
   State<CountdownTimer> createState() => _CountdownTimerState();
 }
 
-class _CountdownTimerState extends State<CountdownTimer>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _pulseController;
-  late Animation<double> _pulseAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _pulseController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
-      vsync: this,
-    );
-    _pulseAnimation = Tween<double>(
-      begin: 1.0,
-      end: 1.1,
-    ).animate(CurvedAnimation(
-      parent: _pulseController,
-      curve: Curves.easeInOut,
-    ));
-    _pulseController.repeat(reverse: true);
-  }
-
-  @override
-  void dispose() {
-    _pulseController.dispose();
-    super.dispose();
-  }
+class _CountdownTimerState extends State<CountdownTimer> {
 
   @override
   Widget build(BuildContext context) {
@@ -68,20 +42,6 @@ class _CountdownTimerState extends State<CountdownTimer>
           color: AppColors.warning.withValues(alpha: 0.3),
           width: 2,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.warning.withValues(alpha: 0.2),
-            blurRadius: 25,
-            offset: const Offset(0, 10),
-            spreadRadius: -5,
-          ),
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.15),
-            blurRadius: 30,
-            offset: const Offset(0, 15),
-            spreadRadius: -8,
-          ),
-        ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
@@ -101,35 +61,20 @@ class _CountdownTimerState extends State<CountdownTimer>
           padding: const EdgeInsets.all(24),
           child: Column(
             children: [
-              // Header with animated icon and title
+              // Header with icon and title
               Row(
                 children: [
-                  AnimatedBuilder(
-                    animation: _pulseAnimation,
-                    builder: (context, child) {
-                      return Transform.scale(
-                        scale: _pulseAnimation.value,
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            gradient: AppColors.warningGradient,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.warning.withValues(alpha: 0.4),
-                                blurRadius: 15,
-                                spreadRadius: 3,
-                              ),
-                            ],
-                          ),
-                          child: const Icon(
-                            Icons.timer_rounded,
-                            color: Colors.white,
-                            size: 24,
-                          ),
-                        ),
-                      );
-                    },
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.warning.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      Icons.timer_rounded,
+                      color: AppColors.warning,
+                      size: 24,
+                    ),
                   ),
                   const SizedBox(width: 16),
                   
@@ -163,26 +108,23 @@ class _CountdownTimerState extends State<CountdownTimer>
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
-                      gradient: AppColors.warningGradient,
+                      color: AppColors.warning.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.warning.withValues(alpha: 0.3),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
+                      border: Border.all(
+                        color: AppColors.warning.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
                     ),
                     child: Text(
                       '${widget.remainingSeconds}s',
-            style: GoogleFonts.inter(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 0.5,
-                        ),
+                      style: GoogleFonts.inter(
+                        color: AppColors.warning,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.5,
                       ),
                     ),
+                  ),
                 ],
               ),
               
@@ -241,27 +183,16 @@ class _CountdownTimerState extends State<CountdownTimer>
                             ),
                           ),
                           
-                          // Animated progress bar
+                          // Progress bar
                           FractionallySizedBox(
                             widthFactor: progress,
                             child: Container(
                               decoration: BoxDecoration(
                                 gradient: AppColors.warningGradient,
                                 borderRadius: BorderRadius.circular(8),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppColors.warning.withValues(alpha: 0.6),
-                                    blurRadius: 8,
-                                    spreadRadius: 1,
-                                  ),
-                                ],
                               ),
                             ),
-                          ).animate(onPlay: (controller) => controller.repeat())
-                              .shimmer(
-                                duration: 2000.ms,
-                                color: Colors.white.withValues(alpha: 0.3),
-                              ),
+                          ),
                         ],
                       ),
                     ),
