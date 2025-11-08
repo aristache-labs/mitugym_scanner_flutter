@@ -256,7 +256,7 @@ class UnifiedActivityTable extends StatelessWidget {
             ),
           ),
           
-          const SizedBox(width: 20),
+          const SizedBox(width: 10),
           
           // Checked In column
           Expanded(
@@ -267,7 +267,7 @@ class UnifiedActivityTable extends StatelessWidget {
             ),
           ),
           
-          const SizedBox(width: 20),
+          const SizedBox(width: 10),
           
           // Checked Out column
           Expanded(
@@ -275,7 +275,7 @@ class UnifiedActivityTable extends StatelessWidget {
             child: _buildCheckOutCell(activity),
           ),
           
-          const SizedBox(width: 20),
+          const SizedBox(width: 10),
           
           // Duration column
           SizedBox(
@@ -570,13 +570,16 @@ class UnifiedActivityTable extends StatelessWidget {
                 size: 13,
                 color: AppColors.warning,
               ),
-              const SizedBox(width: 5),
-              Text(
-                'Active Session',
-                style: GoogleFonts.inter(
-                  color: AppColors.warning,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
+              const SizedBox(width: 4),
+              Flexible(
+                child: Text(
+                  'Active Session',
+                  style: GoogleFonts.inter(
+                    color: AppColors.warning,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],

@@ -790,17 +790,15 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     ),
                     const SizedBox(width: 12),
                     // Date text
-                    Expanded(
-                    child: Text(
+                    Text(
                       dateKey,
-                        style: GoogleFonts.inter(
-                          color: isExpanded ? AppColors.text : AppColors.textMuted,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.2,
+                      style: GoogleFonts.inter(
+                        color: isExpanded ? AppColors.text : AppColors.textMuted,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.2,
                       ),
                     ),
-                  ),
                     const SizedBox(width: 12),
                     // Scan count badge
                     Container(
@@ -822,17 +820,19 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                             color: AppColors.textMuted,
                           ),
                           const SizedBox(width: 4),
-                  Text(
+                          Text(
                             '${dayActivities.length}',
                             style: GoogleFonts.inter(
                               color: AppColors.textMuted,
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
+                    // Spacer to push everything to the left
+                    const Spacer(),
                   ],
                 ),
               ),
@@ -914,7 +914,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             ),
           ),
           
-          const SizedBox(width: 20),
+          const SizedBox(width: 10),
           
           // Checked In column
           Expanded(
@@ -923,7 +923,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
               'CHECKED IN',
               'checkIn',
               padding: const EdgeInsets.only(
-                left: 170,
+                left: 180,
                 right: 4,
                 top: 6,
                 bottom: 6,
@@ -931,7 +931,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             ),
           ),
           
-          const SizedBox(width: 20),
+          const SizedBox(width: 10),
           
           // Checked Out column
           Expanded(
@@ -948,7 +948,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             ),
           ),
           
-          const SizedBox(width: 20),
+          const SizedBox(width: 10),
           
           // Duration column
           SizedBox(
