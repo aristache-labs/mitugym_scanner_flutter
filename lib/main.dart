@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:window_manager/window_manager.dart';
@@ -24,6 +25,13 @@ void main() async {
     await windowManager.focus();
     // Prevent default close behavior to allow tray service to handle it
     await windowManager.setPreventClose(true);
+    
+    // Set window icon (title bar and taskbar)
+    if (Platform.isWindows) {
+      await windowManager.setIcon('assets/images/logo.ico');
+    } else {
+      await windowManager.setIcon('assets/images/logo.png');
+    }
   });
 
   runApp(
