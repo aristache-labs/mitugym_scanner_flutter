@@ -901,7 +901,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           children: [
           // Member column (with avatar space)
           SizedBox(
-            width: 220,
+            width: 200,
             child: _buildSortableHeader(
               'MEMBER',
               'member',
@@ -914,20 +914,24 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             ),
           ),
           
+          const SizedBox(width: 20),
+          
           // Checked In column
-            Expanded(
-            flex: 2,
+          Expanded(
+            flex: 3,
             child: _buildSortableHeader(
               'CHECKED IN',
               'checkIn',
               padding: const EdgeInsets.only(
-                left: 30,
+                left: 170,
                 right: 4,
                 top: 6,
                 bottom: 6,
               ),
             ),
           ),
+          
+          const SizedBox(width: 20),
           
           // Checked Out column
           Expanded(
@@ -936,7 +940,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
               'CHECKED OUT',
               'checkOut',
               padding: const EdgeInsets.only(
-                left: 0,
+                left: 2,
                 right: 4,
                 top: 6,
                 bottom: 6,
@@ -944,15 +948,17 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             ),
           ),
           
+          const SizedBox(width: 20),
+          
           // Duration column
           SizedBox(
-            width: 160,
+            width: 120,
             child: _buildSortableHeader(
               'DURATION',
               'duration',
               padding: const EdgeInsets.only(
                 left: 25,
-                right: 4,
+                right: 0,
                 top: 6,
                 bottom: 6,
               ),

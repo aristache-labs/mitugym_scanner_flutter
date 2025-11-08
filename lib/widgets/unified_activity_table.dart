@@ -167,7 +167,7 @@ class UnifiedActivityTable extends StatelessWidget {
         children: [
           // Member column (avatar + name)
           SizedBox(
-            width: 220,
+            width: 200,
             child: Row(
               children: [
                 // Avatar with status indicator
@@ -256,11 +256,18 @@ class UnifiedActivityTable extends StatelessWidget {
             ),
           ),
           
+          const SizedBox(width: 20),
+          
           // Checked In column
           Expanded(
-            flex: 2,
-            child: _buildCheckInCell(activity),
+            flex: 3,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 150),
+              child: _buildCheckInCell(activity),
+            ),
           ),
+          
+          const SizedBox(width: 20),
           
           // Checked Out column
           Expanded(
@@ -268,9 +275,11 @@ class UnifiedActivityTable extends StatelessWidget {
             child: _buildCheckOutCell(activity),
           ),
           
+          const SizedBox(width: 20),
+          
           // Duration column
           SizedBox(
-            width: 160,
+            width: 120,
             child: _buildDurationCell(activity),
           ),
         ],
