@@ -66,64 +66,41 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           delegate: _ActivitySectionHeaderDelegate(
             minHeight: 130,
             maxHeight: 130,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                // Background filler to keep corners consistent when pinned
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        AppColors.card,
-                        AppColors.surface,
-                      ],
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppColors.card,
+                    AppColors.surface,
+                  ],
+                ),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
+                ),
+                border: Border.all(
+                  color: AppColors.border.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Today\'s Activity (${sortedActivities.length} entries)',
+                    style: GoogleFonts.inter(
+                      color: AppColors.textPrimary,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-                // Rounded header content
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.fromLTRB(24, 24, 24, 4),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          AppColors.card,
-                          AppColors.surface,
-                        ],
-                      ),
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(16),
-                        topRight: Radius.circular(16),
-                      ),
-                      border: Border.all(
-                        color: AppColors.border.withValues(alpha: 0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Today\'s Activity (${sortedActivities.length} entries)',
-                          style: GoogleFonts.inter(
-                            color: AppColors.textPrimary,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        _buildActivityTableHeader(),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+                  const SizedBox(height: 20),
+                  _buildActivityTableHeader(),
+                ],
+              ),
             ),
           ),
         ),
