@@ -715,7 +715,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
       children: [
         // Activity list with padding for fixed header
         Positioned.fill(
-          top: 55, // Height of the header
+          top: 48, // Height of the header
           child: ListView.builder(
             controller: _scrollController,
             padding: EdgeInsets.zero,
@@ -870,77 +870,131 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   /// Build table header (like web panel) with sorting
   Widget _buildTableHeader() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      height: 48,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
         color: AppColors.surface.withValues(alpha: 0.5),
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(12),
           topRight: Radius.circular(12),
         ),
-        border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.3),
-          width: 1,
+        border: Border(
+          top: BorderSide(
+            color: AppColors.border.withValues(alpha: 0.3),
+            width: 1,
+          ),
+          left: BorderSide(
+            color: AppColors.border.withValues(alpha: 0.3),
+            width: 1,
+          ),
+          right: BorderSide(
+            color: AppColors.border.withValues(alpha: 0.3),
+            width: 1,
+          ),
+          bottom: BorderSide(
+            color: AppColors.border.withValues(alpha: 0.3),
+            width: 1,
+          ),
         ),
       ),
         child: Row(
           children: [
           // Member column (with avatar space)
           SizedBox(
-            width: 200,
-            child: _buildSortableHeader('MEMBER', 'member'),
+            width: 220,
+            child: _buildSortableHeader(
+              'MEMBER',
+              'member',
+              padding: const EdgeInsets.only(
+                left: 4,
+                right: 4,
+                top: 6,
+                bottom: 6,
+              ),
+            ),
           ),
           
           // Checked In column
             Expanded(
             flex: 2,
-            child: _buildSortableHeader('CHECKED IN', 'checkIn'),
+            child: _buildSortableHeader(
+              'CHECKED IN',
+              'checkIn',
+              padding: const EdgeInsets.only(
+                left: 30,
+                right: 4,
+                top: 6,
+                bottom: 6,
+              ),
+            ),
           ),
           
           // Checked Out column
           Expanded(
             flex: 2,
-            child: _buildSortableHeader('CHECKED OUT', 'checkOut'),
+            child: _buildSortableHeader(
+              'CHECKED OUT',
+              'checkOut',
+              padding: const EdgeInsets.only(
+                left: 0,
+                right: 4,
+                top: 6,
+                bottom: 6,
+              ),
+            ),
           ),
           
           // Duration column
           SizedBox(
-            width: 140,
-            child: _buildSortableHeader('DURATION', 'duration'),
+            width: 160,
+            child: _buildSortableHeader(
+              'DURATION',
+              'duration',
+              padding: const EdgeInsets.only(
+                left: 25,
+                right: 4,
+                top: 6,
+                bottom: 6,
+              ),
+            ),
           ),
         ],
       ),
     );
   }
   
-  Widget _buildSortableHeader(String label, String sortKey) {
+  Widget _buildSortableHeader(String label, String sortKey, {required EdgeInsets padding}) {
     final isActive = _sortBy == sortKey;
     
-    return InkWell(
-      onTap: () => _toggleSort(sortKey),
-      borderRadius: BorderRadius.circular(6),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-              label,
-              style: GoogleFonts.inter(
-                color: isActive ? AppColors.primary : AppColors.textMuted,
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.8,
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: InkWell(
+        onTap: () => _toggleSort(sortKey),
+        borderRadius: BorderRadius.circular(6),
+        child: Padding(
+          padding: padding,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                label,
+                style: GoogleFonts.inter(
+                  color: isActive ? AppColors.primary : AppColors.textMuted,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.8,
+                ),
               ),
-            ),
-            const SizedBox(width: 4),
-                      Icon(
-              isActive
-                  ? (_sortAscending ? LucideIcons.arrowUp : LucideIcons.arrowDown)
-                  : LucideIcons.arrowUpDown,
-                        size: 14,
-              color: isActive ? AppColors.primary : AppColors.textMuted.withValues(alpha: 0.5),
-            ),
-          ],
+              const SizedBox(width: 4),
+                        Icon(
+                isActive
+                    ? (_sortAscending ? LucideIcons.arrowUp : LucideIcons.arrowDown)
+                    : LucideIcons.arrowUpDown,
+                          size: 14,
+                color: isActive ? AppColors.primary : AppColors.textMuted.withValues(alpha: 0.5),
+              ),
+            ],
+          ),
         ),
       ),
     );

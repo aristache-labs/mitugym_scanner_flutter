@@ -1014,25 +1014,61 @@ class _ActivityTableHeaderDelegate extends SliverPersistentHeaderDelegate {
                 // Member column
                 SizedBox(
                   width: 220,
-                  child: _buildSortableHeader('MEMBER', 'member'),
+                  child: _buildSortableHeader(
+                    'MEMBER',
+                    'member',
+                    padding: const EdgeInsets.only(
+                      left: 4,
+                      right: 4,
+                      top: 6,
+                      bottom: 6,
+                    ),
+                  ),
                 ),
                 
                 // Checked In column
                 Expanded(
                   flex: 2,
-                  child: _buildSortableHeader('CHECKED IN', 'checkIn'),
+                  child: _buildSortableHeader(
+                    'CHECKED IN',
+                    'checkIn',
+                    padding: const EdgeInsets.only(
+                      left: 30,
+                      right: 4,
+                      top: 6,
+                      bottom: 6,
+                    ),
+                  ),
                 ),
                 
                 // Checked Out column
                 Expanded(
                   flex: 2,
-                  child: _buildSortableHeader('CHECKED OUT', 'checkOut'),
+                  child: _buildSortableHeader(
+                    'CHECKED OUT',
+                    'checkOut',
+                    padding: const EdgeInsets.only(
+                      left: 0,
+                      right: 4,
+                      top: 6,
+                      bottom: 6,
+                    ),
+                  ),
                 ),
                 
                 // Duration column
                 SizedBox(
                   width: 160,
-                  child: _buildSortableHeader('DURATION', 'duration'),
+                  child: _buildSortableHeader(
+                    'DURATION',
+                    'duration',
+                    padding: const EdgeInsets.only(
+                      left: 25,
+                      right: 4,
+                      top: 6,
+                      bottom: 6,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -1042,35 +1078,38 @@ class _ActivityTableHeaderDelegate extends SliverPersistentHeaderDelegate {
     );
   }
 
-  Widget _buildSortableHeader(String label, String sortKey) {
+  Widget _buildSortableHeader(String label, String sortKey, {required EdgeInsets padding}) {
     final isActive = sortBy == sortKey;
     
-    return InkWell(
-      onTap: () => onSort(sortKey),
-      borderRadius: BorderRadius.circular(6),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              label,
-              style: GoogleFonts.inter(
-                color: isActive ? AppColors.primary : AppColors.textMuted,
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.8,
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: InkWell(
+        onTap: () => onSort(sortKey),
+        borderRadius: BorderRadius.circular(6),
+        child: Padding(
+          padding: padding,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                label,
+                style: GoogleFonts.inter(
+                  color: isActive ? AppColors.primary : AppColors.textMuted,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.8,
+                ),
               ),
-            ),
-            const SizedBox(width: 4),
-            Icon(
-              isActive
-                  ? (sortAscending ? LucideIcons.arrowUp : LucideIcons.arrowDown)
-                  : LucideIcons.arrowUpDown,
-              size: 14,
-              color: isActive ? AppColors.primary : AppColors.textMuted.withValues(alpha: 0.5),
-            ),
-          ],
+              const SizedBox(width: 4),
+              Icon(
+                isActive
+                    ? (sortAscending ? LucideIcons.arrowUp : LucideIcons.arrowDown)
+                    : LucideIcons.arrowUpDown,
+                size: 14,
+                color: isActive ? AppColors.primary : AppColors.textMuted.withValues(alpha: 0.5),
+              ),
+            ],
+          ),
         ),
       ),
     );
