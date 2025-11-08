@@ -532,5 +532,40 @@
   "success": "SUCCESS",
   "reachable": "REACHABLE",
   "endpointIsOperational": "Endpoint is operational",
-  "testingApiEndpoints": "Testing API endpoints..."
+  "testingApiEndpoints": "Testing API endpoints...",
+  "failedToFetchGymSchedule": "Failed to fetch gym schedule - returned null",
+  "failedToFetchHistory": "Failed to fetch history",
+  "endpointNotFound": "Endpoint not found (404) - check API URL",
+  "serverError": "Server error ({code})",
+  "@serverError": {
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
+  },
+  "endpointResponded": "Endpoint responded ({code})",
+  "@endpointResponded": {
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
+  },
+  "endpointReachableButKeyInvalid": "Endpoint reachable but API key may be invalid",
+  "apiTestResults": "API Test Results",
+  "stateEndpointUri": "State Endpoint-URI",
+  "dioExceptionBadResponse": "Bad response: Status code {code}",
+  "@dioExceptionBadResponse": {
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
+  },
+  "dioException404": "Endpoint not found (404) - The requested resource does not exist",
+  "dioExceptionConnectionTimeout": "Connection timeout - Server took too long to respond",
+  "dioExceptionReceiveTimeout": "Receive timeout - Data transfer took too long",
+  "dioExceptionConnectionError": "Connection error - Unable to connect to server",
+  "dioExceptionUnknown": "Network error occurred"
 }

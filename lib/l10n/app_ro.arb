@@ -386,5 +386,19 @@
   "success": "SUCCES",
   "reachable": "ACCESIBIL",
   "endpointIsOperational": "Endpoint-ul este operațional",
-  "testingApiEndpoints": "Se testează endpoint-urile API..."
+  "testingApiEndpoints": "Se testează endpoint-urile API...",
+  "failedToFetchGymSchedule": "Eșec la obținerea programului sălii - a returnat null",
+  "failedToFetchHistory": "Eșec la obținerea istoricului",
+  "endpointNotFound": "Endpoint nu a fost găsit (404) - verifică URL-ul API",
+  "serverError": "Eroare server ({code})",
+  "endpointResponded": "Endpoint-ul a răspuns ({code})",
+  "endpointReachableButKeyInvalid": "Endpoint accesibil dar cheia API poate fi invalidă",
+  "apiTestResults": "Rezultate Test API",
+  "stateEndpointUri": "STARE ENDPOINT-URI",
+  "dioExceptionBadResponse": "Răspuns invalid: Cod status {code}",
+  "dioException404": "Endpoint nu a fost găsit (404) - Resursa solicitată nu există",
+  "dioExceptionConnectionTimeout": "Timeout conexiune - Serverul a durat prea mult să răspundă",
+  "dioExceptionReceiveTimeout": "Timeout recepție - Transferul de date a durat prea mult",
+  "dioExceptionConnectionError": "Eroare conexiune - Nu se poate conecta la server",
+  "dioExceptionUnknown": "Eroare de rețea"
 }

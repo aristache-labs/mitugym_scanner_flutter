@@ -1015,4 +1015,56 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get testingApiEndpoints => 'Se testează endpoint-urile API...';
+
+  @override
+  String get failedToFetchGymSchedule =>
+      'Eșec la obținerea programului sălii - a returnat null';
+
+  @override
+  String get failedToFetchHistory => 'Eșec la obținerea istoricului';
+
+  @override
+  String get endpointNotFound =>
+      'Endpoint nu a fost găsit (404) - verifică URL-ul API';
+
+  @override
+  String serverError(int code) {
+    return 'Eroare server ($code)';
+  }
+
+  @override
+  String endpointResponded(int code) {
+    return 'Endpoint-ul a răspuns ($code)';
+  }
+
+  @override
+  String get endpointReachableButKeyInvalid =>
+      'Endpoint accesibil dar cheia API poate fi invalidă';
+
+  @override
+  String get stateEndpointUri => 'STARE ENDPOINT-URI';
+
+  @override
+  String dioExceptionBadResponse(int code) {
+    return 'Răspuns invalid: Cod status $code';
+  }
+
+  @override
+  String get dioException404 =>
+      'Endpoint nu a fost găsit (404) - Resursa solicitată nu există';
+
+  @override
+  String get dioExceptionConnectionTimeout =>
+      'Timeout conexiune - Serverul a durat prea mult să răspundă';
+
+  @override
+  String get dioExceptionReceiveTimeout =>
+      'Timeout recepție - Transferul de date a durat prea mult';
+
+  @override
+  String get dioExceptionConnectionError =>
+      'Eroare conexiune - Nu se poate conecta la server';
+
+  @override
+  String get dioExceptionUnknown => 'Eroare de rețea';
 }

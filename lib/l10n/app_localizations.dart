@@ -1999,6 +1999,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Testing API endpoints...'**
   String get testingApiEndpoints;
+
+  /// No description provided for @failedToFetchGymSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to fetch gym schedule - returned null'**
+  String get failedToFetchGymSchedule;
+
+  /// No description provided for @failedToFetchHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to fetch history'**
+  String get failedToFetchHistory;
+
+  /// No description provided for @endpointNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Endpoint not found (404) - check API URL'**
+  String get endpointNotFound;
+
+  /// No description provided for @serverError.
+  ///
+  /// In en, this message translates to:
+  /// **'Server error ({code})'**
+  String serverError(int code);
+
+  /// No description provided for @endpointResponded.
+  ///
+  /// In en, this message translates to:
+  /// **'Endpoint responded ({code})'**
+  String endpointResponded(int code);
+
+  /// No description provided for @endpointReachableButKeyInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Endpoint reachable but API key may be invalid'**
+  String get endpointReachableButKeyInvalid;
+
+  /// No description provided for @stateEndpointUri.
+  ///
+  /// In en, this message translates to:
+  /// **'State Endpoint-URI'**
+  String get stateEndpointUri;
+
+  /// No description provided for @dioExceptionBadResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'Bad response: Status code {code}'**
+  String dioExceptionBadResponse(int code);
+
+  /// No description provided for @dioException404.
+  ///
+  /// In en, this message translates to:
+  /// **'Endpoint not found (404) - The requested resource does not exist'**
+  String get dioException404;
+
+  /// No description provided for @dioExceptionConnectionTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection timeout - Server took too long to respond'**
+  String get dioExceptionConnectionTimeout;
+
+  /// No description provided for @dioExceptionReceiveTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive timeout - Data transfer took too long'**
+  String get dioExceptionReceiveTimeout;
+
+  /// No description provided for @dioExceptionConnectionError.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection error - Unable to connect to server'**
+  String get dioExceptionConnectionError;
+
+  /// No description provided for @dioExceptionUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Network error occurred'**
+  String get dioExceptionUnknown;
 }
 
 class _AppLocalizationsDelegate

@@ -1004,4 +1004,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get testingApiEndpoints => 'Testing API endpoints...';
+
+  @override
+  String get failedToFetchGymSchedule =>
+      'Failed to fetch gym schedule - returned null';
+
+  @override
+  String get failedToFetchHistory => 'Failed to fetch history';
+
+  @override
+  String get endpointNotFound => 'Endpoint not found (404) - check API URL';
+
+  @override
+  String serverError(int code) {
+    return 'Server error ($code)';
+  }
+
+  @override
+  String endpointResponded(int code) {
+    return 'Endpoint responded ($code)';
+  }
+
+  @override
+  String get endpointReachableButKeyInvalid =>
+      'Endpoint reachable but API key may be invalid';
+
+  @override
+  String get stateEndpointUri => 'State Endpoint-URI';
+
+  @override
+  String dioExceptionBadResponse(int code) {
+    return 'Bad response: Status code $code';
+  }
+
+  @override
+  String get dioException404 =>
+      'Endpoint not found (404) - The requested resource does not exist';
+
+  @override
+  String get dioExceptionConnectionTimeout =>
+      'Connection timeout - Server took too long to respond';
+
+  @override
+  String get dioExceptionReceiveTimeout =>
+      'Receive timeout - Data transfer took too long';
+
+  @override
+  String get dioExceptionConnectionError =>
+      'Connection error - Unable to connect to server';
+
+  @override
+  String get dioExceptionUnknown => 'Network error occurred';
 }

@@ -386,7 +386,7 @@ class ApiService {
       } else {
         results['endpoints']['gym_schedule'] = {
           'status': 'error',
-          'error': 'Failed to fetch gym schedule - returned null',
+          'error': 'failedToFetchGymSchedule', // Translation key
         };
       }
     } catch (e) {
@@ -439,7 +439,7 @@ class ApiService {
     } else {
       results['endpoints']['history'] = {
         'status': 'error',
-        'error': historyError ?? 'Failed to fetch history',
+        'error': historyError ?? 'failedToFetchHistory', // Translation key if no specific error
       };
     }
 
@@ -462,20 +462,21 @@ class ApiService {
         results['endpoints']['checkin'] = {
           'status': 'reachable',
           'statusCode': getResponse.statusCode,
-          'note': 'Endpoint is operational',
+          'note': 'endpointIsOperational', // Translation key
         };
       } else if (getResponse.statusCode == 404) {
         // 404 means the endpoint doesn't exist (wrong URL or not deployed)
         results['endpoints']['checkin'] = {
           'status': 'error',
-          'error': 'Endpoint not found (404) - check API URL',
+          'error': 'endpointNotFound', // Translation key
           'statusCode': getResponse.statusCode,
         };
       } else if (getResponse.statusCode != null && getResponse.statusCode! >= 500) {
         // 5xx means server error
         results['endpoints']['checkin'] = {
           'status': 'error',
-          'error': 'Server error (${getResponse.statusCode})',
+          'error': 'serverError', // Translation key
+          'errorCode': getResponse.statusCode, // Store code separately for placeholder
           'statusCode': getResponse.statusCode,
         };
       } else {
@@ -483,7 +484,8 @@ class ApiService {
         results['endpoints']['checkin'] = {
           'status': 'reachable',
           'statusCode': getResponse.statusCode,
-          'note': 'Endpoint responded (${getResponse.statusCode})',
+          'note': 'endpointResponded', // Translation key
+          'noteCode': getResponse.statusCode, // Store code separately for placeholder
         };
       }
     } catch (e) {
@@ -508,7 +510,7 @@ class ApiService {
       endpoints['checkin'] = {
         'status': 'warning',
         'statusCode': endpoints['checkin']?['statusCode'],
-        'note': 'Endpoint reachable but API key may be invalid',
+        'note': 'endpointReachableButKeyInvalid', // Translation key
       };
     }
     

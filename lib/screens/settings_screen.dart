@@ -1356,18 +1356,81 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
         return l10n.success;
       case 'reachable':
         return l10n.reachable;
+      case 'error':
+        return l10n.error.toUpperCase();
+      case 'warning':
+        return l10n.warning.toUpperCase();
       default:
         return status.toUpperCase();
     }
   }
 
   /// Translate endpoint note
-  String _translateEndpointNote(String note, BuildContext context) {
+  String _translateEndpointNote(String note, BuildContext context, [Map<String, dynamic>? result]) {
     final l10n = AppLocalizations.of(context)!;
-    if (note.toLowerCase() == 'endpoint is operational') {
-      return l10n.endpointIsOperational;
+    
+    // Handle translation keys
+    switch (note) {
+      case 'endpointIsOperational':
+        return l10n.endpointIsOperational;
+      case 'endpointResponded':
+        final code = result?['noteCode'] ?? result?['statusCode'];
+        return l10n.endpointResponded(code as int? ?? 0);
+      case 'endpointReachableButKeyInvalid':
+        return l10n.endpointReachableButKeyInvalid;
+      default:
+        // Fallback for legacy messages
+        if (note.toLowerCase() == 'endpoint is operational') {
+          return l10n.endpointIsOperational;
+        }
+        return note;
     }
-    return note;
+  }
+  
+  /// Translate endpoint error message
+  String _translateEndpointError(String error, BuildContext context, [Map<String, dynamic>? result]) {
+    final l10n = AppLocalizations.of(context)!;
+    
+    // Handle translation keys
+    switch (error) {
+      case 'failedToFetchGymSchedule':
+        return l10n.failedToFetchGymSchedule;
+      case 'failedToFetchHistory':
+        return l10n.failedToFetchHistory;
+      case 'endpointNotFound':
+        return l10n.endpointNotFound;
+      case 'serverError':
+        final code = result?['errorCode'] ?? result?['statusCode'];
+        return l10n.serverError(code as int? ?? 500);
+      default:
+        // Handle DioException patterns
+        if (error.contains('DioException')) {
+          // Extract status code from DioException message
+          final statusCodeMatch = RegExp(r'status code of (\d+)').firstMatch(error);
+          if (statusCodeMatch != null) {
+            final code = int.tryParse(statusCodeMatch.group(1) ?? '');
+            if (code == 404) {
+              return l10n.dioException404;
+            } else if (code != null) {
+              return l10n.dioExceptionBadResponse(code);
+            }
+          }
+          
+          // Handle specific DioException types
+          if (error.contains('connectionTimeout') || error.contains('Connection timeout')) {
+            return l10n.dioExceptionConnectionTimeout;
+          } else if (error.contains('receiveTimeout') || error.contains('Receive timeout')) {
+            return l10n.dioExceptionReceiveTimeout;
+          } else if (error.contains('connectionError') || error.contains('Connection error')) {
+            return l10n.dioExceptionConnectionError;
+          }
+          
+          return l10n.dioExceptionUnknown;
+        }
+        
+        // Return first line if it's not a translation key or DioException
+        return error.split('\n').first;
+    }
   }
 
   /// Show API test results dialog with modern design
@@ -1704,7 +1767,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                                               const SizedBox(width: 6),
                                               Expanded(
                                                 child: Text(
-                                                  _translateEndpointNote(result['note'] as String, context),
+                                                  _translateEndpointNote(result['note'] as String, context, result),
                                                   style: GoogleFonts.inter(
                                                     color: AppColors.textSecondary,
                                                     fontSize: 11,
@@ -1731,7 +1794,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                                               const SizedBox(width: 6),
                                               Expanded(
                                                 child: Text(
-                                                  (result['error'] as String).split('\n').first,
+                                                  _translateEndpointError(result['error'] as String, context, result),
                                                   style: GoogleFonts.inter(
                                                     color: AppColors.textMuted,
                                                     fontSize: 11,
