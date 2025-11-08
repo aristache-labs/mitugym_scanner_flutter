@@ -38,9 +38,10 @@ class UnifiedActivityTable extends StatelessWidget {
       children: [
         if (showHeader) ...[
           _buildTableHeader(),
-          const SizedBox(height: 12),
+          const SizedBox(height: 1),
         ],
-        ...activities.map((activity) => _buildActivityRow(activity, context)),
+        ...activities.asMap().entries.map((entry) => 
+          _buildActivityRow(entry.value, context, isFirst: entry.key == 0 && !showHeader)),
       ],
     );
   }
@@ -120,11 +121,11 @@ class UnifiedActivityTable extends StatelessWidget {
     );
   }
 
-  Widget _buildActivityRow(ActivityLog activity, BuildContext context) {
+  Widget _buildActivityRow(ActivityLog activity, BuildContext context, {bool isFirst = false}) {
     final isSuccess = activity.success;
     final statusColor = isSuccess ? AppColors.success : AppColors.error;
     
-    return Container(
+    final card = Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -136,11 +137,31 @@ class UnifiedActivityTable extends StatelessWidget {
             AppColors.surface.withValues(alpha: 0.5),
           ],
         ),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.3),
-          width: 1,
-        ),
+        borderRadius: isFirst 
+          ? const BorderRadius.only(
+              bottomLeft: Radius.circular(8),
+              bottomRight: Radius.circular(8),
+            )
+          : BorderRadius.circular(8),
+        border: isFirst
+          ? Border(
+              left: BorderSide(
+                color: AppColors.border.withValues(alpha: 0.3),
+                width: 1,
+              ),
+              right: BorderSide(
+                color: AppColors.border.withValues(alpha: 0.3),
+                width: 1,
+              ),
+              bottom: BorderSide(
+                color: AppColors.border.withValues(alpha: 0.3),
+                width: 1,
+              ),
+            )
+          : Border.all(
+              color: AppColors.border.withValues(alpha: 0.3),
+              width: 1,
+            ),
       ),
       child: Row(
         children: [
@@ -255,6 +276,16 @@ class UnifiedActivityTable extends StatelessWidget {
         ],
       ),
     );
+    
+    // If this is the first card after a header, shift it up to connect seamlessly
+    if (isFirst) {
+      return Transform.translate(
+        offset: const Offset(0, -1),
+        child: card,
+      );
+    }
+    
+    return card;
   }
 
   Widget _buildCheckInCell(ActivityLog activity) {

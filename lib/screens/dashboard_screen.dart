@@ -386,7 +386,7 @@ class _ActivityTableHeaderDelegate extends SliverPersistentHeaderDelegate {
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
       height: 122.0,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.only(top: 16),
       decoration: BoxDecoration(
         color: const Color.fromARGB(255, 20, 26, 26),
         boxShadow: overlapsContent
@@ -400,11 +400,12 @@ class _ActivityTableHeaderDelegate extends SliverPersistentHeaderDelegate {
             : null,
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           // Title
           Padding(
-            padding: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
             child: Text(
               'Today\'s Activity ($activityCount entries)',
               style: GoogleFonts.inter(
@@ -425,9 +426,23 @@ class _ActivityTableHeaderDelegate extends SliverPersistentHeaderDelegate {
                 topLeft: Radius.circular(12),
                 topRight: Radius.circular(12),
               ),
-              border: Border.all(
-                color: AppColors.border.withValues(alpha: 0.3),
-                width: 1,
+              border: Border(
+                top: BorderSide(
+                  color: AppColors.border.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+                left: BorderSide(
+                  color: AppColors.border.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+                right: BorderSide(
+                  color: AppColors.border.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+                bottom: BorderSide(
+                  color: AppColors.border.withValues(alpha: 0.3),
+                  width: 1,
+                ),
               ),
             ),
             child: Row(
