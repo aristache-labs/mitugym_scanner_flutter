@@ -116,7 +116,7 @@ class UnifiedMemberTable extends StatelessWidget {
               'EXPIRES',
               'expires',
               padding: const EdgeInsets.only(
-                left: 15,
+                left: 2,
                 right: 4,
                 top: 6,
                 bottom: 6,
