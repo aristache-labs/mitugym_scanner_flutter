@@ -106,6 +106,19 @@ class _DateRangePickerModalState extends State<DateRangePickerModal> {
         date.isBefore(_endDate!.add(const Duration(days: 1)));
   }
 
+  String _formatDate(DateTime date, BuildContext context) {
+    final locale = Localizations.localeOf(context);
+    
+    // Custom Romanian month abbreviations (intl uses "nov." instead of "noi")
+    if (locale.languageCode == 'ro') {
+      const romanianMonths = ['ian', 'feb', 'mar', 'apr', 'mai', 'iun', 
+                             'iul', 'aug', 'sept', 'oct', 'noi', 'dec'];
+      return '${date.day} ${romanianMonths[date.month - 1]} ${date.year}';
+    }
+    
+    return DateFormat('d MMM yyyy', locale.toString()).format(date);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -115,7 +128,7 @@ class _DateRangePickerModalState extends State<DateRangePickerModal> {
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 550),
+        constraints: const BoxConstraints(maxWidth: 650),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
@@ -157,19 +170,16 @@ class _DateRangePickerModalState extends State<DateRangePickerModal> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      gradient: AppColors.primaryGradient,
+                      color: AppColors.primary.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primary.withValues(alpha: 0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
+                      border: Border.all(
+                        color: AppColors.primary.withValues(alpha: 0.25),
+                        width: 1,
+                      ),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       LucideIcons.calendarRange,
-                      color: Colors.white,
+                      color: AppColors.primary.withValues(alpha: 0.95),
                       size: 22,
                     ),
                   ),
@@ -189,9 +199,9 @@ class _DateRangePickerModalState extends State<DateRangePickerModal> {
                         const SizedBox(height: 3),
                         Text(
                           _startDate != null && _endDate != null
-                              ? '${DateFormat('MMM d, yyyy').format(_startDate!)} - ${DateFormat('MMM d, yyyy').format(_endDate!)}'
+                              ? '${_formatDate(_startDate!, context)} - ${_formatDate(_endDate!, context)}'
                               : _startDate != null
-                                  ? l10n.from(DateFormat('MMM d, yyyy').format(_startDate!))
+                                  ? l10n.from(_formatDate(_startDate!, context))
                                   : l10n.selectStartDate,
                           style: GoogleFonts.inter(
                             color: AppColors.textMuted,
@@ -213,19 +223,23 @@ class _DateRangePickerModalState extends State<DateRangePickerModal> {
               ),
             ),
 
-            // Content (no scroll needed)
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Quick presets
-                  _buildPresets(today),
-                  const SizedBox(height: 16),
-                  
-                  // Calendar
-                  _buildCalendar(),
-                ],
+            // Content (scrollable to prevent overflow)
+            Flexible(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Quick presets
+                      _buildPresets(today),
+                      const SizedBox(height: 16),
+                      
+                      // Calendar
+                      _buildCalendar(),
+                    ],
+                  ),
+                ),
               ),
             ),
 
@@ -339,10 +353,9 @@ class _DateRangePickerModalState extends State<DateRangePickerModal> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
             decoration: BoxDecoration(
-              gradient: isSelected
-                  ? AppColors.primaryGradient
-                  : null,
-              color: isSelected ? null : AppColors.surface.withValues(alpha: 0.5),
+              color: isSelected 
+                  ? AppColors.primary.withValues(alpha: 0.15)
+                  : AppColors.surface.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: isSelected
@@ -354,7 +367,9 @@ class _DateRangePickerModalState extends State<DateRangePickerModal> {
             child: Text(
               preset['label'] as String,
               style: GoogleFonts.inter(
-                color: isSelected ? Colors.white : AppColors.textSecondary,
+                color: isSelected 
+                    ? AppColors.primary.withValues(alpha: 0.95)
+                    : AppColors.textSecondary,
                 fontSize: 12,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
               ),
@@ -401,7 +416,7 @@ class _DateRangePickerModalState extends State<DateRangePickerModal> {
                 ),
                 Expanded(
                   child: Text(
-                    DateFormat('MMMM yyyy', Localizations.localeOf(context).languageCode).format(_focusedMonth).toUpperCase(),
+                    DateFormat('MMMM yyyy', Localizations.localeOf(context).toString()).format(_focusedMonth).toUpperCase(),
                     textAlign: TextAlign.center,
                     style: GoogleFonts.inter(
                       color: AppColors.textPrimary,
@@ -514,18 +529,33 @@ class _DateRangePickerModalState extends State<DateRangePickerModal> {
     Color? backgroundColor;
     Color? textColor;
     Border? border;
+    Gradient? gradient;
     
     if (isDisabled) {
       textColor = AppColors.textMuted.withValues(alpha: 0.3);
     } else if (isStart || isEnd) {
-      backgroundColor = AppColors.primary;
-      textColor = Colors.white;
-      border = Border.all(color: AppColors.primary.withValues(alpha: 0.5), width: 2);
+      // Use very subtle gradient for start/end dates - much darker
+      gradient = LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          AppColors.primary.withValues(alpha: 0.35),
+          AppColors.primary.withValues(alpha: 0.25),
+        ],
+      );
+      textColor = AppColors.primary.withValues(alpha: 0.95);
+      border = Border.all(
+        color: AppColors.primary.withValues(alpha: 0.5),
+        width: 1.5,
+      );
     } else if (isInRange) {
-      backgroundColor = AppColors.primary.withValues(alpha: 0.15);
-      textColor = AppColors.primary;
+      backgroundColor = AppColors.primary.withValues(alpha: 0.08);
+      textColor = AppColors.primary.withValues(alpha: 0.85);
     } else if (isToday) {
-      border = Border.all(color: AppColors.primary.withValues(alpha: 0.5), width: 1.5);
+      border = Border.all(
+        color: AppColors.primary.withValues(alpha: 0.5),
+        width: 1.5,
+      );
       textColor = AppColors.primary;
     } else {
       textColor = AppColors.textPrimary;
@@ -537,6 +567,7 @@ class _DateRangePickerModalState extends State<DateRangePickerModal> {
       child: Container(
         decoration: BoxDecoration(
           color: backgroundColor,
+          gradient: gradient,
           borderRadius: BorderRadius.circular(6),
           border: border,
         ),
