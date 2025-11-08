@@ -101,7 +101,7 @@ class UnifiedMemberTable extends StatelessWidget {
               'PLAN',
               'plan',
               padding: const EdgeInsets.only(
-                left: 20,
+                left: 100,
                 right: 4,
                 top: 6,
                 bottom: 6,
@@ -276,13 +276,16 @@ class UnifiedMemberTable extends StatelessWidget {
                 // Plan column
                 Expanded(
                   flex: 2,
-                  child: Text(
-                    member.planName,
-                    style: GoogleFonts.inter(
-                      color: AppColors.textSecondary,
-                      fontSize: 13,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 80),
+                    child: Text(
+                      member.planName,
+                      style: GoogleFonts.inter(
+                        color: AppColors.textSecondary,
+                        fontSize: 13,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 
