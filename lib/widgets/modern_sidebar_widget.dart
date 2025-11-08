@@ -119,30 +119,35 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
             isActive: widget.selectedIndex == 0,
             onTap: () => widget.onNavigate(0),
           ),
+          _buildMenuSeparator(),
           _buildCompactNavItem(
             icon: LucideIcons.qrCode,
             label: 'QR Scanner',
             isActive: widget.selectedIndex == 1,
             onTap: () => widget.onNavigate(1),
           ),
+          _buildMenuSeparator(),
           _buildCompactNavItem(
             icon: LucideIcons.activity,
             label: 'Check-ins',
             isActive: widget.selectedIndex == 2,
             onTap: () => widget.onNavigate(2),
           ),
+          _buildMenuSeparator(),
           _buildCompactNavItem(
             icon: LucideIcons.history,
             label: 'History',
             isActive: widget.selectedIndex == 3,
             onTap: () => widget.onNavigate(3),
           ),
+          _buildMenuSeparator(),
           _buildCompactNavItem(
             icon: LucideIcons.users,
             label: 'Members',
             isActive: widget.selectedIndex == 4,
             onTap: () => widget.onNavigate(4),
           ),
+          _buildMenuSeparator(),
           _buildCompactNavItem(
             icon: LucideIcons.settings,
             label: 'Settings',
@@ -154,6 +159,25 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
     );
   }
 
+  /// Build elegant menu separator
+  Widget _buildMenuSeparator() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      height: 1,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.transparent,
+            AppColors.border.withValues(alpha: 0.3),
+            AppColors.primary.withValues(alpha: 0.1),
+            AppColors.border.withValues(alpha: 0.3),
+            Colors.transparent,
+          ],
+        ),
+      ),
+    );
+  }
+
   /// Build compact navigation item
   Widget _buildCompactNavItem({
     required IconData icon,
@@ -161,46 +185,11 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
     required bool isActive,
     required VoidCallback onTap,
   }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          margin: const EdgeInsets.only(bottom: 4),
-          decoration: BoxDecoration(
-            gradient: isActive
-                ? LinearGradient(
-                    colors: [
-                      AppColors.primary.withValues(alpha: 0.15),
-                      AppColors.primary.withValues(alpha: 0.05),
-                    ],
-                  )
-                : null,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            children: [
-              Icon(
-                icon,
-                color: isActive ? AppColors.primary : AppColors.textSecondary,
-                size: 22,
-              ),
-              const SizedBox(width: 16),
-              Text(
-                label,
-                style: GoogleFonts.inter(
-                  color: isActive ? AppColors.primary : AppColors.textSecondary,
-                  fontSize: 14,
-                  fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-                  letterSpacing: 0.2,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+    return _AnimatedNavItem(
+      isActive: isActive,
+      onTap: onTap,
+      icon: icon,
+      label: label,
     );
   }
 
@@ -439,6 +428,162 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Custom animated navigation item with professional scale and fade animation
+class _AnimatedNavItem extends StatefulWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final bool isActive;
+
+  const _AnimatedNavItem({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    required this.isActive,
+  });
+
+  @override
+  State<_AnimatedNavItem> createState() => _AnimatedNavItemState();
+}
+
+class _AnimatedNavItemState extends State<_AnimatedNavItem>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  bool _isHovered = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 150),
+      vsync: this,
+    );
+
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.96,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeOut,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _handleTapDown(TapDownDetails details) {
+    _controller.forward();
+  }
+
+  void _handleTapUp(TapUpDetails details) {
+    _controller.reverse();
+    widget.onTap();
+  }
+
+  void _handleTapCancel() {
+    _controller.reverse();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: GestureDetector(
+        onTapDown: _handleTapDown,
+        onTapUp: _handleTapUp,
+        onTapCancel: _handleTapCancel,
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: _scaleAnimation.value,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeOut,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                margin: const EdgeInsets.only(bottom: 4),
+                decoration: BoxDecoration(
+                  gradient: widget.isActive
+                      ? LinearGradient(
+                          colors: [
+                            AppColors.primary.withValues(alpha: 0.15),
+                            AppColors.primary.withValues(alpha: 0.05),
+                          ],
+                        )
+                      : _isHovered
+                          ? LinearGradient(
+                              colors: [
+                                AppColors.surface.withValues(alpha: 0.8),
+                                AppColors.surface.withValues(alpha: 0.4),
+                              ],
+                            )
+                          : null,
+                  borderRadius: BorderRadius.circular(12),
+                  border: widget.isActive
+                      ? Border.all(
+                          color: AppColors.primary.withValues(alpha: 0.3),
+                          width: 1,
+                        )
+                      : _isHovered
+                          ? Border.all(
+                              color: AppColors.border.withValues(alpha: 0.2),
+                              width: 1,
+                            )
+                          : null,
+                  boxShadow: _isHovered && !widget.isActive
+                      ? [
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.05),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ]
+                      : null,
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      widget.icon,
+                      color: widget.isActive 
+                          ? AppColors.primary 
+                          : _isHovered
+                              ? AppColors.textPrimary
+                              : AppColors.textSecondary,
+                      size: 22,
+                    ),
+                    const SizedBox(width: 16),
+                    Text(
+                      widget.label,
+                      style: GoogleFonts.inter(
+                        color: widget.isActive 
+                            ? AppColors.primary 
+                            : _isHovered
+                                ? AppColors.textPrimary
+                                : AppColors.textSecondary,
+                        fontSize: 14,
+                        fontWeight: widget.isActive ? FontWeight.w600 : FontWeight.w500,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
