@@ -5,6 +5,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../config/app_colors.dart';
 import '../providers/auth_provider.dart';
 import '../providers/offline_provider.dart';
+import '../models/auth_session.dart';
 import 'main_layout_screen.dart';
 
 /// Login screen for authentication
@@ -34,11 +35,53 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     // Check if online
     final isOnline = ref.read(offlineProvider).isOnline;
+    
+    // If offline, check if cached credentials exist
     if (!isOnline) {
-      _showError('You must be online to login');
+      final hasCachedCredentials = await AuthSession.hasCachedCredentials();
+      
+      if (!hasCachedCredentials) {
+        _showError('You must be online for your first login. Once you\'ve logged in successfully, you can login offline.');
+        return;
+      }
+      
+      // Attempt offline login
+      setState(() => _isLoading = true);
+      
+      try {
+        final success = await ref.read(authProvider.notifier).login(
+              email: _emailController.text.trim(),
+              password: _passwordController.text,
+              deviceName: 'Scanner App',
+              isOffline: true,
+            );
+
+        if (mounted) {
+          if (success) {
+            // Navigate to main app
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => const MainLayoutScreen(),
+              ),
+            );
+          } else {
+            final authState = ref.read(authProvider);
+            _showError(authState.error ?? 'Login failed');
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          _showError('Offline login failed: $e');
+        }
+      } finally {
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
+      }
       return;
     }
 
+    // Online login
     setState(() => _isLoading = true);
 
     try {
@@ -46,6 +89,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             email: _emailController.text.trim(),
             password: _passwordController.text,
             deviceName: 'Scanner App',
+            isOffline: false,
           );
 
       if (mounted) {
@@ -368,73 +412,95 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _buildLoginButton(bool isOnline) {
-    return ElevatedButton(
-      onPressed: _isLoading || !isOnline ? null : _handleLogin,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-        disabledBackgroundColor: AppColors.border,
-        disabledForegroundColor: AppColors.textMuted,
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        elevation: 0,
-      ),
-      child: _isLoading
-          ? SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  Colors.white.withValues(alpha: 0.7),
-                ),
-              ),
-            )
-          : Text(
-              'Sign In',
-              style: GoogleFonts.inter(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.5,
-              ),
+    return FutureBuilder<bool>(
+      future: AuthSession.hasCachedCredentials(),
+      builder: (context, snapshot) {
+        final hasCachedCredentials = snapshot.data ?? false;
+        // Enable button if online OR if offline with cached credentials
+        final isEnabled = !_isLoading && (isOnline || hasCachedCredentials);
+        
+        return ElevatedButton(
+          onPressed: isEnabled ? _handleLogin : null,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+            disabledBackgroundColor: AppColors.border,
+            disabledForegroundColor: AppColors.textMuted,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
             ),
+            elevation: 0,
+          ),
+          child: _isLoading
+              ? SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Colors.white.withValues(alpha: 0.7),
+                    ),
+                  ),
+                )
+              : Text(
+                  'Sign In',
+                  style: GoogleFonts.inter(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+        );
+      },
     );
   }
 
   Widget _buildOfflineIndicator() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: AppColors.warning.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.warning.withValues(alpha: 0.3),
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            LucideIcons.wifiOff,
-            color: AppColors.warning,
-            size: 20,
-          ),
-          const SizedBox(width: 12),
-          Flexible(
-            child: Text(
-              'You\'re offline. Please connect to the internet to login.',
-              style: GoogleFonts.inter(
-                color: AppColors.warning,
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
+    return FutureBuilder<bool>(
+      future: AuthSession.hasCachedCredentials(),
+      builder: (context, snapshot) {
+        final hasCachedCredentials = snapshot.data ?? false;
+        
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: hasCachedCredentials 
+                ? AppColors.info.withValues(alpha: 0.1)
+                : AppColors.warning.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: hasCachedCredentials 
+                  ? AppColors.info.withValues(alpha: 0.3)
+                  : AppColors.warning.withValues(alpha: 0.3),
             ),
           ),
-        ],
-      ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                hasCachedCredentials ? LucideIcons.info : LucideIcons.wifiOff,
+                color: hasCachedCredentials ? AppColors.info : AppColors.warning,
+                size: 20,
+              ),
+              const SizedBox(width: 12),
+              Flexible(
+                child: Text(
+                  hasCachedCredentials
+                      ? 'You\'re offline. Offline login available for previous users.'
+                      : 'You\'re offline. Please connect to the internet for your first login.',
+                  style: GoogleFonts.inter(
+                    color: hasCachedCredentials ? AppColors.info : AppColors.warning,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

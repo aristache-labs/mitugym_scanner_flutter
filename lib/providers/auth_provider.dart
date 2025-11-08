@@ -74,16 +74,23 @@ class AuthNotifier extends Notifier<AuthState> {
     required String email,
     required String password,
     String? deviceName,
+    bool isOffline = false,
   }) async {
     state = state.copyWith(isLoading: true, error: null);
 
     try {
       final authService = _getAuthService();
-      final session = await authService.login(
-        email: email,
-        password: password,
-        deviceName: deviceName,
-      );
+      final session = isOffline
+          ? await authService.offlineLogin(
+              email: email,
+              password: password,
+              deviceName: deviceName,
+            )
+          : await authService.login(
+              email: email,
+              password: password,
+              deviceName: deviceName,
+            );
 
       state = state.copyWith(
         isAuthenticated: true,
@@ -92,7 +99,7 @@ class AuthNotifier extends Notifier<AuthState> {
         error: null,
       );
 
-      _logger.i('Login successful for: $email');
+      _logger.i('Login successful for: $email (offline: $isOffline)');
       return true;
     } catch (e) {
       _logger.e('Login failed: $e');
