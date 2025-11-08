@@ -81,139 +81,312 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     
     final result = await showDialog<String>(
       context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.7),
       builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          backgroundColor: AppColors.card,
-          title: Text(
-            AppLocalizations.of(context)!.setExportPath,
-            style: GoogleFonts.inter(
-              color: AppColors.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                AppLocalizations.of(context)!.selectFolderPath,
-                style: GoogleFonts.inter(
-                  color: AppColors.textSecondary,
-                  fontSize: 13,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: pathController,
-                      decoration: InputDecoration(
-                        hintText: 'C:\\Users\\YourName\\Documents\\exports',
-                        hintStyle: GoogleFonts.inter(
-                          color: AppColors.textMuted.withValues(alpha: 0.5),
-                          fontSize: 13,
-                        ),
-                        filled: true,
-                        fillColor: AppColors.surface.withValues(alpha: 0.3),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: AppColors.border.withValues(alpha: 0.3)),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: AppColors.border.withValues(alpha: 0.3)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: AppColors.primary.withValues(alpha: 0.5)),
-                        ),
-                      ),
-                      style: GoogleFonts.inter(
-                        color: AppColors.textPrimary,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  ElevatedButton.icon(
-                    onPressed: () async {
-                      String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
-                      if (selectedDirectory != null) {
-                        pathController.text = selectedDirectory;
-                      }
-                    },
-                    icon: const Icon(LucideIcons.folderSearch, size: 14),
-                    label: Text(
-                      AppLocalizations.of(context)!.browse,
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.2,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary.withValues(alpha: 0.12),
-                      foregroundColor: AppColors.primary.withValues(alpha: 0.95),
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        side: BorderSide(
-                          color: AppColors.primary.withValues(alpha: 0.25),
-                          width: 1,
-                        ),
-                      ),
-                    ),
-                  ),
+        builder: (context, setDialogState) => Dialog(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 550),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  AppColors.card.withValues(alpha: 0.95),
+                  AppColors.surface.withValues(alpha: 0.95),
                 ],
               ),
-              const SizedBox(height: 12),
-              Text(
-                AppLocalizations.of(context)!.leaveEmptyForDefault,
-                style: GoogleFonts.inter(
-                  color: AppColors.textMuted.withValues(alpha: 0.7),
-                  fontSize: 11,
-                  fontStyle: FontStyle.italic,
-                ),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: AppColors.border.withValues(alpha: 0.3),
+                width: 1,
               ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                AppLocalizations.of(context)!.cancel,
-                style: GoogleFonts.inter(
-                  color: AppColors.textSecondary,
-                  fontWeight: FontWeight.w600,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.4),
+                  blurRadius: 30,
+                  offset: const Offset(0, 15),
+                  spreadRadius: -5,
                 ),
-              ),
+              ],
             ),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context, pathController.text),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary.withValues(alpha: 0.12),
-                foregroundColor: AppColors.primary.withValues(alpha: 0.95),
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  side: BorderSide(
-                    color: AppColors.primary.withValues(alpha: 0.25),
-                    width: 1,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.primary.withValues(alpha: 0.1),
+                        AppColors.primary.withValues(alpha: 0.05),
+                      ],
+                    ),
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: AppColors.primary.withValues(alpha: 0.25),
+                            width: 1,
+                          ),
+                        ),
+                        child: Icon(
+                          LucideIcons.folderOutput,
+                          color: AppColors.primary,
+                          size: 22,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              AppLocalizations.of(context)!.setExportPath,
+                              style: GoogleFonts.inter(
+                                color: AppColors.textPrimary,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.3,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              AppLocalizations.of(context)!.selectFolderPath,
+                              style: GoogleFonts.inter(
+                                color: AppColors.textMuted.withValues(alpha: 0.8),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              child: Text(
-                AppLocalizations.of(context)!.save,
-                style: GoogleFonts.inter(
-                  fontWeight: FontWeight.w600,
+                
+                // Content
+                Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Text field with browse button
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withValues(alpha: 0.05),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: TextField(
+                          controller: pathController,
+                          decoration: InputDecoration(
+                            hintText: 'C:\\Users\\YourName\\Documents\\exports',
+                            hintStyle: GoogleFonts.inter(
+                              color: AppColors.textMuted.withValues(alpha: 0.5),
+                              fontSize: 13,
+                            ),
+                            filled: true,
+                            fillColor: AppColors.surface.withValues(alpha: 0.5),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: AppColors.border.withValues(alpha: 0.3)),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: AppColors.border.withValues(alpha: 0.3)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: AppColors.primary.withValues(alpha: 0.5),
+                                width: 1.5,
+                              ),
+                            ),
+                            suffixIcon: Container(
+                              margin: const EdgeInsets.all(6),
+                              child: ElevatedButton.icon(
+                                onPressed: () async {
+                                  String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+                                  if (selectedDirectory != null) {
+                                    setDialogState(() {
+                                      pathController.text = selectedDirectory;
+                                    });
+                                  }
+                                },
+                                icon: const Icon(LucideIcons.folderSearch, size: 16),
+                                label: Text(
+                                  AppLocalizations.of(context)!.browse,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    letterSpacing: 0.3,
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                                  foregroundColor: AppColors.primary.withValues(alpha: 0.95),
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    side: BorderSide(
+                                      color: AppColors.primary.withValues(alpha: 0.25),
+                                      width: 1,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          style: GoogleFonts.inter(
+                            color: AppColors.textPrimary,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      
+                      // Info message
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.info.withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: AppColors.info.withValues(alpha: 0.2),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              LucideIcons.info,
+                              color: AppColors.info.withValues(alpha: 0.8),
+                              size: 16,
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                AppLocalizations.of(context)!.leaveEmptyForDefault,
+                                style: GoogleFonts.inter(
+                                  color: AppColors.textSecondary.withValues(alpha: 0.8),
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+                
+                // Footer with action buttons
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      top: BorderSide(
+                        color: AppColors.border.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.error.withValues(alpha: 0.12),
+                                blurRadius: 6,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: OutlinedButton.icon(
+                            onPressed: () => Navigator.pop(context),
+                            icon: const Icon(LucideIcons.x, size: 16),
+                            label: Text(
+                              AppLocalizations.of(context)!.cancel,
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.3,
+                              ),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              backgroundColor: AppColors.error.withValues(alpha: 0.08),
+                              foregroundColor: AppColors.error.withValues(alpha: 0.9),
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              side: BorderSide(
+                                color: AppColors.error.withValues(alpha: 0.3),
+                                width: 1.5,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        flex: 2,
+                        child: ElevatedButton.icon(
+                          onPressed: () => Navigator.pop(context, pathController.text),
+                          icon: const Icon(LucideIcons.save, size: 16),
+                          label: Text(
+                            AppLocalizations.of(context)!.save,
+                            style: GoogleFonts.inter(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.3,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.success.withValues(alpha: 0.12),
+                            foregroundColor: AppColors.success.withValues(alpha: 0.95),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              side: BorderSide(
+                                color: AppColors.success.withValues(alpha: 0.3),
+                                width: 1.5,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -382,74 +555,105 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
       child: Row(
         children: [
           Expanded(
-            child: ElevatedButton.icon(
-              onPressed: () {
-                // Reset to original values
-                final config = ref.read(configProvider);
-                setState(() {
-                  _apiUrlController.text = config.apiUrl;
-                  _apiKeyController.text = config.apiKey;
-                  _cameraIndex = config.cameraIndex;
-                  _debounceDuration = config.debounceDuration;
-                  _audioEnabled = config.audioEnabled;
-                  _soundVolume = config.soundVolume;
-                  _cameraFrameRate = config.cameraFrameRate;
-                  _logRetentionDays = config.logRetentionDays;
-                  _exportPath = config.exportPath;
-                  _autoStartScanning = config.autoStartScanning;
-                  _cameraVisible = config.cameraVisible;
-                  _startWithWindows = config.startWithWindows;
-                  _historyRetentionDays = config.historyRetentionDays;
-                });
-              },
-              icon: const Icon(LucideIcons.rotateCcw, size: 16),
-              label: Text(
-                AppLocalizations.of(context)!.reset,
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.2,
-                ),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.error.withValues(alpha: 0.15),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.surface.withValues(alpha: 0.3),
-                foregroundColor: AppColors.textSecondary.withValues(alpha: 0.85),
-                minimumSize: const Size(double.infinity, 44),
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  side: BorderSide(
-                    color: AppColors.border.withValues(alpha: 0.2),
-                    width: 1,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  // Reset to original values
+                  final config = ref.read(configProvider);
+                  setState(() {
+                    _apiUrlController.text = config.apiUrl;
+                    _apiKeyController.text = config.apiKey;
+                    _cameraIndex = config.cameraIndex;
+                    _debounceDuration = config.debounceDuration;
+                    _audioEnabled = config.audioEnabled;
+                    _soundVolume = config.soundVolume;
+                    _cameraFrameRate = config.cameraFrameRate;
+                    _logRetentionDays = config.logRetentionDays;
+                    _exportPath = config.exportPath;
+                    _autoStartScanning = config.autoStartScanning;
+                    _cameraVisible = config.cameraVisible;
+                    _startWithWindows = config.startWithWindows;
+                    _historyRetentionDays = config.historyRetentionDays;
+                  });
+                },
+                icon: const Icon(LucideIcons.rotateCcw, size: 18),
+                label: Text(
+                  AppLocalizations.of(context)!.reset,
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.error.withValues(alpha: 0.12),
+                  foregroundColor: AppColors.error.withValues(alpha: 0.95),
+                  minimumSize: const Size(double.infinity, 52),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(
+                      color: AppColors.error.withValues(alpha: 0.3),
+                      width: 1.5,
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             flex: 2,
-            child: ElevatedButton.icon(
-              onPressed: _saveSettings,
-              icon: const Icon(LucideIcons.save, size: 16),
-              label: Text(
-                AppLocalizations.of(context)!.saveSettings,
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.2,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.success.withValues(alpha: 0.15),
+                    AppColors.success.withValues(alpha: 0.08),
+                  ],
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.success.withValues(alpha: 0.25),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary.withValues(alpha: 0.12),
-                foregroundColor: AppColors.primary.withValues(alpha: 0.95),
-                minimumSize: const Size(double.infinity, 44),
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  side: BorderSide(
-                    color: AppColors.primary.withValues(alpha: 0.25),
-                    width: 1,
+              child: ElevatedButton.icon(
+                onPressed: _saveSettings,
+                icon: const Icon(LucideIcons.save, size: 18),
+                label: Text(
+                  AppLocalizations.of(context)!.saveSettings,
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  foregroundColor: AppColors.success.withValues(alpha: 0.95),
+                  minimumSize: const Size(double.infinity, 52),
+                  elevation: 0,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(
+                      color: AppColors.success.withValues(alpha: 0.35),
+                      width: 1.5,
+                    ),
                   ),
                 ),
               ),
@@ -1780,27 +1984,38 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 child: Row(
                   children: [
                     Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () => Navigator.of(context).pop(false),
-                        icon: const Icon(LucideIcons.x, size: 16),
-                        label: Text(
-                          AppLocalizations.of(context)!.cancel,
-                          style: GoogleFonts.inter(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.2,
-                          ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.error.withValues(alpha: 0.12),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
                         ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.surface.withValues(alpha: 0.3),
-                          foregroundColor: AppColors.textSecondary.withValues(alpha: 0.85),
-                          minimumSize: const Size(double.infinity, 44),
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                        child: OutlinedButton.icon(
+                          onPressed: () => Navigator.of(context).pop(false),
+                          icon: const Icon(LucideIcons.x, size: 16),
+                          label: Text(
+                            AppLocalizations.of(context)!.cancel,
+                            style: GoogleFonts.inter(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.3,
+                            ),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            backgroundColor: AppColors.error.withValues(alpha: 0.08),
+                            foregroundColor: AppColors.error.withValues(alpha: 0.9),
+                            minimumSize: const Size(double.infinity, 44),
                             side: BorderSide(
-                              color: AppColors.border.withValues(alpha: 0.2),
-                              width: 1,
+                              color: AppColors.error.withValues(alpha: 0.3),
+                              width: 1.5,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                         ),
