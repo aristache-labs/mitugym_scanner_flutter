@@ -22,9 +22,11 @@ class TrayService with TrayListener, WindowListener {
     _context = context;
     
     // Set up tray icon
+    // Windows: Use .ico for best results in system tray
+    // macOS/Linux: Use .png
     await trayManager.setIcon(
       Platform.isWindows
-          ? 'assets/images/logo.png'
+          ? 'assets/images/logo.ico'
           : 'assets/images/logo.png',
     );
     
