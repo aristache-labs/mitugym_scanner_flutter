@@ -511,5 +511,26 @@
         "type": "int"
       }
     }
-  }
+  },
+  "apiTestResults": "API Test Results",
+  "endpointStatus": "ENDPOINT STATUS",
+  "records": "Records: {count}",
+  "@records": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "close": "Close",
+  "healthy": "HEALTHY",
+  "offline": "OFFLINE",
+  "degraded": "DEGRADED",
+  "gymSchedule": "GYM SCHEDULE",
+  "history": "HISTORY",
+  "checkin": "CHECKIN",
+  "success": "SUCCESS",
+  "reachable": "REACHABLE",
+  "endpointIsOperational": "Endpoint is operational",
+  "testingApiEndpoints": "Testing API endpoints..."
 }

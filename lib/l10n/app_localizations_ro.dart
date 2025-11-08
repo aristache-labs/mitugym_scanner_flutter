@@ -423,7 +423,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get info => 'Informație';
 
   @override
-  String get success => 'Succes';
+  String get success => 'SUCCES';
 
   @override
   String get loading => 'Se încarcă...';
@@ -545,7 +545,7 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get offline => 'Offline';
+  String get offline => 'OFFLINE';
 
   @override
   String get online => 'Online';
@@ -980,4 +980,39 @@ class AppLocalizationsRo extends AppLocalizations {
   String cleanupWarningMessage(int days) {
     return 'Această acțiune va șterge definitiv toate înregistrările din istoric mai vechi de $days zile. Această operațiune nu poate fi anulată.';
   }
+
+  @override
+  String get apiTestResults => 'Rezultate Test API';
+
+  @override
+  String get endpointStatus => 'STARE ENDPOINT-URI';
+
+  @override
+  String records(int count) {
+    return 'Înregistrări: $count';
+  }
+
+  @override
+  String get healthy => 'SĂNĂTOS';
+
+  @override
+  String get degraded => 'DEGRADAT';
+
+  @override
+  String get gymSchedule => 'PROGRAM SALĂ';
+
+  @override
+  String get history => 'ISTORIC';
+
+  @override
+  String get checkin => 'INTRARE';
+
+  @override
+  String get reachable => 'ACCESIBIL';
+
+  @override
+  String get endpointIsOperational => 'Endpoint-ul este operațional';
+
+  @override
+  String get testingApiEndpoints => 'Se testează endpoint-urile API...';
 }

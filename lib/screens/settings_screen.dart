@@ -1074,7 +1074,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
             const CircularProgressIndicator(color: AppColors.info),
             const SizedBox(height: 16),
             Text(
-              'Testing API endpoints...',
+              AppLocalizations.of(context)!.testingApiEndpoints,
               style: GoogleFonts.inter(color: AppColors.textPrimary),
             ),
           ],
@@ -1112,6 +1112,58 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
         );
       }
     }
+  }
+
+  /// Translate health status
+  String _translateHealthStatus(String status, BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (status.toLowerCase()) {
+      case 'healthy':
+        return l10n.healthy;
+      case 'offline':
+        return l10n.offline;
+      case 'degraded':
+        return l10n.degraded;
+      default:
+        return status.toUpperCase();
+    }
+  }
+
+  /// Translate endpoint name
+  String _translateEndpointName(String endpointName, BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (endpointName.toLowerCase().replaceAll('_', '')) {
+      case 'gymschedule':
+        return l10n.gymSchedule;
+      case 'history':
+        return l10n.history;
+      case 'checkin':
+        return l10n.checkin;
+      default:
+        return endpointName.replaceAll('_', ' ').toUpperCase();
+    }
+  }
+
+  /// Translate endpoint status
+  String _translateEndpointStatus(String status, BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (status.toLowerCase()) {
+      case 'success':
+        return l10n.success;
+      case 'reachable':
+        return l10n.reachable;
+      default:
+        return status.toUpperCase();
+    }
+  }
+
+  /// Translate endpoint note
+  String _translateEndpointNote(String note, BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    if (note.toLowerCase() == 'endpoint is operational') {
+      return l10n.endpointIsOperational;
+    }
+    return note;
   }
 
   /// Show API test results dialog with modern design
@@ -1224,7 +1276,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'API Test Results',
+                            AppLocalizations.of(context)!.apiTestResults,
                             style: GoogleFonts.inter(
                               color: AppColors.textPrimary,
                               fontSize: 20,
@@ -1256,7 +1308,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                               ),
                             ),
                             child: Text(
-                              overallHealth.toUpperCase(),
+                              _translateHealthStatus(overallHealth, context),
                               style: GoogleFonts.inter(
                                 color: isHealthy 
                                     ? AppColors.success 
@@ -1284,7 +1336,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'ENDPOINT STATUS',
+                        AppLocalizations.of(context)!.endpointStatus,
                         style: GoogleFonts.inter(
                           color: AppColors.textMuted,
                           fontSize: 11,
@@ -1364,7 +1416,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            endpointName.replaceAll('_', ' ').toUpperCase(),
+                                            _translateEndpointName(endpointName, context),
                                             style: GoogleFonts.inter(
                                               color: AppColors.textPrimary,
                                               fontWeight: FontWeight.w700,
@@ -1374,7 +1426,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                                           ),
                                           const SizedBox(height: 2),
                                           Text(
-                                            status.toUpperCase(),
+                                            _translateEndpointStatus(status, context),
                                             style: GoogleFonts.inter(
                                               color: statusColor,
                                               fontSize: 10,
@@ -1410,7 +1462,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                                               ),
                                               const SizedBox(width: 6),
                                               Text(
-                                                'Records: ${result['recordCount']}',
+                                                AppLocalizations.of(context)!.records(result['recordCount'] as int),
                                                 style: GoogleFonts.inter(
                                                   color: AppColors.textSecondary,
                                                   fontSize: 12,
@@ -1434,7 +1486,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                                               const SizedBox(width: 6),
                                               Expanded(
                                                 child: Text(
-                                                  result['note'] as String,
+                                                  _translateEndpointNote(result['note'] as String, context),
                                                   style: GoogleFonts.inter(
                                                     color: AppColors.textSecondary,
                                                     fontSize: 11,
@@ -1503,7 +1555,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                   onPressed: () => Navigator.of(context).pop(),
                   icon: const Icon(LucideIcons.x, size: 16),
                   label: Text(
-                    'Close',
+                    AppLocalizations.of(context)!.close,
                     style: GoogleFonts.inter(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,

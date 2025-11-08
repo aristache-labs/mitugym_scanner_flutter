@@ -372,5 +372,19 @@
   "syncError": "Eroare sincronizare: {error}",
   "syncFailed": "Sincronizare eșuată: {error}",
   "confirmDeletion": "Confirmă ștergerea",
-  "cleanupWarningMessage": "Această acțiune va șterge definitiv toate înregistrările din istoric mai vechi de {days} zile. Această operațiune nu poate fi anulată."
+  "cleanupWarningMessage": "Această acțiune va șterge definitiv toate înregistrările din istoric mai vechi de {days} zile. Această operațiune nu poate fi anulată.",
+  "apiTestResults": "Rezultate Test API",
+  "endpointStatus": "STARE ENDPOINT-URI",
+  "records": "Înregistrări: {count}",
+  "close": "Închide",
+  "healthy": "SĂNĂTOS",
+  "offline": "OFFLINE",
+  "degraded": "DEGRADAT",
+  "gymSchedule": "PROGRAM SALĂ",
+  "history": "ISTORIC",
+  "checkin": "INTRARE",
+  "success": "SUCCES",
+  "reachable": "ACCESIBIL",
+  "endpointIsOperational": "Endpoint-ul este operațional",
+  "testingApiEndpoints": "Se testează endpoint-urile API..."
 }

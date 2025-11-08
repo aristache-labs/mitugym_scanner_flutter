@@ -905,7 +905,7 @@ abstract class AppLocalizations {
   /// No description provided for @success.
   ///
   /// In en, this message translates to:
-  /// **'Success'**
+  /// **'SUCCESS'**
   String get success;
 
   /// No description provided for @loading.
@@ -1145,7 +1145,7 @@ abstract class AppLocalizations {
   /// No description provided for @offline.
   ///
   /// In en, this message translates to:
-  /// **'Offline'**
+  /// **'OFFLINE'**
   String get offline;
 
   /// No description provided for @online.
@@ -1933,6 +1933,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This will permanently delete all history records older than {days} days. This action cannot be undone.'**
   String cleanupWarningMessage(int days);
+
+  /// No description provided for @apiTestResults.
+  ///
+  /// In en, this message translates to:
+  /// **'API Test Results'**
+  String get apiTestResults;
+
+  /// No description provided for @endpointStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'ENDPOINT STATUS'**
+  String get endpointStatus;
+
+  /// No description provided for @records.
+  ///
+  /// In en, this message translates to:
+  /// **'Records: {count}'**
+  String records(int count);
+
+  /// No description provided for @healthy.
+  ///
+  /// In en, this message translates to:
+  /// **'HEALTHY'**
+  String get healthy;
+
+  /// No description provided for @degraded.
+  ///
+  /// In en, this message translates to:
+  /// **'DEGRADED'**
+  String get degraded;
+
+  /// No description provided for @gymSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'GYM SCHEDULE'**
+  String get gymSchedule;
+
+  /// No description provided for @history.
+  ///
+  /// In en, this message translates to:
+  /// **'HISTORY'**
+  String get history;
+
+  /// No description provided for @checkin.
+  ///
+  /// In en, this message translates to:
+  /// **'CHECKIN'**
+  String get checkin;
+
+  /// No description provided for @reachable.
+  ///
+  /// In en, this message translates to:
+  /// **'REACHABLE'**
+  String get reachable;
+
+  /// No description provided for @endpointIsOperational.
+  ///
+  /// In en, this message translates to:
+  /// **'Endpoint is operational'**
+  String get endpointIsOperational;
+
+  /// No description provided for @testingApiEndpoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Testing API endpoints...'**
+  String get testingApiEndpoints;
 }
 
 class _AppLocalizationsDelegate

@@ -422,7 +422,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get info => 'Information';
 
   @override
-  String get success => 'Success';
+  String get success => 'SUCCESS';
 
   @override
   String get loading => 'Loading...';
@@ -544,7 +544,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get offline => 'Offline';
+  String get offline => 'OFFLINE';
 
   @override
   String get online => 'Online';
@@ -969,4 +969,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String cleanupWarningMessage(int days) {
     return 'This will permanently delete all history records older than $days days. This action cannot be undone.';
   }
+
+  @override
+  String get apiTestResults => 'API Test Results';
+
+  @override
+  String get endpointStatus => 'ENDPOINT STATUS';
+
+  @override
+  String records(int count) {
+    return 'Records: $count';
+  }
+
+  @override
+  String get healthy => 'HEALTHY';
+
+  @override
+  String get degraded => 'DEGRADED';
+
+  @override
+  String get gymSchedule => 'GYM SCHEDULE';
+
+  @override
+  String get history => 'HISTORY';
+
+  @override
+  String get checkin => 'CHECKIN';
+
+  @override
+  String get reachable => 'REACHABLE';
+
+  @override
+  String get endpointIsOperational => 'Endpoint is operational';
+
+  @override
+  String get testingApiEndpoints => 'Testing API endpoints...';
 }
