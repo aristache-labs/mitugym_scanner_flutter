@@ -864,6 +864,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get device => 'Dispozitiv';
 
   @override
+  String get qrCodeScanningBehavior => 'Comportament scanare cod QR';
+
+  @override
   String get scanCooldown => 'Pauză scanare';
 
   @override
@@ -934,4 +937,47 @@ class AppLocalizationsRo extends AppLocalizations {
   @override
   String get scanHistorySyncSettings =>
       'Setări istoric scanare și sincronizare';
+
+  @override
+  String totalRecords(int count) {
+    return 'Total Înregistrări: $count';
+  }
+
+  @override
+  String lastSynced(String date) {
+    return 'Ultima Sincronizare: $date';
+  }
+
+  @override
+  String get cleanupOldHistory => 'Curăță Istoric Vechi';
+
+  @override
+  String get cleanup => 'Curăță';
+
+  @override
+  String get syncing => 'Se sincronizează...';
+
+  @override
+  String get syncAllDataFromServer => 'Sincronizează Toate Datele de pe Server';
+
+  @override
+  String get syncingFromServer => 'Se sincronizează datele de pe server...';
+
+  @override
+  String syncError(String error) {
+    return 'Eroare sincronizare: $error';
+  }
+
+  @override
+  String syncFailed(String error) {
+    return 'Sincronizare eșuată: $error';
+  }
+
+  @override
+  String get confirmDeletion => 'Confirmă ștergerea';
+
+  @override
+  String cleanupWarningMessage(int days) {
+    return 'Această acțiune va șterge definitiv toate înregistrările din istoric mai vechi de $days zile. Această operațiune nu poate fi anulată.';
+  }
 }

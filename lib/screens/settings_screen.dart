@@ -591,12 +591,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 // Scanner Settings Card
                 _buildModernCard(
                   icon: LucideIcons.qrCode,
-                  title: 'Scanner',
-                  subtitle: 'QR code scanning behavior',
+                  title: AppLocalizations.of(context)!.scanner,
+                  subtitle: AppLocalizations.of(context)!.qrCodeScanningBehavior,
                   child: Column(
                     children: [
                       _buildCompactSlider(
-                        label: 'Scan Cooldown',
+                        label: AppLocalizations.of(context)!.scanCooldown,
                         icon: LucideIcons.timer,
                         value: _debounceDuration.toDouble(),
                         min: 2,
@@ -622,21 +622,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 // Display Preferences Card
                 _buildModernCard(
                   icon: LucideIcons.eye,
-                  title: 'Display Preferences',
-                  subtitle: 'Camera and UI settings',
+                  title: AppLocalizations.of(context)!.displayPreferences,
+                  subtitle: AppLocalizations.of(context)!.cameraUISettings,
                   child: Column(
                     children: [
                       _buildInlineSwitch(
-                        label: 'Show Camera by Default',
-                        description: 'Display camera preview on scanner screen',
+                        label: AppLocalizations.of(context)!.showCameraByDefault,
+                        description: AppLocalizations.of(context)!.displayCameraPreview,
                         icon: LucideIcons.video,
                         value: _cameraVisible,
                         onChanged: (v) => setState(() => _cameraVisible = v),
                       ),
                       const SizedBox(height: 12),
                       _buildInlineSwitch(
-                        label: 'Auto-start Scanning',
-                        description: 'Begin scanning when app launches',
+                        label: AppLocalizations.of(context)!.autoStartScanning,
+                        description: AppLocalizations.of(context)!.beginScanningOnLaunch,
                         icon: LucideIcons.playCircle,
                         value: _autoStartScanning,
                         onChanged: (v) => setState(() => _autoStartScanning = v),
@@ -666,13 +666,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 // Sound Settings Card
                 _buildModernCard(
                   icon: LucideIcons.volume2,
-                  title: 'Sound Settings',
-                  subtitle: 'Audio feedback configuration',
+                  title: AppLocalizations.of(context)!.soundSettings,
+                  subtitle: AppLocalizations.of(context)!.audioFeedbackConfig,
                   child: Column(
                     children: [
                       _buildInlineSwitch(
-                        label: 'Enable Audio Feedback',
-                        description: 'Play sound when scanning QR codes',
+                        label: AppLocalizations.of(context)!.enableAudioFeedback,
+                        description: AppLocalizations.of(context)!.playSoundWhenScanning,
                         icon: LucideIcons.volumeX,
                         value: _audioEnabled,
                         onChanged: (v) => setState(() => _audioEnabled = v),
@@ -680,7 +680,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                       if (_audioEnabled) ...[
                         const SizedBox(height: 16),
                         _buildCompactSlider(
-                          label: 'Volume',
+                          label: AppLocalizations.of(context)!.volume,
                           icon: LucideIcons.volume2,
                           value: _soundVolume,
                           min: 0,
@@ -723,7 +723,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'More audio settings\ncoming soon',
+                        AppLocalizations.of(context)!.moreAudioSettingsComingSoon,
                         textAlign: TextAlign.center,
                         style: GoogleFonts.inter(
                           color: AppColors.textMuted.withValues(alpha: 0.7),
@@ -756,18 +756,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 // Data Management Card
                 _buildModernCard(
                   icon: LucideIcons.database,
-                  title: 'Data Management',
-                  subtitle: 'Log and data retention settings',
+                  title: AppLocalizations.of(context)!.dataManagement,
+                  subtitle: AppLocalizations.of(context)!.logDataRetentionSettings,
                   child: Column(
                     children: [
                       _buildCompactSlider(
-                        label: 'Log Retention',
+                        label: AppLocalizations.of(context)!.logRetention,
                         icon: LucideIcons.fileText,
                         value: _logRetentionDays.toDouble(),
                         min: 7,
                         max: 90,
                         divisions: 83,
-                        displayValue: '$_logRetentionDays days',
+                        displayValue: '$_logRetentionDays ${AppLocalizations.of(context)!.days}',
                         onChanged: (v) => setState(() => _logRetentionDays = v.toInt()),
                       ),
                     ],
@@ -778,8 +778,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 // Export Settings Card
                 _buildModernCard(
                   icon: LucideIcons.folderOutput,
-                  title: 'Export Settings',
-                  subtitle: 'Configure export file location',
+                  title: AppLocalizations.of(context)!.exportSettings,
+                  subtitle: AppLocalizations.of(context)!.configureExportLocation,
                   child: Column(
                     children: [
                       Row(
@@ -795,7 +795,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Export Path',
+                                  AppLocalizations.of(context)!.exportPath,
                                   style: GoogleFonts.inter(
                                     color: AppColors.textPrimary,
                                     fontSize: 13,
@@ -805,7 +805,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                                 const SizedBox(height: 4),
                                 Text(
                                   _exportPath.isEmpty
-                                      ? 'Using default location'
+                                      ? AppLocalizations.of(context)!.usingDefaultLocation
                                       : _exportPath,
                                   style: GoogleFonts.inter(
                                     color: AppColors.textMuted.withValues(alpha: 0.8),
@@ -823,7 +823,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                             onPressed: _selectExportPath,
                             icon: const Icon(LucideIcons.folderSearch, size: 14),
                             label: Text(
-                              'Browse',
+                              AppLocalizations.of(context)!.browse,
                               style: GoogleFonts.inter(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
@@ -854,13 +854,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 // Logging Card
                 _buildModernCard(
                   icon: LucideIcons.terminal,
-                  title: 'Logging',
-                  subtitle: 'Application logging configuration',
+                  title: AppLocalizations.of(context)!.logging,
+                  subtitle: AppLocalizations.of(context)!.appLoggingConfig,
                   child: Column(
                     children: [
                       _buildInlineSwitch(
-                        label: 'Verbose Logging',
-                        description: 'Save debug, warning, and trace logs to files',
+                        label: AppLocalizations.of(context)!.verboseLogging,
+                        description: AppLocalizations.of(context)!.saveDebugLogs,
                         icon: LucideIcons.bug,
                         value: _verboseLogging,
                         onChanged: (v) => setState(() => _verboseLogging = v),
@@ -886,7 +886,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  'Helpful for troubleshooting issues',
+                                  AppLocalizations.of(context)!.helpfulForTroubleshooting,
                                   style: GoogleFonts.inter(
                                     color: AppColors.textSecondary.withValues(alpha: 0.8),
                                     fontSize: 11,
@@ -915,18 +915,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 // History Management Card
                 _buildModernCard(
                   icon: LucideIcons.history,
-                  title: 'History Management',
-                  subtitle: 'Scan history and sync settings',
+                  title: AppLocalizations.of(context)!.historyManagement,
+                  subtitle: AppLocalizations.of(context)!.scanHistorySyncSettings,
                   child: Column(
                     children: [
                       _buildCompactSlider(
-                        label: 'History Retention',
+                        label: AppLocalizations.of(context)!.historyRetention,
                         icon: LucideIcons.clock,
                         value: _historyRetentionDays.toDouble(),
                         min: 7,
                         max: 365,
                         divisions: 51,
-                        displayValue: '$_historyRetentionDays days',
+                        displayValue: '$_historyRetentionDays ${AppLocalizations.of(context)!.days}',
                         onChanged: (v) => setState(() => _historyRetentionDays = v.toInt()),
                       ),
                       const SizedBox(height: 16),
@@ -972,7 +972,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                   const Icon(LucideIcons.fileText, color: AppColors.primary, size: 18),
                   const SizedBox(width: 8),
                           Text(
-                    'Total Records: $count',
+                    AppLocalizations.of(context)!.totalRecords(count),
                             style: GoogleFonts.inter(
                       color: AppColors.textPrimary,
                               fontSize: 14,
@@ -988,7 +988,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                     const Icon(LucideIcons.refreshCw, color: AppColors.textMuted, size: 16),
                     const SizedBox(width: 8),
                     Text(
-                      'Last Synced: ${DateFormat('MMM d, h:mm a').format(lastSync)}',
+                      AppLocalizations.of(context)!.lastSynced(
+                        DateFormat('MMM d, h:mm a').format(lastSync)
+                      ),
                       style: GoogleFonts.inter(
                         color: AppColors.textMuted,
                         fontSize: 12,
@@ -1009,7 +1011,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     return ElevatedButton.icon(
       onPressed: _performCleanup,
       icon: const Icon(LucideIcons.trash2),
-      label: const Text('Cleanup Old History'),
+      label: Text(AppLocalizations.of(context)!.cleanupOldHistory),
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.warning.withValues(alpha: 0.15),
         foregroundColor: AppColors.warning,
@@ -1546,7 +1548,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
               ),
             )
           : const Icon(LucideIcons.download),
-      label: Text(historyState.isLoading ? 'Syncing...' : 'Sync All Data from Server'),
+      label: Text(historyState.isLoading 
+          ? AppLocalizations.of(context)!.syncing 
+          : AppLocalizations.of(context)!.syncAllDataFromServer),
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primary.withValues(alpha: 0.15),
         foregroundColor: AppColors.primary,
@@ -1630,7 +1634,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Cleanup Old History',
+                            AppLocalizations.of(context)!.cleanupOldHistory,
                             style: GoogleFonts.inter(
                               color: AppColors.textPrimary,
                               fontSize: 18,
@@ -1640,7 +1644,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Confirm deletion',
+                            AppLocalizations.of(context)!.confirmDeletion,
                             style: GoogleFonts.inter(
                               color: AppColors.textMuted.withValues(alpha: 0.8),
                               fontSize: 12,
@@ -1680,7 +1684,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              'This will permanently delete all history records older than $_historyRetentionDays days. This action cannot be undone.',
+                              AppLocalizations.of(context)!.cleanupWarningMessage(_historyRetentionDays),
                               style: GoogleFonts.inter(
                                 color: AppColors.textSecondary,
                                 fontSize: 13,
@@ -1714,7 +1718,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                         onPressed: () => Navigator.of(context).pop(false),
                         icon: const Icon(LucideIcons.x, size: 16),
                         label: Text(
-                          'Cancel',
+                          AppLocalizations.of(context)!.cancel,
                           style: GoogleFonts.inter(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
@@ -1742,7 +1746,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                         onPressed: () => Navigator.of(context).pop(true),
                         icon: const Icon(LucideIcons.trash2, size: 16),
                         label: Text(
-                          'Cleanup',
+                          AppLocalizations.of(context)!.cleanup,
                           style: GoogleFonts.inter(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
@@ -1803,7 +1807,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
             const CircularProgressIndicator(color: AppColors.primary),
             const SizedBox(height: 16),
             Text(
-              'Syncing from server...',
+              AppLocalizations.of(context)!.syncingFromServer,
               style: GoogleFonts.inter(color: AppColors.textPrimary),
             ),
           ],
@@ -1828,7 +1832,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
         if (historyState.error != null) {
           _showPremiumToast(
             context: context,
-            message: 'Sync error: ${historyState.error}',
+            message: AppLocalizations.of(context)!.syncError(historyState.error!),
             icon: LucideIcons.alertCircle,
             type: ToastType.error,
           );
@@ -1846,7 +1850,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
         Navigator.of(context).pop(); // Close loading dialog
         _showPremiumToast(
           context: context,
-          message: 'Sync failed: $e',
+          message: AppLocalizations.of(context)!.syncFailed(e.toString()),
           icon: LucideIcons.xCircle,
           type: ToastType.error,
         );

@@ -859,6 +859,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get device => 'Device';
 
   @override
+  String get qrCodeScanningBehavior => 'QR code scanning behavior';
+
+  @override
   String get scanCooldown => 'Scan Cooldown';
 
   @override
@@ -923,4 +926,47 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get scanHistorySyncSettings => 'Scan history and sync settings';
+
+  @override
+  String totalRecords(int count) {
+    return 'Total Records: $count';
+  }
+
+  @override
+  String lastSynced(String date) {
+    return 'Last Synced: $date';
+  }
+
+  @override
+  String get cleanupOldHistory => 'Cleanup Old History';
+
+  @override
+  String get cleanup => 'Cleanup';
+
+  @override
+  String get syncing => 'Syncing...';
+
+  @override
+  String get syncAllDataFromServer => 'Sync All Data from Server';
+
+  @override
+  String get syncingFromServer => 'Syncing from server...';
+
+  @override
+  String syncError(String error) {
+    return 'Sync error: $error';
+  }
+
+  @override
+  String syncFailed(String error) {
+    return 'Sync failed: $error';
+  }
+
+  @override
+  String get confirmDeletion => 'Confirm deletion';
+
+  @override
+  String cleanupWarningMessage(int days) {
+    return 'This will permanently delete all history records older than $days days. This action cannot be undone.';
+  }
 }

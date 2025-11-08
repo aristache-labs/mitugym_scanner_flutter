@@ -327,6 +327,7 @@
   "device": "Dispozitiv",
   "frameRate": "Rata de cadre",
   "scanner": "Scaner",
+  "qrCodeScanningBehavior": "Comportament scanare cod QR",
   "scanCooldown": "Pauză scanare",
   "displayPreferences": "Preferințe Afișare",
   "cameraUISettings": "Setări cameră și interfață",
@@ -360,5 +361,16 @@
   "helpfulForTroubleshooting": "Util pentru depanare",
   "historyManagement": "Gestionare Istoric",
   "scanHistorySyncSettings": "Setări istoric scanare și sincronizare",
-  "historyRetention": "Păstrare istoric"
+  "historyRetention": "Păstrare istoric",
+  "totalRecords": "Total Înregistrări: {count}",
+  "lastSynced": "Ultima Sincronizare: {date}",
+  "cleanupOldHistory": "Curăță Istoric Vechi",
+  "cleanup": "Curăță",
+  "syncing": "Se sincronizează...",
+  "syncAllDataFromServer": "Sincronizează Toate Datele de pe Server",
+  "syncingFromServer": "Se sincronizează datele de pe server...",
+  "syncError": "Eroare sincronizare: {error}",
+  "syncFailed": "Sincronizare eșuată: {error}",
+  "confirmDeletion": "Confirmă ștergerea",
+  "cleanupWarningMessage": "Această acțiune va șterge definitiv toate înregistrările din istoric mai vechi de {days} zile. Această operațiune nu poate fi anulată."
 }

@@ -431,6 +431,7 @@
   "device": "Device",
   "frameRate": "Frame Rate",
   "scanner": "Scanner",
+  "qrCodeScanningBehavior": "QR code scanning behavior",
   "scanCooldown": "Scan Cooldown",
   "displayPreferences": "Display Preferences",
   "cameraUISettings": "Camera and UI settings",
@@ -464,5 +465,51 @@
   "helpfulForTroubleshooting": "Helpful for troubleshooting issues",
   "historyManagement": "History Management",
   "scanHistorySyncSettings": "Scan history and sync settings",
-  "historyRetention": "History Retention"
+  "historyRetention": "History Retention",
+  "totalRecords": "Total Records: {count}",
+  "@totalRecords": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "lastSynced": "Last Synced: {date}",
+  "@lastSynced": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "cleanupOldHistory": "Cleanup Old History",
+  "cleanup": "Cleanup",
+  "syncing": "Syncing...",
+  "syncAllDataFromServer": "Sync All Data from Server",
+  "syncingFromServer": "Syncing from server...",
+  "syncError": "Sync error: {error}",
+  "@syncError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "syncFailed": "Sync failed: {error}",
+  "@syncFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmDeletion": "Confirm deletion",
+  "cleanupWarningMessage": "This will permanently delete all history records older than {days} days. This action cannot be undone.",
+  "@cleanupWarningMessage": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  }
 }

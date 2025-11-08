@@ -1730,6 +1730,12 @@ abstract class AppLocalizations {
   /// **'Device'**
   String get device;
 
+  /// No description provided for @qrCodeScanningBehavior.
+  ///
+  /// In en, this message translates to:
+  /// **'QR code scanning behavior'**
+  String get qrCodeScanningBehavior;
+
   /// No description provided for @scanCooldown.
   ///
   /// In en, this message translates to:
@@ -1861,6 +1867,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Scan history and sync settings'**
   String get scanHistorySyncSettings;
+
+  /// No description provided for @totalRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Records: {count}'**
+  String totalRecords(int count);
+
+  /// No description provided for @lastSynced.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Synced: {date}'**
+  String lastSynced(String date);
+
+  /// No description provided for @cleanupOldHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Cleanup Old History'**
+  String get cleanupOldHistory;
+
+  /// No description provided for @cleanup.
+  ///
+  /// In en, this message translates to:
+  /// **'Cleanup'**
+  String get cleanup;
+
+  /// No description provided for @syncing.
+  ///
+  /// In en, this message translates to:
+  /// **'Syncing...'**
+  String get syncing;
+
+  /// No description provided for @syncAllDataFromServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync All Data from Server'**
+  String get syncAllDataFromServer;
+
+  /// No description provided for @syncingFromServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Syncing from server...'**
+  String get syncingFromServer;
+
+  /// No description provided for @syncError.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync error: {error}'**
+  String syncError(String error);
+
+  /// No description provided for @syncFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync failed: {error}'**
+  String syncFailed(String error);
+
+  /// No description provided for @confirmDeletion.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm deletion'**
+  String get confirmDeletion;
+
+  /// No description provided for @cleanupWarningMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete all history records older than {days} days. This action cannot be undone.'**
+  String cleanupWarningMessage(int days);
 }
 
 class _AppLocalizationsDelegate
