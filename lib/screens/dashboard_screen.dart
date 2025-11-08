@@ -36,19 +36,157 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final historyState = ref.watch(historyProvider);
+    
+    // Get ALL today's activities (not limited)
+    final now = DateTime.now();
+    final todayStart = DateTime(now.year, now.month, now.day);
+    final todayEnd = todayStart.add(const Duration(days: 1));
+    
+    var recentActivities = historyState.items
+        .where((a) => a.time.isAfter(todayStart) && a.time.isBefore(todayEnd))
+        .toList();
+    
+    // Apply sorting
+    final sortedActivities = _applySorting(recentActivities);
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Stats overview
-          _buildStatsOverview(historyState),
-          const SizedBox(height: 16),
-          
-          // Recent activity
-          _buildRecentActivity(historyState, context),
-        ],
-      ),
+    return CustomScrollView(
+      slivers: [
+        // Stats overview
+        SliverToBoxAdapter(
+          child: _buildStatsOverview(historyState),
+        ),
+        
+        SliverToBoxAdapter(
+          child: const SizedBox(height: 16),
+        ),
+        
+        // Today's Activity - sticky container with title and header
+        SliverPersistentHeader(
+          pinned: true,
+          delegate: _ActivitySectionHeaderDelegate(
+            minHeight: 130,
+            maxHeight: 130,
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 4),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppColors.card.withValues(alpha: 0.9),
+                    AppColors.surface.withValues(alpha: 0.7),
+                  ],
+                ),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
+                ),
+                border: Border.all(
+                  color: AppColors.border.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Today\'s Activity (${sortedActivities.length} entries)',
+                    style: GoogleFonts.inter(
+                      color: AppColors.textPrimary,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  _buildActivityTableHeader(),
+                ],
+              ),
+            ),
+          ),
+        ),
+        
+        // Activity items list
+        if (sortedActivities.isEmpty)
+          SliverToBoxAdapter(
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppColors.card.withValues(alpha: 0.9),
+                    AppColors.surface.withValues(alpha: 0.7),
+                  ],
+                ),
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(16),
+                  bottomRight: Radius.circular(16),
+                ),
+                border: Border.all(
+                  color: AppColors.border.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+              child: Center(
+                child: Text(
+                  'No activity today',
+                  style: GoogleFonts.inter(
+                    color: AppColors.textMuted,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ),
+          )
+        else
+          SliverPadding(
+            padding: const EdgeInsets.only(bottom: 24),
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  return Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          AppColors.card.withValues(alpha: 0.9),
+                          AppColors.surface.withValues(alpha: 0.7),
+                        ],
+                      ),
+                      border: Border(
+                        left: BorderSide(
+                          color: AppColors.border.withValues(alpha: 0.3),
+                          width: 1,
+                        ),
+                        right: BorderSide(
+                          color: AppColors.border.withValues(alpha: 0.3),
+                          width: 1,
+                        ),
+                        bottom: index == sortedActivities.length - 1
+                            ? BorderSide(
+                                color: AppColors.border.withValues(alpha: 0.3),
+                                width: 1,
+                              )
+                            : BorderSide.none,
+                      ),
+                      borderRadius: index == sortedActivities.length - 1
+                          ? const BorderRadius.only(
+                              bottomLeft: Radius.circular(16),
+                              bottomRight: Radius.circular(16),
+                            )
+                          : null,
+                    ),
+                    child: _buildActivityItem(sortedActivities[index], context),
+                  );
+                },
+                childCount: sortedActivities.length,
+              ),
+            ),
+          ),
+      ],
     );
   }
 
@@ -283,75 +421,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     );
   }
 
-  Widget _buildRecentActivity(HistoryState historyState, BuildContext context) {
-    // Get only today's activities (matching check-ins page)
-    final now = DateTime.now();
-    final todayStart = DateTime(now.year, now.month, now.day);
-    final todayEnd = todayStart.add(const Duration(days: 1));
-    
-    var recentActivities = historyState.items
-        .where((a) => a.time.isAfter(todayStart) && a.time.isBefore(todayEnd))
-        .take(10)
-        .toList();
-    
-    // Apply sorting
-    final sortedActivities = _applySorting(recentActivities);
-
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.card.withValues(alpha: 0.9),
-            AppColors.surface.withValues(alpha: 0.7),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.3),
-          width: 1,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Today\'s Activity',
-            style: GoogleFonts.inter(
-              color: AppColors.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 20),
-          if (sortedActivities.isEmpty)
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(32.0),
-                child: Text(
-                  'No activity today',
-                  style: GoogleFonts.inter(
-                    color: AppColors.textMuted,
-                    fontSize: 14,
-                  ),
-                ),
-              ),
-            )
-          else ...[
-            _buildActivityTableHeader(),
-            ...sortedActivities.map((activity) => _buildActivityItem(activity, context)),
-          ],
-        ],
-      ),
-    );
-  }
 
   /// Build activity table header (matching history page) with sorting
   Widget _buildActivityTableHeader() {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: AppColors.surface.withValues(alpha: 0.5),
@@ -871,6 +944,36 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         ],
       ),
     );
+  }
+}
+
+/// Custom delegate for the sticky activity section header
+class _ActivitySectionHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final double minHeight;
+  final double maxHeight;
+  final Widget child;
+
+  _ActivitySectionHeaderDelegate({
+    required this.minHeight,
+    required this.maxHeight,
+    required this.child,
+  });
+
+  @override
+  double get minExtent => minHeight;
+
+  @override
+  double get maxExtent => maxHeight;
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return SizedBox.expand(child: child);
+  }
+
+  @override
+  bool shouldRebuild(_ActivitySectionHeaderDelegate oldDelegate) {
+    return maxHeight != oldDelegate.maxHeight ||
+        minHeight != oldDelegate.minHeight;
   }
 }
 
