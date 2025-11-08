@@ -1,4 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 
 /// Authentication session model
 /// Stores user session information including API key and validation status
@@ -133,6 +135,58 @@ class AuthSession {
     if (lastValidated == null) return true;
     final difference = DateTime.now().difference(lastValidated!);
     return difference.inHours >= 24;
+  }
+
+  // ============================================================================
+  // Cached Credentials Management (for offline login)
+  // ============================================================================
+
+  /// Hash a password using SHA256
+  static String _hashPassword(String password) {
+    final bytes = utf8.encode(password);
+    final digest = sha256.convert(bytes);
+    return digest.toString();
+  }
+
+  /// Save cached credentials for offline login (email + password hash)
+  /// This allows users to login offline if they've successfully logged in before
+  static Future<void> saveCachedCredentials(String email, String password) async {
+    final prefs = await SharedPreferences.getInstance();
+    final passwordHash = _hashPassword(password);
+    
+    await prefs.setString('cached_email', email);
+    await prefs.setString('cached_password_hash', passwordHash);
+  }
+
+  /// Check if cached credentials exist
+  static Future<bool> hasCachedCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    final cachedEmail = prefs.getString('cached_email');
+    final cachedHash = prefs.getString('cached_password_hash');
+    
+    return cachedEmail != null && cachedHash != null;
+  }
+
+  /// Validate credentials against cached credentials
+  /// Returns true if the provided email and password match the cached ones
+  static Future<bool> validateCachedCredentials(String email, String password) async {
+    final prefs = await SharedPreferences.getInstance();
+    final cachedEmail = prefs.getString('cached_email');
+    final cachedHash = prefs.getString('cached_password_hash');
+    
+    if (cachedEmail == null || cachedHash == null) {
+      return false;
+    }
+    
+    final providedHash = _hashPassword(password);
+    return cachedEmail == email && cachedHash == providedHash;
+  }
+
+  /// Clear cached credentials
+  static Future<void> clearCachedCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('cached_email');
+    await prefs.remove('cached_password_hash');
   }
 }
 

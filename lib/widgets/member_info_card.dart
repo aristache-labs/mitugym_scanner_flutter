@@ -37,20 +37,6 @@ class MemberInfoCard extends StatelessWidget {
           color: (isSuccess ? AppColors.success : AppColors.error).withValues(alpha: 0.3),
           width: 2,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: (isSuccess ? AppColors.success : AppColors.error).withValues(alpha: 0.2),
-            blurRadius: 25,
-            offset: const Offset(0, 10),
-            spreadRadius: -5,
-          ),
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.15),
-            blurRadius: 30,
-            offset: const Offset(0, 15),
-            spreadRadius: -8,
-          ),
-        ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
@@ -101,33 +87,23 @@ class MemberInfoCard extends StatelessWidget {
 
   /// Build header with status indicator and message
   Widget _buildHeader(bool isSuccess) {
+    final statusColor = isSuccess ? AppColors.success : AppColors.error;
+    
     return Row(
       children: [
-        // Status indicator with pulse animation
+        // Status indicator - clean style
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: isSuccess
-                  ? [AppColors.success, AppColors.successLight]
-                  : [AppColors.error, AppColors.errorLight],
-            ),
+            color: statusColor.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: (isSuccess ? AppColors.success : AppColors.error).withValues(alpha: 0.4),
-                blurRadius: 15,
-                spreadRadius: 3,
-              ),
-            ],
           ),
           child: Icon(
             isSuccess ? Icons.check_circle_rounded : Icons.error_rounded,
-            color: Colors.white,
+            color: statusColor,
             size: 24,
           ),
-        ).animate(onPlay: (controller) => controller.repeat())
-            .shimmer(duration: 2000.ms, color: Colors.white.withValues(alpha: 0.3)),
+        ),
         
         const SizedBox(width: 16),
         
@@ -218,45 +194,30 @@ class MemberInfoCard extends StatelessWidget {
 
   /// Build modern avatar with better styling
   Widget _buildModernAvatar(MemberData data, bool isSuccess) {
-    final borderGradient = LinearGradient(
-      colors: isSuccess 
-          ? [AppColors.success, AppColors.successLight]
-          : [AppColors.error, AppColors.errorLight],
-    );
+    final borderColor = isSuccess ? AppColors.success : AppColors.error;
 
     return Container(
       width: 80,
       height: 80,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        gradient: borderGradient,
-        boxShadow: [
-          BoxShadow(
-            color: (isSuccess ? AppColors.success : AppColors.error).withValues(alpha: 0.3),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Container(
-        margin: const EdgeInsets.all(3), // Use margin instead of padding
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(17),
-          color: AppColors.surface,
+        border: Border.all(
+          color: borderColor.withValues(alpha: 0.15),
+          width: 1.5,
         ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18.5),
         child: data.hasAvatar
-            ? ClipRRect(
-                borderRadius: BorderRadius.circular(17),
-                child: CachedNetworkImage(
-                  imageUrl: data.avatarUrl!,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => Shimmer.fromColors(
-                    baseColor: AppColors.surface,
-                    highlightColor: AppColors.primary.withValues(alpha: 0.3),
-                    child: Container(color: AppColors.surface),
-                  ),
-                  errorWidget: (context, url, error) => _buildFallbackAvatar(data),
+            ? CachedNetworkImage(
+                imageUrl: data.avatarUrl!,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Shimmer.fromColors(
+                  baseColor: AppColors.surface,
+                  highlightColor: AppColors.primary.withValues(alpha: 0.3),
+                  child: Container(color: AppColors.surface),
                 ),
+                errorWidget: (context, url, error) => _buildFallbackAvatar(data),
               )
             : _buildFallbackAvatar(data),
       ),
@@ -267,7 +228,6 @@ class MemberInfoCard extends StatelessWidget {
   Widget _buildFallbackAvatar(MemberData data) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(17),
         gradient: AppColors.primaryGradient,
       ),
       child: Center(
@@ -308,13 +268,6 @@ class MemberInfoCard extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: data.isActive ? AppColors.success : AppColors.error,
-              boxShadow: [
-                BoxShadow(
-                  color: (data.isActive ? AppColors.success : AppColors.error).withValues(alpha: 0.6),
-                  blurRadius: 6,
-                  spreadRadius: 1,
-                ),
-              ],
             ),
           ),
           const SizedBox(width: 8),
@@ -380,13 +333,6 @@ class MemberInfoCard extends StatelessWidget {
           color: AppColors.border.withValues(alpha: 0.5),
           width: 1,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -394,17 +340,10 @@ class MemberInfoCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              gradient: gradient,
+              color: gradient.colors.first.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(8),
-              boxShadow: [
-                BoxShadow(
-                  color: gradient.colors.first.withValues(alpha: 0.3),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
             ),
-            child: Icon(icon, color: Colors.white, size: 16),
+            child: Icon(icon, color: gradient.colors.first, size: 16),
           ),
           const SizedBox(height: 12),
           Text(

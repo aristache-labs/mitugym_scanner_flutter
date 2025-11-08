@@ -7,7 +7,6 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../config/app_colors.dart';
 import '../models/activity_log.dart';
 import '../providers/history_provider.dart';
-import '../providers/config_provider.dart';
 import '../services/export_service.dart';
 import '../widgets/member_avatar_modal.dart';
 import '../widgets/member_details_modal.dart';
@@ -170,7 +169,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     );
   }
 
-  Future<void> _exportHistory() async {
+  Future<void> _exportHistory(String format) async {
     final activities = _getFilteredActivities();
     
     if (activities.isEmpty) {
@@ -186,14 +185,23 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     }
 
     try {
-      // Get export format from config
-      final config = ref.read(configProvider);
-      final format = config.exportFormat.toLowerCase();
-      
       // Export using selected format
-      final filePath = format == 'csv'
-          ? await _exportService.exportToCSV(activities)
-          : await _exportService.exportToText(activities);
+      String? filePath;
+      switch (format.toLowerCase()) {
+        case 'csv':
+          filePath = await _exportService.exportToCSV(activities);
+          break;
+        case 'pdf':
+          filePath = await _exportService.exportToPDF(activities);
+          break;
+        case 'txt':
+        default:
+          filePath = await _exportService.exportToText(activities);
+      }
+      
+      if (filePath == null) {
+        throw Exception('Export failed: No file path returned');
+      }
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -214,6 +222,135 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         );
       }
     }
+  }
+
+  void _showExportMenu(BuildContext context) {
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        MediaQuery.of(context).size.width - 200,
+        140,
+        20,
+        0,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: AppColors.border.withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
+      color: AppColors.card,
+      elevation: 8,
+      items: [
+        PopupMenuItem(
+          padding: EdgeInsets.zero,
+          enabled: false,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            child: Text(
+              'Export Format',
+              style: GoogleFonts.inter(
+                color: AppColors.textMuted,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.8,
+              ),
+            ),
+          ),
+        ),
+        _buildExportMenuItem(
+          icon: LucideIcons.fileSpreadsheet,
+          label: 'CSV',
+          description: 'Comma-separated values',
+          onTap: () {
+            Navigator.pop(context);
+            _exportHistory('csv');
+          },
+        ),
+        _buildExportMenuItem(
+          icon: LucideIcons.fileText,
+          label: 'PDF',
+          description: 'Portable document format',
+          onTap: () {
+            Navigator.pop(context);
+            _exportHistory('pdf');
+          },
+        ),
+        _buildExportMenuItem(
+          icon: LucideIcons.fileType,
+          label: 'TXT',
+          description: 'Plain text file',
+          onTap: () {
+            Navigator.pop(context);
+            _exportHistory('txt');
+          },
+        ),
+      ],
+    );
+  }
+
+  PopupMenuItem _buildExportMenuItem({
+    required IconData icon,
+    required String label,
+    required String description,
+    required VoidCallback onTap,
+  }) {
+    return PopupMenuItem(
+      padding: EdgeInsets.zero,
+      onTap: onTap,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  icon,
+                  size: 18,
+                  color: AppColors.primary,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: GoogleFonts.inter(
+                        color: AppColors.textPrimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      description,
+                      style: GoogleFonts.inter(
+                        color: AppColors.textMuted,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                LucideIcons.chevronRight,
+                size: 16,
+                color: AppColors.textMuted.withValues(alpha: 0.5),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -267,21 +404,59 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             ],
           ],
         ),
-        ElevatedButton.icon(
-          onPressed: _exportHistory,
-          icon: const Icon(LucideIcons.download, size: 18),
-          label: Text(
-            'Export',
-            style: GoogleFonts.inter(
-              fontWeight: FontWeight.w600,
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.primary,
+                AppColors.primaryDark,
+              ],
             ),
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            shape: RoundedRectangleBorder(
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => _showExportMenu(context),
               borderRadius: BorderRadius.circular(12),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      LucideIcons.download,
+                      size: 18,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Export',
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Icon(
+                      LucideIcons.chevronDown,
+                      size: 16,
+                      color: Colors.white.withValues(alpha: 0.8),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ),

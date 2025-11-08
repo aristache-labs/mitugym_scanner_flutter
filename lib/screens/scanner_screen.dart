@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../config/app_colors.dart';
 import '../providers/scan_provider.dart';
 import '../providers/windows_scanner_provider.dart';
@@ -9,7 +10,7 @@ import '../widgets/collapsible_camera_widget.dart';
 import '../widgets/member_info_card.dart';
 import '../widgets/countdown_timer.dart';
 
-/// Scanner screen - QR Code scanning interface
+/// Scanner screen - QR Code scanning interface with modern, compact design
 class ScannerScreen extends ConsumerWidget {
   const ScannerScreen({super.key});
 
@@ -19,55 +20,57 @@ class ScannerScreen extends ConsumerWidget {
     final scannerState = ref.watch(windowsScannerControllerProvider);
 
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Left column - Scanner and controls
+        // Left column - Scanner and controls (more compact)
         Expanded(
           flex: 1,
           child: SingleChildScrollView(
+            padding: const EdgeInsets.only(bottom: 16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Scanner card with reduced size
+                // Scanner card with compact design
                 _buildScannerCard(scannerState, scanState, ref),
-                const SizedBox(height: 20),
+                const SizedBox(height: 12),
                 
                 // Start/Stop scanner button
                 _buildScannerButton(scannerState, ref),
-                
-                const SizedBox(height: 20),
               ],
             ),
           ),
         ),
         
-        const SizedBox(width: 20),
+        const SizedBox(width: 16),
         
         // Right column - Member details or placeholder
         Expanded(
           flex: 1,
-          child: Column(
-            children: [
-              // Member info card or placeholder
-              if (scanState.lastResult != null)
-                _buildMemberInfoCard(scanState)
-              else
-                _buildPlaceholderCard(),
-              
-              const SizedBox(height: 16),
-              
-              // Countdown timer
-              if (scanState.cooldownActive)
-                _buildCountdownCard(scanState),
-              
-              const Spacer(),
-            ],
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Member info card or placeholder
+                if (scanState.lastResult != null)
+                  _buildMemberInfoCard(scanState)
+                else
+                  _buildPlaceholderCard(),
+                
+                const SizedBox(height: 12),
+                
+                // Countdown timer
+                if (scanState.cooldownActive)
+                  _buildCountdownCard(scanState),
+              ],
+            ),
           ),
         ),
       ],
     );
   }
 
-  /// Build scanner card with modern design and reduced size
+  /// Build scanner card with modern, compact design matching app style
   Widget _buildScannerCard(
     WindowsScannerControllerState scannerState,
     ScanState scanState,
@@ -79,44 +82,66 @@ class ScannerScreen extends ConsumerWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppColors.card.withValues(alpha: 0.9),
-            AppColors.surface.withValues(alpha: 0.7),
+            AppColors.card.withValues(alpha: 0.85),
+            AppColors.surface.withValues(alpha: 0.65),
           ],
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppColors.radiusMedium),
         border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.2),
+          color: scannerState.isActive 
+              ? AppColors.success.withValues(alpha: 0.3)
+              : AppColors.border.withValues(alpha: 0.3),
           width: 1,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-            spreadRadius: -2,
-          ),
-        ],
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Header
+          // Compact header with status
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  (scannerState.isActive ? AppColors.success : AppColors.primary)
+                      .withValues(alpha: 0.12),
+                  const Color(0xFF0D0D0D).withValues(alpha: 0.8),
+                ],
+              ),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
+              ),
+              border: Border(
+                bottom: BorderSide(
+                  color: (scannerState.isActive ? AppColors.success : AppColors.primary)
+                      .withValues(alpha: 0.2),
+                  width: 1,
+                ),
+              ),
+            ),
             child: Row(
               children: [
+                // Icon with subtle styling
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    gradient: AppColors.primaryGradient,
+                    color: (scannerState.isActive 
+                        ? AppColors.success
+                        : AppColors.primary).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(
-                    LucideIcons.camera,
-                    color: Colors.white,
-                    size: 18,
+                  child: Icon(
+                    scannerState.isActive ? LucideIcons.scan : LucideIcons.camera,
+                    color: scannerState.isActive 
+                        ? AppColors.success
+                        : AppColors.primary,
+                    size: 16,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -125,14 +150,16 @@ class ScannerScreen extends ConsumerWidget {
                         'Camera Preview',
                         style: GoogleFonts.inter(
                           color: AppColors.textPrimary,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.2,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 3),
                       Row(
                         children: [
-                          Container(
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
                             width: 6,
                             height: 6,
                             decoration: BoxDecoration(
@@ -140,15 +167,35 @@ class ScannerScreen extends ConsumerWidget {
                               color: scannerState.isActive
                                   ? AppColors.success
                                   : AppColors.textMuted,
+                              boxShadow: scannerState.isActive
+                                  ? [
+                                      BoxShadow(
+                                        color: AppColors.success.withValues(alpha: 0.5),
+                                        blurRadius: 6,
+                                        spreadRadius: 1,
+                                      ),
+                                    ]
+                                  : null,
                             ),
-                          ),
+                          )
+                              .animate(
+                                onPlay: (controller) => scannerState.isActive 
+                                    ? controller.repeat(reverse: true) 
+                                    : controller.stop(),
+                              )
+                              .fadeIn(duration: 600.ms)
+                              .then()
+                              .fadeOut(duration: 600.ms),
                           const SizedBox(width: 6),
-                          Text(
-                            scanState.statusMessage ?? 'Ready to scan',
-                            style: GoogleFonts.inter(
-                              color: AppColors.textSecondary,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
+                          Expanded(
+                            child: Text(
+                              scanState.statusMessage ?? 'Ready to scan',
+                              style: GoogleFonts.inter(
+                                color: AppColors.textSecondary,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
@@ -160,17 +207,31 @@ class ScannerScreen extends ConsumerWidget {
             ),
           ),
           
-          // Camera preview - reduced padding
+          // Camera preview - compact padding
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-            child: AspectRatio(
-              aspectRatio: 1.0,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: CollapsibleCameraWidget(
-                  scannerService: scannerState.service,
-                  isScanning: scannerState.isActive,
-                  statusMessage: scanState.statusMessage ?? 'Ready',
+            padding: const EdgeInsets.all(12),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(AppColors.radiusSmall),
+              child: AspectRatio(
+                aspectRatio: 1.0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: scannerState.isActive 
+                          ? AppColors.success.withValues(alpha: 0.3)
+                          : AppColors.border.withValues(alpha: 0.2),
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(AppColors.radiusSmall),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(AppColors.radiusSmall - 2),
+                    child: CollapsibleCameraWidget(
+                      scannerService: scannerState.service,
+                      isScanning: scannerState.isActive,
+                      statusMessage: scanState.statusMessage ?? 'Ready',
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -180,77 +241,123 @@ class ScannerScreen extends ConsumerWidget {
     );
   }
 
-  /// Build member info card with modern design
+  /// Build member info card with modern, compact design
   Widget _buildMemberInfoCard(ScanState scanState) {
+    final isSuccess = scanState.lastResult?.success ?? false;
+    final statusColor = isSuccess ? AppColors.success : AppColors.error;
+    
     return Container(
-      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppColors.card.withValues(alpha: 0.9),
-            AppColors.surface.withValues(alpha: 0.7),
+            AppColors.card.withValues(alpha: 0.85),
+            AppColors.surface.withValues(alpha: 0.65),
           ],
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppColors.radiusMedium),
         border: Border.all(
-          color: AppColors.success.withValues(alpha: 0.3),
+          color: statusColor.withValues(alpha: 0.3),
           width: 1,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.success.withValues(alpha: 0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-            spreadRadius: -2,
-          ),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Header
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  gradient: AppColors.successGradient,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(
-                  LucideIcons.user,
-                  color: Colors.white,
-                  size: 18,
+          // Compact header with status indicator
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  statusColor.withValues(alpha: 0.12),
+                  const Color(0xFF0D0D0D).withValues(alpha: 0.8),
+                ],
+              ),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
+              ),
+              border: Border(
+                bottom: BorderSide(
+                  color: statusColor.withValues(alpha: 0.2),
+                  width: 1,
                 ),
               ),
-              const SizedBox(width: 12),
-              Text(
-                'Member Details',
-                style: GoogleFonts.inter(
-                  color: AppColors.textPrimary,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: statusColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    isSuccess ? LucideIcons.userCheck : LucideIcons.userX,
+                    color: statusColor,
+                    size: 16,
+                  ),
+                )
+                    .animate()
+                    .scale(
+                      duration: 300.ms,
+                      curve: Curves.easeOutBack,
+                    )
+                    .fadeIn(duration: 200.ms),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Member Details',
+                        style: GoogleFonts.inter(
+                          color: AppColors.textPrimary,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        isSuccess ? 'Access Granted' : 'Access Denied',
+                        style: GoogleFonts.inter(
+                          color: statusColor,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-          const SizedBox(height: 20),
           
-          // Member info
-          MemberInfoCard(
-            scanResult: scanState.lastResult!,
+          // Member info content
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: MemberInfoCard(
+              scanResult: scanState.lastResult!,
+            ),
           ),
         ],
       ),
-    );
+    )
+        .animate()
+        .fadeIn(duration: 300.ms)
+        .slideX(begin: 0.1, end: 0, duration: 400.ms, curve: Curves.easeOutQuart);
   }
 
-  /// Build placeholder card when no member scanned
+  /// Build placeholder card when no member scanned - compact design
   Widget _buildPlaceholderCard() {
     return Container(
-      padding: const EdgeInsets.all(32),
+      padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -260,7 +367,7 @@ class ScannerScreen extends ConsumerWidget {
             AppColors.surface.withValues(alpha: 0.4),
           ],
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppColors.radiusMedium),
         border: Border.all(
           color: AppColors.border.withValues(alpha: 0.3),
           width: 1,
@@ -268,34 +375,55 @@ class ScannerScreen extends ConsumerWidget {
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: AppColors.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
+              border: Border.all(
+                color: AppColors.primary.withValues(alpha: 0.2),
+                width: 2,
+              ),
             ),
             child: Icon(
               LucideIcons.qrCode,
-              size: 48,
-              color: AppColors.primary.withValues(alpha: 0.5),
+              size: 40,
+              color: AppColors.primary.withValues(alpha: 0.6),
             ),
-          ),
-          const SizedBox(height: 20),
+          )
+              .animate(onPlay: (controller) => controller.repeat())
+              .scale(
+                duration: 2000.ms,
+                begin: const Offset(1.0, 1.0),
+                end: const Offset(1.05, 1.05),
+                curve: Curves.easeInOut,
+              )
+              .then()
+              .scale(
+                duration: 2000.ms,
+                begin: const Offset(1.05, 1.05),
+                end: const Offset(1.0, 1.0),
+                curve: Curves.easeInOut,
+              ),
+          const SizedBox(height: 16),
           Text(
             'Waiting for scan...',
             style: GoogleFonts.inter(
               color: AppColors.textSecondary,
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.w600,
+              letterSpacing: 0.2,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(
             'Scan a QR code to view member details',
             style: GoogleFonts.inter(
               color: AppColors.textMuted,
-              fontSize: 13,
+              fontSize: 12,
+              letterSpacing: 0.1,
             ),
             textAlign: TextAlign.center,
           ),
@@ -304,95 +432,119 @@ class ScannerScreen extends ConsumerWidget {
     );
   }
 
-  /// Build countdown card with modern design
+  /// Build countdown card with compact design
   Widget _buildCountdownCard(ScanState scanState) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppColors.warning.withValues(alpha: 0.15),
-            AppColors.warningLight.withValues(alpha: 0.1),
+            AppColors.warning.withValues(alpha: 0.12),
+            AppColors.warningLight.withValues(alpha: 0.06),
           ],
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppColors.radiusMedium),
         border: Border.all(
           color: AppColors.warning.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: CountdownTimer(
-          remainingSeconds: scanState.cooldownRemaining,
-          totalSeconds: scanState.cooldownRemaining,
-        ),
+      child: CountdownTimer(
+        remainingSeconds: scanState.cooldownRemaining,
       ),
-    );
+    )
+        .animate()
+        .fadeIn(duration: 300.ms)
+        .slideY(begin: -0.1, end: 0, duration: 400.ms, curve: Curves.easeOutQuart);
   }
 
-  /// Build scanner control button
+  /// Build scanner control button with compact design and smooth animations
   Widget _buildScannerButton(
     WindowsScannerControllerState scannerState,
     WidgetRef ref,
   ) {
     final isScanning = scannerState.isActive;
     
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () async {
-          if (isScanning) {
-            await ref.read(windowsScannerControllerProvider.notifier).stopScanner();
-          } else {
-            await ref.read(windowsScannerControllerProvider.notifier).startScanner();
-          }
-        },
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-          decoration: BoxDecoration(
-            gradient: isScanning
-                ? LinearGradient(
-                    colors: [
-                      AppColors.error,
-                      AppColors.errorLight,
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  )
-                : AppColors.primaryGradient,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: (isScanning ? AppColors.error : AppColors.primary)
-                    .withValues(alpha: 0.3),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                isScanning ? LucideIcons.square : LucideIcons.play,
-                color: Colors.white,
-                size: 24,
-              ),
-              const SizedBox(width: 12),
-              Text(
-                isScanning ? 'STOP SCANNER' : 'START SCANNER',
-                style: GoogleFonts.inter(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () async {
+            if (isScanning) {
+              await ref.read(windowsScannerControllerProvider.notifier).stopScanner();
+            } else {
+              await ref.read(windowsScannerControllerProvider.notifier).startScanner();
+            }
+          },
+          borderRadius: BorderRadius.circular(10),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+            decoration: BoxDecoration(
+              gradient: isScanning
+                  ? LinearGradient(
+                      colors: [
+                        AppColors.error,
+                        AppColors.errorLight,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    )
+                  : AppColors.primaryGradient,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: (isScanning ? AppColors.error : AppColors.primary)
+                      .withValues(alpha: 0.25),
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
+                  spreadRadius: -1,
                 ),
-              ),
-            ],
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  transitionBuilder: (child, animation) {
+                    return ScaleTransition(
+                      scale: animation,
+                      child: FadeTransition(
+                        opacity: animation,
+                        child: child,
+                      ),
+                    );
+                  },
+                  child: Icon(
+                    isScanning ? LucideIcons.square : LucideIcons.play,
+                    key: ValueKey(isScanning),
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  style: GoogleFonts.inter(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.3,
+                  ),
+                  child: Text(
+                    isScanning ? 'STOP SCANNER' : 'START SCANNER',
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -46,6 +46,7 @@ dependencies:
   
   # Window Management
   window_manager: ^0.5.1
+  tray_manager: ^0.5.2
   
   # Audio
   audioplayers: ^6.1.0
@@ -54,6 +55,9 @@ dependencies:
   logger: ^2.4.0
   intl: ^0.20.1
   uuid: ^4.5.1
+  crypto: ^3.0.6
+  sticky_headers: ^0.3.0+2
+  pdf: ^3.11.1
   
   # Database & Connectivity
   sqflite: ^2.4.1
@@ -84,6 +88,7 @@ flutter:
   assets:
     - assets/sounds/
     - assets/images/
+    - assets/fonts/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

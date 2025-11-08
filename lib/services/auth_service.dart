@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/auth_session.dart';
 import 'logger_service.dart';
 
@@ -30,6 +31,7 @@ class AuthService {
     required String email,
     required String password,
     String? deviceName,
+    bool rememberMe = true,
   }) async {
     try {
       _logger.i('Attempting login for: $email');
@@ -71,6 +73,31 @@ class AuthService {
           // Save session
           await session.save();
           _verboseLogger?.logDebug('Session saved successfully', source: 'AuthService');
+
+          // Save cached credentials for offline login (only if remember me is enabled)
+          if (rememberMe) {
+            await AuthSession.saveCachedCredentials(email, password);
+            _verboseLogger?.logDebug('Cached credentials saved for offline login', source: 'AuthService');
+
+            // Save session data for offline login restoration
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString('last_user_name', session.userName);
+            await prefs.setString('last_location_name', session.locationName);
+            await prefs.setString('last_api_key', session.apiKey);
+            if (session.avatarUrl != null) {
+              await prefs.setString('last_avatar_url', session.avatarUrl!);
+            }
+            _verboseLogger?.logDebug('Session data cached for offline login', source: 'AuthService');
+          } else {
+            // Clear any existing cached credentials if remember me is disabled
+            await AuthSession.clearCachedCredentials();
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.remove('last_user_name');
+            await prefs.remove('last_location_name');
+            await prefs.remove('last_api_key');
+            await prefs.remove('last_avatar_url');
+            _verboseLogger?.logDebug('Cached credentials cleared (remember me disabled)', source: 'AuthService');
+          }
 
           return session;
         } else {
@@ -163,15 +190,83 @@ class AuthService {
   }
 
   /// Logout and clear session
+  /// Note: Cached credentials are NOT cleared to allow offline login in the future
   Future<void> logout() async {
     try {
       _logger.i('Logging out...');
       await AuthSession.clear();
-      _logger.i('Session cleared');
+      _logger.i('Session cleared (cached credentials preserved for offline login)');
     } catch (e) {
       _logger.e('Logout error: $e');
       // Still try to clear even if there's an error
       await AuthSession.clear();
+    }
+  }
+
+  /// Offline login with cached credentials
+  /// Returns AuthSession on success, throws exception on failure
+  /// This allows users to login offline if they've successfully logged in before
+  Future<AuthSession> offlineLogin({
+    required String email,
+    required String password,
+    String? deviceName,
+  }) async {
+    try {
+      _logger.i('Attempting offline login for: $email');
+      _verboseLogger?.logDebug('Starting offline login validation', source: 'AuthService');
+
+      // Validate against cached credentials
+      final isValid = await AuthSession.validateCachedCredentials(email, password);
+      
+      if (!isValid) {
+        _logger.w('Offline login failed: Invalid credentials');
+        throw Exception('Invalid email or password');
+      }
+
+      // Try to load existing session
+      final existingSession = await AuthSession.load();
+      
+      if (existingSession != null && existingSession.email == email) {
+        // Session exists and matches - restore it
+        _logger.i('Offline login successful for: $email');
+        _verboseLogger?.logDebug('Restoring existing session for: ${existingSession.userName}', source: 'AuthService');
+        return existingSession;
+      }
+
+      // Session doesn't exist (was cleared on logout) - check if we have cached session data
+      // We need to load the last known session data from SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      final lastUserName = prefs.getString('last_user_name');
+      final lastLocationName = prefs.getString('last_location_name');
+      final lastApiKey = prefs.getString('last_api_key');
+      final lastAvatarUrl = prefs.getString('last_avatar_url');
+      
+      if (lastUserName == null || lastLocationName == null || lastApiKey == null) {
+        _logger.w('Offline login failed: No cached session data found');
+        throw Exception('No saved session data found. Please login online first.');
+      }
+
+      // Create a new session from cached data
+      final session = AuthSession(
+        email: email,
+        apiKey: lastApiKey,
+        userName: lastUserName,
+        locationName: lastLocationName,
+        avatarUrl: lastAvatarUrl,
+        loginTime: DateTime.now(),
+        lastValidated: DateTime.now(),
+      );
+
+      // Save the session
+      await session.save();
+      
+      _logger.i('Offline login successful for: $email (recreated session from cache)');
+      _verboseLogger?.logDebug('Recreated session for: ${session.userName}', source: 'AuthService');
+
+      return session;
+    } catch (e) {
+      _logger.e('Offline login error: $e');
+      rethrow;
     }
   }
 

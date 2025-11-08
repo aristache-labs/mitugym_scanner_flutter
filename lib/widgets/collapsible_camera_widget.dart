@@ -91,97 +91,105 @@ class _CollapsibleCameraWidgetState extends State<CollapsibleCameraWidget>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
       children: [
-        // Toggle button
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Camera Preview',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+        Column(
+          children: [
+            // Toggle button - fixed height
+            SizedBox(
+              height: 56,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Camera Preview',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
+                    Row(
+                      children: [
+                        // Status indicator
+                        if (!_isVisible)
+                          Container(
+                            width: 8,
+                            height: 8,
+                            margin: const EdgeInsets.only(right: 8),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: widget.isScanning ? Colors.green : Colors.red,
+                              boxShadow: widget.isScanning
+                                  ? [
+                                      BoxShadow(
+                                        color: Colors.green.withValues(alpha: 0.5),
+                                        blurRadius: 8,
+                                        spreadRadius: 2,
+                                      ),
+                                    ]
+                                  : null,
+                            ),
+                          ),
+                        // Toggle button
+                        IconButton(
+                          icon: AnimatedRotation(
+                            turns: _isVisible ? 0 : 0.5,
+                            duration: const Duration(milliseconds: 300),
+                            child: Icon(
+                              _isVisible ? Icons.visibility : Icons.visibility_off,
+                            ),
+                          ),
+                          onPressed: _toggleVisibility,
+                          tooltip: _isVisible ? 'Hide Camera' : 'Show Camera',
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-              Row(
-                children: [
-                  // Status indicator
-                  if (!_isVisible)
-                    Container(
-                      width: 8,
-                      height: 8,
-                      margin: const EdgeInsets.only(right: 8),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: widget.isScanning ? Colors.green : Colors.red,
-                        boxShadow: widget.isScanning
-                            ? [
-                                BoxShadow(
-                                  color: Colors.green.withValues(alpha: 0.5),
-                                  blurRadius: 8,
-                                  spreadRadius: 2,
-                                ),
-                              ]
-                            : null,
+            ),
+            
+            // Animated camera preview or status message
+            Expanded(
+              child: _isVisible
+                  ? SizeTransition(
+                      sizeFactor: _heightAnimation,
+                      axisAlignment: -1.0,
+                      child: WindowsCameraPreviewWidget(
+                        scannerService: widget.scannerService,
+                        isScanning: widget.isScanning,
+                        statusMessage: widget.statusMessage,
+                      ),
+                    )
+                  : Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              widget.isScanning ? Icons.qr_code_scanner : Icons.pause_circle,
+                              size: 20,
+                              color: widget.isScanning ? Colors.green : Colors.grey,
+                            ),
+                            const SizedBox(width: 8),
+                            Flexible(
+                              child: Text(
+                                widget.statusMessage,
+                                style: Theme.of(context).textTheme.bodyMedium,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  // Toggle button
-                  IconButton(
-                    icon: AnimatedRotation(
-                      turns: _isVisible ? 0 : 0.5,
-                      duration: const Duration(milliseconds: 300),
-                      child: Icon(
-                        _isVisible ? Icons.visibility : Icons.visibility_off,
-                      ),
-                    ),
-                    onPressed: _toggleVisibility,
-                    tooltip: _isVisible ? 'Hide Camera' : 'Show Camera',
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        
-        // Animated camera preview
-        SizeTransition(
-          sizeFactor: _heightAnimation,
-          axisAlignment: -1.0,
-          child: SizedBox(
-            height: 400,
-            child: WindowsCameraPreviewWidget(
-              scannerService: widget.scannerService,
-              isScanning: widget.isScanning,
-              statusMessage: widget.statusMessage,
             ),
-          ),
+          ],
         ),
-        
-        // Collapsed status message
-        if (!_isVisible)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              children: [
-                Icon(
-                  widget.isScanning ? Icons.qr_code_scanner : Icons.pause_circle,
-                  size: 20,
-                  color: widget.isScanning ? Colors.green : Colors.grey,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    widget.statusMessage,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          ),
       ],
     );
   }
