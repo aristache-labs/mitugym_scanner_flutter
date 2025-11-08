@@ -575,7 +575,7 @@ abstract class AppLocalizations {
   /// No description provided for @autoStartScanning.
   ///
   /// In en, this message translates to:
-  /// **'Auto-start scanning'**
+  /// **'Auto-start Scanning'**
   String get autoStartScanning;
 
   /// No description provided for @autoStartDesc.
@@ -671,7 +671,7 @@ abstract class AppLocalizations {
   /// No description provided for @verboseLogging.
   ///
   /// In en, this message translates to:
-  /// **'Verbose logging'**
+  /// **'Verbose Logging'**
   String get verboseLogging;
 
   /// No description provided for @verboseLoggingDesc.
@@ -1639,6 +1639,228 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} members found'**
   String membersFound(int count);
+
+  /// No description provided for @display.
+  ///
+  /// In en, this message translates to:
+  /// **'Display'**
+  String get display;
+
+  /// No description provided for @audio.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio'**
+  String get audio;
+
+  /// No description provided for @advanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced'**
+  String get advanced;
+
+  /// No description provided for @saveSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Settings'**
+  String get saveSettings;
+
+  /// No description provided for @settingsSavedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings saved successfully'**
+  String get settingsSavedSuccessfully;
+
+  /// No description provided for @apiConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'API Connection'**
+  String get apiConnection;
+
+  /// No description provided for @manageApiConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your API connection'**
+  String get manageApiConnection;
+
+  /// No description provided for @enterApiKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your API key'**
+  String get enterApiKey;
+
+  /// No description provided for @applicationPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Application Preferences'**
+  String get applicationPreferences;
+
+  /// No description provided for @startupBehaviorSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Startup and behavior settings'**
+  String get startupBehaviorSettings;
+
+  /// No description provided for @selectPreferredLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your preferred language'**
+  String get selectPreferredLanguage;
+
+  /// No description provided for @launchAutomatically.
+  ///
+  /// In en, this message translates to:
+  /// **'Launch automatically when Windows starts'**
+  String get launchAutomatically;
+
+  /// No description provided for @camera.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get camera;
+
+  /// No description provided for @deviceCaptureSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Device and capture settings'**
+  String get deviceCaptureSettings;
+
+  /// No description provided for @device.
+  ///
+  /// In en, this message translates to:
+  /// **'Device'**
+  String get device;
+
+  /// No description provided for @scanCooldown.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan Cooldown'**
+  String get scanCooldown;
+
+  /// No description provided for @displayPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Display Preferences'**
+  String get displayPreferences;
+
+  /// No description provided for @cameraUISettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera and UI settings'**
+  String get cameraUISettings;
+
+  /// No description provided for @showCameraByDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Camera by Default'**
+  String get showCameraByDefault;
+
+  /// No description provided for @displayCameraPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Display camera preview on scanner screen'**
+  String get displayCameraPreview;
+
+  /// No description provided for @beginScanningOnLaunch.
+  ///
+  /// In en, this message translates to:
+  /// **'Begin scanning when app launches'**
+  String get beginScanningOnLaunch;
+
+  /// No description provided for @soundSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Sound Settings'**
+  String get soundSettings;
+
+  /// No description provided for @audioFeedbackConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio feedback configuration'**
+  String get audioFeedbackConfig;
+
+  /// No description provided for @enableAudioFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Audio Feedback'**
+  String get enableAudioFeedback;
+
+  /// No description provided for @playSoundWhenScanning.
+  ///
+  /// In en, this message translates to:
+  /// **'Play sound when scanning QR codes'**
+  String get playSoundWhenScanning;
+
+  /// No description provided for @volume.
+  ///
+  /// In en, this message translates to:
+  /// **'Volume'**
+  String get volume;
+
+  /// No description provided for @moreAudioSettingsComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'More audio settings\ncoming soon'**
+  String get moreAudioSettingsComingSoon;
+
+  /// No description provided for @logDataRetentionSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Log and data retention settings'**
+  String get logDataRetentionSettings;
+
+  /// No description provided for @configureExportLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure export file location'**
+  String get configureExportLocation;
+
+  /// No description provided for @usingDefaultLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Using default location'**
+  String get usingDefaultLocation;
+
+  /// No description provided for @leaveEmptyForDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave empty to use default location'**
+  String get leaveEmptyForDefault;
+
+  /// No description provided for @logging.
+  ///
+  /// In en, this message translates to:
+  /// **'Logging'**
+  String get logging;
+
+  /// No description provided for @appLoggingConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'Application logging configuration'**
+  String get appLoggingConfig;
+
+  /// No description provided for @saveDebugLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Save debug, warning, and trace logs to files'**
+  String get saveDebugLogs;
+
+  /// No description provided for @helpfulForTroubleshooting.
+  ///
+  /// In en, this message translates to:
+  /// **'Helpful for troubleshooting issues'**
+  String get helpfulForTroubleshooting;
+
+  /// No description provided for @historyManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'History Management'**
+  String get historyManagement;
+
+  /// No description provided for @scanHistorySyncSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan history and sync settings'**
+  String get scanHistorySyncSettings;
 }
 
 class _AppLocalizationsDelegate

@@ -184,7 +184,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get general => 'General';
 
   @override
-  String get scanner => 'Scanner';
+  String get scanner => 'Scaner';
 
   @override
   String get data => 'Date';
@@ -241,7 +241,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get selectCamera => 'Selectează camera';
 
   @override
-  String get frameRate => 'Rată cadre';
+  String get frameRate => 'Rata de cadre';
 
   @override
   String get fps => 'FPS';
@@ -256,7 +256,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get scannerBehavior => 'Comportament scanner';
 
   @override
-  String get autoStartScanning => 'Pornire automată scanare';
+  String get autoStartScanning => 'Pornește scanarea automat';
 
   @override
   String get autoStartDesc =>
@@ -282,7 +282,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get soundVolume => 'Volum sunet';
 
   @override
-  String get dataManagement => 'Gestionare date';
+  String get dataManagement => 'Gestionare Date';
 
   @override
   String get historyRetention => 'Păstrare istoric';
@@ -291,7 +291,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get days => 'zile';
 
   @override
-  String get exportSettings => 'Setări export';
+  String get exportSettings => 'Setări Export';
 
   @override
   String get exportPath => 'Cale export';
@@ -303,10 +303,10 @@ class AppLocalizationsRo extends AppLocalizations {
   String get logSettings => 'Setări log-uri';
 
   @override
-  String get logRetention => 'Păstrare log-uri';
+  String get logRetention => 'Păstrare jurnale';
 
   @override
-  String get verboseLogging => 'Log-uri detaliate';
+  String get verboseLogging => 'Jurnalizare detaliată';
 
   @override
   String get verboseLoggingDesc => 'Include informații detaliate de debug';
@@ -633,7 +633,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get selectFolderPath =>
-      'Selectează sau introdu calea către folderul unde vor fi salvate fișierele exportate:';
+      'Selectează sau introdu calea folderului unde vor fi salvate fișierele de export:';
 
   @override
   String get enterPath => 'Introdu calea manual';
@@ -817,4 +817,121 @@ class AppLocalizationsRo extends AppLocalizations {
   String membersFound(int count) {
     return '$count membri găsiți';
   }
+
+  @override
+  String get display => 'Afișare';
+
+  @override
+  String get audio => 'Audio';
+
+  @override
+  String get advanced => 'Avansat';
+
+  @override
+  String get saveSettings => 'Salvează Setări';
+
+  @override
+  String get settingsSavedSuccessfully => 'Setări salvate cu succes';
+
+  @override
+  String get apiConnection => 'Conexiune API';
+
+  @override
+  String get manageApiConnection => 'Gestionează conexiunea API';
+
+  @override
+  String get enterApiKey => 'Introdu cheia API';
+
+  @override
+  String get applicationPreferences => 'Preferințe Aplicație';
+
+  @override
+  String get startupBehaviorSettings => 'Setări pornire și comportament';
+
+  @override
+  String get selectPreferredLanguage => 'Selectează limba preferată';
+
+  @override
+  String get launchAutomatically => 'Lansează automat când pornește Windows';
+
+  @override
+  String get camera => 'Cameră';
+
+  @override
+  String get deviceCaptureSettings => 'Setări dispozitiv și captură';
+
+  @override
+  String get device => 'Dispozitiv';
+
+  @override
+  String get scanCooldown => 'Pauză scanare';
+
+  @override
+  String get displayPreferences => 'Preferințe Afișare';
+
+  @override
+  String get cameraUISettings => 'Setări cameră și interfață';
+
+  @override
+  String get showCameraByDefault => 'Afișează camera implicit';
+
+  @override
+  String get displayCameraPreview =>
+      'Afișează previzualizarea camerei pe ecranul de scanare';
+
+  @override
+  String get beginScanningOnLaunch =>
+      'Începe scanarea când se lansează aplicația';
+
+  @override
+  String get soundSettings => 'Setări Sunet';
+
+  @override
+  String get audioFeedbackConfig => 'Configurare feedback audio';
+
+  @override
+  String get enableAudioFeedback => 'Activează feedback audio';
+
+  @override
+  String get playSoundWhenScanning => 'Redă sunet la scanarea codurilor QR';
+
+  @override
+  String get volume => 'Volum';
+
+  @override
+  String get moreAudioSettingsComingSoon => 'Mai multe setări audio\nîn curând';
+
+  @override
+  String get logDataRetentionSettings => 'Setări păstrare jurnale și date';
+
+  @override
+  String get configureExportLocation =>
+      'Configurează locația fișierelor de export';
+
+  @override
+  String get usingDefaultLocation => 'Se folosește locația implicită';
+
+  @override
+  String get leaveEmptyForDefault =>
+      'Lasă gol pentru a folosi locația implicită';
+
+  @override
+  String get logging => 'Jurnalizare';
+
+  @override
+  String get appLoggingConfig => 'Configurare jurnalizare aplicație';
+
+  @override
+  String get saveDebugLogs =>
+      'Salvează jurnale de depanare, avertizări și trasare';
+
+  @override
+  String get helpfulForTroubleshooting => 'Util pentru depanare';
+
+  @override
+  String get historyManagement => 'Gestionare Istoric';
+
+  @override
+  String get scanHistorySyncSettings =>
+      'Setări istoric scanare și sincronizare';
 }

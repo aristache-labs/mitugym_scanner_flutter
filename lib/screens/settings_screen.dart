@@ -12,6 +12,7 @@ import '../providers/language_provider.dart';
 import '../services/api_service.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../widgets/animated_tab_switcher.dart';
+import '../l10n/app_localizations.dart';
 
 /// Modern settings screen - Dashboard style
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -84,7 +85,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
         builder: (context, setDialogState) => AlertDialog(
           backgroundColor: AppColors.card,
           title: Text(
-            'Set Export Path',
+            AppLocalizations.of(context)!.setExportPath,
             style: GoogleFonts.inter(
               color: AppColors.textPrimary,
               fontSize: 18,
@@ -96,7 +97,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Select or enter the folder path where export files should be saved:',
+                AppLocalizations.of(context)!.selectFolderPath,
                 style: GoogleFonts.inter(
                   color: AppColors.textSecondary,
                   fontSize: 13,
@@ -146,7 +147,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                     },
                     icon: const Icon(LucideIcons.folderSearch, size: 14),
                     label: Text(
-                      'Browse',
+                      AppLocalizations.of(context)!.browse,
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -171,7 +172,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
               ),
               const SizedBox(height: 12),
               Text(
-                'Leave empty to use default location',
+                AppLocalizations.of(context)!.leaveEmptyForDefault,
                 style: GoogleFonts.inter(
                   color: AppColors.textMuted.withValues(alpha: 0.7),
                   fontSize: 11,
@@ -184,7 +185,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text(
-                'Cancel',
+                AppLocalizations.of(context)!.cancel,
                 style: GoogleFonts.inter(
                   color: AppColors.textSecondary,
                   fontWeight: FontWeight.w600,
@@ -206,7 +207,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 ),
               ),
               child: Text(
-                'Save',
+                AppLocalizations.of(context)!.save,
                 style: GoogleFonts.inter(
                   fontWeight: FontWeight.w600,
                 ),
@@ -258,7 +259,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     if (mounted) {
       _showPremiumToast(
         context: context,
-        message: 'Settings saved successfully',
+        message: AppLocalizations.of(context)!.settingsSavedSuccessfully,
         icon: LucideIcons.checkCircle,
         type: ToastType.success,
       );
@@ -335,11 +336,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
       ),
       child: Center(
         child: AnimatedTabSwitcher(
-          tabs: const [
-            TabItem(label: 'General', icon: LucideIcons.home),
-            TabItem(label: 'Display', icon: LucideIcons.monitor),
-            TabItem(label: 'Audio', icon: LucideIcons.volume2),
-            TabItem(label: 'Advanced', icon: LucideIcons.settings2),
+          tabs: [
+            TabItem(label: AppLocalizations.of(context)!.general, icon: LucideIcons.home),
+            TabItem(label: AppLocalizations.of(context)!.display, icon: LucideIcons.monitor),
+            TabItem(label: AppLocalizations.of(context)!.audio, icon: LucideIcons.volume2),
+            TabItem(label: AppLocalizations.of(context)!.advanced, icon: LucideIcons.settings2),
           ],
           selectedIndex: _tabController.index,
           onTabSelected: (index) {
@@ -403,7 +404,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
               },
               icon: const Icon(LucideIcons.rotateCcw, size: 16),
               label: Text(
-                'Reset',
+                AppLocalizations.of(context)!.reset,
                 style: GoogleFonts.inter(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
@@ -432,7 +433,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
               onPressed: _saveSettings,
               icon: const Icon(LucideIcons.save, size: 16),
               label: Text(
-                'Save Settings',
+                AppLocalizations.of(context)!.saveSettings,
                 style: GoogleFonts.inter(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
@@ -473,8 +474,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 // API Configuration Card
                 _buildModernCard(
                   icon: LucideIcons.cloud,
-                  title: 'API Configuration',
-                  subtitle: 'Manage your API connection',
+                  title: AppLocalizations.of(context)!.apiConnection,
+                  subtitle: AppLocalizations.of(context)!.manageApiConnection,
                   child: Column(
                     children: [
                       _buildInlineTextField(
@@ -490,7 +491,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                             child: _buildInlineTextField(
                               controller: _apiKeyController,
                               label: 'API Key',
-                              hint: 'Enter your API key',
+                              hint: AppLocalizations.of(context)!.enterApiKey,
                               icon: LucideIcons.key,
                               obscure: true,
                             ),
@@ -510,15 +511,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 // Application Preferences Card
                 _buildModernCard(
                   icon: LucideIcons.settings,
-                  title: 'Application Preferences',
-                  subtitle: 'Startup and behavior settings',
+                  title: AppLocalizations.of(context)!.applicationPreferences,
+                  subtitle: AppLocalizations.of(context)!.startupBehaviorSettings,
                   child: Column(
                     children: [
                       _buildLanguageSelector(),
                       const SizedBox(height: 12),
                       _buildInlineSwitch(
-                        label: 'Start with Windows',
-                        description: 'Launch automatically when Windows starts',
+                        label: AppLocalizations.of(context)!.startWithWindows,
+                        description: AppLocalizations.of(context)!.launchAutomatically,
                         icon: LucideIcons.power,
                         value: _startWithWindows,
                         onChanged: (v) => setState(() => _startWithWindows = v),
@@ -540,23 +541,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 // Camera Settings Card
                 _buildModernCard(
                   icon: LucideIcons.video,
-                  title: 'Camera',
-                  subtitle: 'Device and capture settings',
+                  title: AppLocalizations.of(context)!.camera,
+                  subtitle: AppLocalizations.of(context)!.deviceCaptureSettings,
                   child: Column(
                     children: [
                       _buildCompactSlider(
-                        label: 'Device',
+                        label: AppLocalizations.of(context)!.device,
                         icon: LucideIcons.camera,
                         value: _cameraIndex.toDouble(),
                         min: 0,
                         max: 5,
                         divisions: 5,
-                        displayValue: 'Camera $_cameraIndex',
+                        displayValue: '${AppLocalizations.of(context)!.camera} $_cameraIndex',
                         onChanged: (v) => setState(() => _cameraIndex = v.toInt()),
                       ),
                       const SizedBox(height: 12),
                       _buildCompactSlider(
-                        label: 'Frame Rate',
+                        label: AppLocalizations.of(context)!.frameRate,
                         icon: LucideIcons.zap,
                         value: _cameraFrameRate.toDouble(),
                         min: 5,
@@ -2070,7 +2071,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Language',
+                  AppLocalizations.of(context)!.language,
                   style: GoogleFonts.inter(
                     color: AppColors.textPrimary,
                     fontSize: 13,
@@ -2080,7 +2081,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Select your preferred language',
+                  AppLocalizations.of(context)!.selectPreferredLanguage,
                   style: GoogleFonts.inter(
                     color: AppColors.textSecondary.withValues(alpha: 0.7),
                     fontSize: 11,

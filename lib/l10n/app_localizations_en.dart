@@ -256,7 +256,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scannerBehavior => 'Scanner Behavior';
 
   @override
-  String get autoStartScanning => 'Auto-start scanning';
+  String get autoStartScanning => 'Auto-start Scanning';
 
   @override
   String get autoStartDesc =>
@@ -305,7 +305,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get logRetention => 'Log Retention';
 
   @override
-  String get verboseLogging => 'Verbose logging';
+  String get verboseLogging => 'Verbose Logging';
 
   @override
   String get verboseLoggingDesc => 'Include detailed debug information';
@@ -812,4 +812,115 @@ class AppLocalizationsEn extends AppLocalizations {
   String membersFound(int count) {
     return '$count members found';
   }
+
+  @override
+  String get display => 'Display';
+
+  @override
+  String get audio => 'Audio';
+
+  @override
+  String get advanced => 'Advanced';
+
+  @override
+  String get saveSettings => 'Save Settings';
+
+  @override
+  String get settingsSavedSuccessfully => 'Settings saved successfully';
+
+  @override
+  String get apiConnection => 'API Connection';
+
+  @override
+  String get manageApiConnection => 'Manage your API connection';
+
+  @override
+  String get enterApiKey => 'Enter your API key';
+
+  @override
+  String get applicationPreferences => 'Application Preferences';
+
+  @override
+  String get startupBehaviorSettings => 'Startup and behavior settings';
+
+  @override
+  String get selectPreferredLanguage => 'Select your preferred language';
+
+  @override
+  String get launchAutomatically => 'Launch automatically when Windows starts';
+
+  @override
+  String get camera => 'Camera';
+
+  @override
+  String get deviceCaptureSettings => 'Device and capture settings';
+
+  @override
+  String get device => 'Device';
+
+  @override
+  String get scanCooldown => 'Scan Cooldown';
+
+  @override
+  String get displayPreferences => 'Display Preferences';
+
+  @override
+  String get cameraUISettings => 'Camera and UI settings';
+
+  @override
+  String get showCameraByDefault => 'Show Camera by Default';
+
+  @override
+  String get displayCameraPreview => 'Display camera preview on scanner screen';
+
+  @override
+  String get beginScanningOnLaunch => 'Begin scanning when app launches';
+
+  @override
+  String get soundSettings => 'Sound Settings';
+
+  @override
+  String get audioFeedbackConfig => 'Audio feedback configuration';
+
+  @override
+  String get enableAudioFeedback => 'Enable Audio Feedback';
+
+  @override
+  String get playSoundWhenScanning => 'Play sound when scanning QR codes';
+
+  @override
+  String get volume => 'Volume';
+
+  @override
+  String get moreAudioSettingsComingSoon => 'More audio settings\ncoming soon';
+
+  @override
+  String get logDataRetentionSettings => 'Log and data retention settings';
+
+  @override
+  String get configureExportLocation => 'Configure export file location';
+
+  @override
+  String get usingDefaultLocation => 'Using default location';
+
+  @override
+  String get leaveEmptyForDefault => 'Leave empty to use default location';
+
+  @override
+  String get logging => 'Logging';
+
+  @override
+  String get appLoggingConfig => 'Application logging configuration';
+
+  @override
+  String get saveDebugLogs => 'Save debug, warning, and trace logs to files';
+
+  @override
+  String get helpfulForTroubleshooting => 'Helpful for troubleshooting issues';
+
+  @override
+  String get historyManagement => 'History Management';
+
+  @override
+  String get scanHistorySyncSettings => 'Scan history and sync settings';
 }

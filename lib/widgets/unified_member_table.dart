@@ -96,55 +96,43 @@ class UnifiedMemberTable extends StatelessWidget {
               ),
             ),
           ),
-          
-          const SizedBox(width: 20),
-          
+
+          const SizedBox(width: 10),
+
           // Plan column
           Expanded(
             flex: 3,
             child: _buildSortableHeader(
               l10n.plan,
               'plan',
-              padding: const EdgeInsets.only(
-                left: 170,
-                right: 4,
-                top: 6,
-                bottom: 6,
-              ),
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
             ),
           ),
-          
-          const SizedBox(width: 20),
-          
+
+          const SizedBox(width: 10),
+
           // Expires column
           Expanded(
             flex: 2,
             child: _buildSortableHeader(
               l10n.expires,
               'expires',
-              padding: const EdgeInsets.only(
-                left: 2,
-                right: 4,
-                top: 6,
-                bottom: 6,
-              ),
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
             ),
           ),
-          
-          const SizedBox(width: 20),
-          
+
+          const SizedBox(width: 10),
+
           // Status column
           SizedBox(
             width: 120,
             child: _buildSortableHeader(
               l10n.status,
               'status',
-              padding: const EdgeInsets.only(
-                left: 25,
-                right: 0,
-                top: 6,
-                bottom: 6,
-              ),
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
             ),
           ),
         ],
@@ -152,11 +140,16 @@ class UnifiedMemberTable extends StatelessWidget {
     );
   }
 
-  Widget _buildSortableHeader(String label, String sortKey, {required EdgeInsets padding}) {
+  Widget _buildSortableHeader(
+    String label,
+    String sortKey, {
+    Alignment alignment = Alignment.centerLeft,
+    EdgeInsets padding = const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+  }) {
     final isActive = sortBy == sortKey;
     
     return Align(
-      alignment: Alignment.centerLeft,
+      alignment: alignment,
       child: InkWell(
         onTap: () => onSort(sortKey),
         borderRadius: BorderRadius.circular(6),
@@ -289,14 +282,14 @@ class UnifiedMemberTable extends StatelessWidget {
                     ],
                   ),
                 ),
-                
-                const SizedBox(width: 20),
-                
+
+                const SizedBox(width: 10),
+
                 // Plan column
                 Expanded(
                   flex: 3,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 150),
+                  child: Align(
+                    alignment: Alignment.center,
                     child: Text(
                       member.planName,
                       style: GoogleFonts.inter(
@@ -307,58 +300,64 @@ class UnifiedMemberTable extends StatelessWidget {
                     ),
                   ),
                 ),
-                
-                const SizedBox(width: 20),
-                
+
+                const SizedBox(width: 10),
+
                 // Expires column
                 Expanded(
                   flex: 2,
-                  child: Text(
-                    member.formattedExpiryDate,
-                    style: GoogleFonts.inter(
-                      color: AppColors.textSecondary,
-                      fontSize: 13,
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      member.formattedExpiryDate,
+                      style: GoogleFonts.inter(
+                        color: AppColors.textSecondary,
+                        fontSize: 13,
+                      ),
                     ),
                   ),
                 ),
-                
-                const SizedBox(width: 20),
-                
+
+                const SizedBox(width: 10),
+
                 // Status column
                 SizedBox(
                   width: 120,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: statusColor.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(
-                        color: statusColor.withValues(alpha: 0.3),
-                        width: 1,
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: statusColor.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: statusColor.withValues(alpha: 0.3),
+                          width: 1,
+                        ),
                       ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          isActive ? LucideIcons.checkCircle : LucideIcons.xCircle,
-                          size: 12,
-                          color: statusColor,
-                        ),
-                        const SizedBox(width: 4),
-                        Flexible(
-                          child: Text(
-                            _translateStatus(member.membershipStatus, l10n).toUpperCase(),
-                            style: GoogleFonts.inter(
-                              color: statusColor,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            overflow: TextOverflow.ellipsis,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            isActive ? LucideIcons.checkCircle : LucideIcons.xCircle,
+                            size: 12,
+                            color: statusColor,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              _translateStatus(member.membershipStatus, l10n).toUpperCase(),
+                              style: GoogleFonts.inter(
+                                color: statusColor,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
