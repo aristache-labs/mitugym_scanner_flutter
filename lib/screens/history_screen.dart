@@ -404,58 +404,38 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             ],
           ],
         ),
-        Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                AppColors.primary,
-                AppColors.primaryDark,
-              ],
-            ),
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.3),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
+        ElevatedButton.icon(
+          onPressed: () => _showExportMenu(context),
+          icon: const Icon(LucideIcons.download, size: 16),
+          label: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Export',
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.2,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Icon(
+                LucideIcons.chevronDown,
+                size: 14,
+                color: AppColors.primary.withValues(alpha: 0.7),
               ),
             ],
           ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () => _showExportMenu(context),
-              borderRadius: BorderRadius.circular(12),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      LucideIcons.download,
-                      size: 18,
-                      color: Colors.white,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Export',
-                      style: GoogleFonts.inter(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Icon(
-                      LucideIcons.chevronDown,
-                      size: 16,
-                      color: Colors.white.withValues(alpha: 0.8),
-                    ),
-                  ],
-                ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+            foregroundColor: AppColors.primary.withValues(alpha: 0.95),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(
+                color: AppColors.primary.withValues(alpha: 0.25),
+                width: 1,
               ),
             ),
           ),
