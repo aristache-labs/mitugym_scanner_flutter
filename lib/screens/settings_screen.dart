@@ -34,6 +34,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   late int _logRetentionDays;
   late bool _autoStartScanning;
   late bool _cameraVisible;
+  late bool _startWithWindows;
   late int _historyRetentionDays;
   late bool _verboseLogging;
 
@@ -54,6 +55,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     _logRetentionDays = config.logRetentionDays;
     _autoStartScanning = config.autoStartScanning;
     _cameraVisible = config.cameraVisible;
+    _startWithWindows = config.startWithWindows;
     _historyRetentionDays = config.historyRetentionDays;
     _verboseLogging = config.verboseLogging;
   }
@@ -80,6 +82,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     // Save settings from Display tab
     await ref.read(configProvider.notifier).updateCameraVisible(_cameraVisible);
     await ref.read(configProvider.notifier).updateAutoStartScanning(_autoStartScanning);
+    
+    // Save settings from General tab
+    await ref.read(configProvider.notifier).updateStartWithWindows(_startWithWindows);
     
     // Save settings from Audio tab
     await ref.read(configProvider.notifier).updateSoundVolume(_soundVolume);
@@ -266,6 +271,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                     _logRetentionDays = config.logRetentionDays;
                     _autoStartScanning = config.autoStartScanning;
                     _cameraVisible = config.cameraVisible;
+                    _startWithWindows = config.startWithWindows;
                     _historyRetentionDays = config.historyRetentionDays;
                   });
                 },
@@ -362,6 +368,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
             ),
             const SizedBox(height: 16),
             _buildTestApiButton(),
+          ],
+        ),
+        const SizedBox(height: 24),
+        _buildSection(
+          'Startup',
+          LucideIcons.power,
+          [
+            _buildSwitch(
+              label: 'Start with Windows',
+              value: _startWithWindows,
+              onChanged: (v) => setState(() => _startWithWindows = v),
+            ),
           ],
         ),
         const SizedBox(height: 24),

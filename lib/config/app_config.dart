@@ -18,6 +18,7 @@ class AppConfig {
   final bool autoStartScanning;
   final bool minimizeToTray;
   final bool cameraVisible;
+  final bool startWithWindows;
   final String theme;
   final int cameraFrameRate;
   
@@ -42,6 +43,7 @@ class AppConfig {
     this.autoStartScanning = false,
     this.minimizeToTray = false,
     this.cameraVisible = true,
+    this.startWithWindows = false,
     this.theme = 'cyan',
     this.cameraFrameRate = 10,
     this.verboseLogging = false,
@@ -65,6 +67,7 @@ class AppConfig {
       autoStartScanning: false,
       minimizeToTray: false,
       cameraVisible: true,
+      startWithWindows: false,
       theme: 'cyan',
       cameraFrameRate: 10,
       verboseLogging: false,
@@ -97,6 +100,7 @@ class AppConfig {
       autoStartScanning: prefs.getBool('autoStartScanning') ?? false,
       minimizeToTray: prefs.getBool('minimizeToTray') ?? false,
       cameraVisible: prefs.getBool('cameraVisible') ?? true,
+      startWithWindows: prefs.getBool('startWithWindows') ?? false,
       theme: prefs.getString('theme') ?? 'cyan',
       cameraFrameRate: prefs.getInt('cameraFrameRate') ?? 10,
       verboseLogging: prefs.getBool('verboseLogging') ?? false,
@@ -122,6 +126,7 @@ class AppConfig {
     await prefs.setBool('autoStartScanning', autoStartScanning);
     await prefs.setBool('minimizeToTray', minimizeToTray);
     await prefs.setBool('cameraVisible', cameraVisible);
+    await prefs.setBool('startWithWindows', startWithWindows);
     await prefs.setString('theme', theme);
     await prefs.setInt('cameraFrameRate', cameraFrameRate);
     await prefs.setBool('verboseLogging', verboseLogging);
@@ -146,6 +151,7 @@ class AppConfig {
     bool? autoStartScanning,
     bool? minimizeToTray,
     bool? cameraVisible,
+    bool? startWithWindows,
     String? theme,
     int? cameraFrameRate,
     bool? verboseLogging,
@@ -166,6 +172,7 @@ class AppConfig {
       autoStartScanning: autoStartScanning ?? this.autoStartScanning,
       minimizeToTray: minimizeToTray ?? this.minimizeToTray,
       cameraVisible: cameraVisible ?? this.cameraVisible,
+      startWithWindows: startWithWindows ?? this.startWithWindows,
       theme: theme ?? this.theme,
       cameraFrameRate: cameraFrameRate ?? this.cameraFrameRate,
       verboseLogging: verboseLogging ?? this.verboseLogging,

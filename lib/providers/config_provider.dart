@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:launch_at_startup/launch_at_startup.dart';
 import '../config/app_config.dart';
 
 /// Config notifier to manage application configuration
@@ -79,6 +80,19 @@ class ConfigNotifier extends Notifier<AppConfig> {
   Future<void> updateAutoStartScanning(bool autoStart) async {
     state = state.copyWith(autoStartScanning: autoStart);
     await state.saveToPreferences();
+  }
+
+  /// Update start with Windows setting
+  Future<void> updateStartWithWindows(bool startWithWindows) async {
+    state = state.copyWith(startWithWindows: startWithWindows);
+    await state.saveToPreferences();
+    
+    // Enable or disable launch at startup
+    if (startWithWindows) {
+      await launchAtStartup.enable();
+    } else {
+      await launchAtStartup.disable();
+    }
   }
 
   /// Update sound volume
