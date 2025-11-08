@@ -22,6 +22,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   late final SearchService _searchService;
   final ExportService _exportService = ExportService();
   final TextEditingController _searchController = TextEditingController();
+  final GlobalKey _exportButtonKey = GlobalKey();
   
   @override
   void initState() {
@@ -174,11 +175,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
     if (members.isEmpty) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No members to export'),
-            backgroundColor: AppColors.warning,
-          ),
+        _showPremiumToast(
+          'No members to export',
+          LucideIcons.alertCircle,
+          ToastType.warning,
         );
       }
       return;
@@ -204,21 +204,18 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Exported ${format.toUpperCase()} to: $filePath'),
-            backgroundColor: AppColors.success,
-            duration: const Duration(seconds: 4),
-          ),
+        _showPremiumToast(
+          'Exported ${format.toUpperCase()} to: $filePath',
+          LucideIcons.checkCircle,
+          ToastType.success,
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Export failed: $e'),
-            backgroundColor: AppColors.error,
-          ),
+        _showPremiumToast(
+          'Export failed: $e',
+          LucideIcons.xCircle,
+          ToastType.error,
         );
       }
     }
@@ -226,12 +223,18 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   /// Show export format menu
   void _showExportMenu(BuildContext context) {
+    final RenderBox? renderBox = _exportButtonKey.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+    
+    final offset = renderBox.localToGlobal(Offset.zero);
+    final size = renderBox.size;
+    
     showMenu(
       context: context,
       position: RelativeRect.fromLTRB(
-        MediaQuery.of(context).size.width - 200,
-        140,
-        20,
+        offset.dx + size.width - 200, // Align right edge of menu with button
+        offset.dy + size.height + 8, // 8px below the button
+        MediaQuery.of(context).size.width - offset.dx - size.width,
         0,
       ),
       shape: RoundedRectangleBorder(
@@ -428,6 +431,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         ),
         // Export button
         ElevatedButton.icon(
+          key: _exportButtonKey,
           onPressed: () => _showExportMenu(context),
           icon: const Icon(LucideIcons.download, size: 16),
           label: Row(
@@ -971,6 +975,184 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       default:
         return AppColors.muted;
     }
+  }
+
+  // Premium Toast Helper
+  void _showPremiumToast(String message, IconData icon, ToastType type) {
+    final overlay = Overlay.of(context);
+    late OverlayEntry overlayEntry;
+
+    overlayEntry = OverlayEntry(
+      builder: (context) => _PremiumToast(
+        message: message,
+        icon: icon,
+        color: type == ToastType.success
+            ? AppColors.success
+            : type == ToastType.error
+                ? AppColors.error
+                : AppColors.warning,
+        onDismiss: () => overlayEntry.remove(),
+      ),
+    );
+
+    overlay.insert(overlayEntry);
+  }
+}
+
+enum ToastType { success, error, warning }
+
+class _PremiumToast extends StatefulWidget {
+  final String message;
+  final IconData icon;
+  final Color color;
+  final VoidCallback onDismiss;
+
+  const _PremiumToast({
+    required this.message,
+    required this.icon,
+    required this.color,
+    required this.onDismiss,
+  });
+
+  @override
+  State<_PremiumToast> createState() => _PremiumToastState();
+}
+
+class _PremiumToastState extends State<_PremiumToast>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<Offset> _slideAnimation;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      reverseDuration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 2),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.elasticOut,
+      reverseCurve: Curves.easeInCubic,
+    ));
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
+      reverseCurve: Curves.easeOut,
+    ));
+
+    _controller.forward();
+
+    Future.delayed(const Duration(seconds: 6), () {
+      if (mounted) {
+        _controller.reverse().then((_) => widget.onDismiss());
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      bottom: 24,
+      left: 0,
+      right: 0,
+      child: Center(
+        child: SlideTransition(
+          position: _slideAnimation,
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: Material(
+              color: Colors.transparent,
+              child: Container(
+                constraints: const BoxConstraints(
+                  maxWidth: double.infinity,
+                  minWidth: 300,
+                ),
+                margin: const EdgeInsets.symmetric(horizontal: 40),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppColors.card.withValues(alpha: 0.95),
+                      AppColors.surface.withValues(alpha: 0.9),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: widget.color.withValues(alpha: 0.3),
+                    width: 1.5,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.25),
+                      blurRadius: 24,
+                      offset: const Offset(0, 12),
+                      spreadRadius: -4,
+                    ),
+                    BoxShadow(
+                      color: widget.color.withValues(alpha: 0.2),
+                      blurRadius: 16,
+                      spreadRadius: 0,
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: widget.color.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: widget.color.withValues(alpha: 0.25),
+                          width: 1,
+                        ),
+                      ),
+                      child: Icon(
+                        widget.icon,
+                        color: widget.color.withValues(alpha: 0.9),
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Flexible(
+                      fit: FlexFit.loose,
+                      child: Text(
+                        widget.message,
+                        style: GoogleFonts.inter(
+                          color: AppColors.textPrimary,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 

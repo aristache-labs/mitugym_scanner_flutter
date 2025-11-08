@@ -2109,7 +2109,11 @@ class _PremiumToastState extends State<_PremiumToast>
             child: Material(
               color: Colors.transparent,
               child: Container(
-                constraints: const BoxConstraints(maxWidth: 400),
+                constraints: const BoxConstraints(
+                  maxWidth: double.infinity,
+                  minWidth: 300,
+                ),
+                margin: const EdgeInsets.symmetric(horizontal: 40),
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -2158,13 +2162,14 @@ class _PremiumToastState extends State<_PremiumToast>
                     ),
                     const SizedBox(width: 14),
                     Flexible(
+                      fit: FlexFit.loose,
                       child: Text(
                         widget.message,
                         style: GoogleFonts.inter(
                           color: AppColors.textPrimary,
-                          fontSize: 14,
+                          fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          letterSpacing: 0.3,
+                          letterSpacing: 0.2,
                         ),
                       ),
                     ),
