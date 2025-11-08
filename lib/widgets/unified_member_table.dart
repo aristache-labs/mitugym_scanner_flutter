@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../config/app_colors.dart';
 import '../models/member_data.dart';
+import '../l10n/app_localizations.dart';
 import 'member_avatar_modal.dart';
 import 'member_details_modal.dart';
 
@@ -28,19 +29,21 @@ class UnifiedMemberTable extends StatelessWidget {
     if (members.isEmpty) {
       return _buildEmptyState();
     }
+    
+    final l10n = AppLocalizations.of(context)!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (showHeader) ...[
-          _buildTableHeader(),
+          _buildTableHeader(l10n),
         ],
         Expanded(
           child: ListView.builder(
             padding: EdgeInsets.zero,
             itemCount: members.length,
             itemBuilder: (context, index) {
-              return _buildMemberRow(members[index], context);
+              return _buildMemberRow(members[index], context, l10n);
             },
           ),
         ),
@@ -48,7 +51,7 @@ class UnifiedMemberTable extends StatelessWidget {
     );
   }
 
-  Widget _buildTableHeader() {
+  Widget _buildTableHeader(AppLocalizations l10n) {
     return Container(
       height: 48,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -83,7 +86,7 @@ class UnifiedMemberTable extends StatelessWidget {
           SizedBox(
             width: 200,
             child: _buildSortableHeader(
-              'MEMBER',
+              l10n.member.toUpperCase(),
               'member',
               padding: const EdgeInsets.only(
                 left: 56,
@@ -100,7 +103,7 @@ class UnifiedMemberTable extends StatelessWidget {
           Expanded(
             flex: 3,
             child: _buildSortableHeader(
-              'PLAN',
+              l10n.plan,
               'plan',
               padding: const EdgeInsets.only(
                 left: 170,
@@ -117,7 +120,7 @@ class UnifiedMemberTable extends StatelessWidget {
           Expanded(
             flex: 2,
             child: _buildSortableHeader(
-              'EXPIRES',
+              l10n.expires,
               'expires',
               padding: const EdgeInsets.only(
                 left: 2,
@@ -134,7 +137,7 @@ class UnifiedMemberTable extends StatelessWidget {
           SizedBox(
             width: 120,
             child: _buildSortableHeader(
-              'STATUS',
+              l10n.status,
               'status',
               padding: const EdgeInsets.only(
                 left: 25,
@@ -186,7 +189,15 @@ class UnifiedMemberTable extends StatelessWidget {
     );
   }
 
-  Widget _buildMemberRow(MemberData member, BuildContext context) {
+  String _translateStatus(String status, AppLocalizations l10n) {
+    final statusLower = status.toLowerCase();
+    if (statusLower == 'active') return l10n.active;
+    if (statusLower == 'inactive') return l10n.inactive;
+    if (statusLower == 'expired') return l10n.expired;
+    return status; // fallback to original
+  }
+
+  Widget _buildMemberRow(MemberData member, BuildContext context, AppLocalizations l10n) {
     final statusColor = _getStatusColor(member.membershipStatus);
     final isActive = member.membershipStatus.toLowerCase() == 'active';
     
@@ -338,7 +349,7 @@ class UnifiedMemberTable extends StatelessWidget {
                         const SizedBox(width: 4),
                         Flexible(
                           child: Text(
-                            member.membershipStatus.toUpperCase(),
+                            _translateStatus(member.membershipStatus, l10n).toUpperCase(),
                             style: GoogleFonts.inter(
                               color: statusColor,
                               fontSize: 10,

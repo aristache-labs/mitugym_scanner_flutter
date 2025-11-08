@@ -10,6 +10,7 @@ import '../services/search_service.dart';
 import '../services/offline_storage_service.dart';
 import '../services/export_service.dart';
 import '../widgets/unified_member_table.dart';
+import '../l10n/app_localizations.dart';
 
 /// Member search screen with modern design
 class SearchScreen extends ConsumerStatefulWidget {
@@ -96,9 +97,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     } catch (e) {
       setState(() => _isSearching = false);
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Search error: $e'),
+            content: Text(l10n.searchError(e.toString())),
             backgroundColor: AppColors.error,
           ),
         );
@@ -170,11 +172,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   /// Export members with format selection
   Future<void> _exportMembers(String format) async {
     final members = _getFilteredMembers();
+    
+    // Get localization early to avoid BuildContext issues
+    final l10n = AppLocalizations.of(context)!;
 
     if (members.isEmpty) {
       if (mounted) {
         _showPremiumToast(
-          'No members to export',
+          l10n.noMembersToExport,
           LucideIcons.alertCircle,
           ToastType.warning,
         );
@@ -202,12 +207,12 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       }
       
       if (filePath == null) {
-        throw Exception('Export failed: No file path returned');
+        throw Exception(l10n.exportFailed('No file path returned'));
       }
 
       if (mounted) {
         _showPremiumToast(
-          'Exported ${format.toUpperCase()} to: $filePath',
+          l10n.exportedTo(format.toUpperCase(), filePath),
           LucideIcons.checkCircle,
           ToastType.success,
           filePath: filePath,
@@ -216,7 +221,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     } catch (e) {
       if (mounted) {
         _showPremiumToast(
-          'Export failed: $e',
+          l10n.exportFailed(e.toString()),
           LucideIcons.xCircle,
           ToastType.error,
         );
@@ -226,6 +231,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   /// Show export format menu
   void _showExportMenu(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final RenderBox? renderBox = _exportButtonKey.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox == null) return;
     
@@ -256,7 +262,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Text(
-              'Export Format',
+              l10n.exportFormat,
               style: GoogleFonts.inter(
                 color: AppColors.textMuted,
                 fontSize: 11,
@@ -269,19 +275,19 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         _buildExportMenuItem(
           icon: LucideIcons.fileSpreadsheet,
           label: 'CSV',
-          description: 'Comma-separated values',
+          description: l10n.csvDescription,
           onTap: () => _exportMembers('csv'),
         ),
         _buildExportMenuItem(
           icon: LucideIcons.fileText,
           label: 'PDF',
-          description: 'Portable document format',
+          description: l10n.pdfDescription,
           onTap: () => _exportMembers('pdf'),
         ),
         _buildExportMenuItem(
           icon: LucideIcons.fileType,
           label: 'TXT',
-          description: 'Plain text file',
+          description: l10n.txtDescription,
           onTap: () => _exportMembers('txt'),
         ),
       ],
@@ -414,6 +420,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   Widget _buildSearchHeader() {
     final filteredMembers = _getFilteredMembers();
+    final l10n = AppLocalizations.of(context)!;
     
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -423,7 +430,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           children: [
             if (_searchResults.isNotEmpty) ...[
               Text(
-                '${filteredMembers.length} ${filteredMembers.length == 1 ? 'member' : 'members'} found',
+                filteredMembers.length == 1 
+                    ? l10n.memberFound(filteredMembers.length)
+                    : l10n.membersFound(filteredMembers.length),
                 style: GoogleFonts.inter(
                   color: AppColors.textMuted,
                   fontSize: 14,
@@ -441,7 +450,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Export',
+                AppLocalizations.of(context)!.export,
                 style: GoogleFonts.inter(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
@@ -500,7 +509,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   controller: _searchController,
             style: GoogleFonts.inter(color: AppColors.textPrimary),
                   decoration: InputDecoration(
-              hintText: 'Search by name...',
+              hintText: AppLocalizations.of(context)!.searchByNameMembers,
               hintStyle: GoogleFonts.inter(
                 color: AppColors.textMuted,
                 fontSize: 14,
@@ -532,20 +541,20 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             child: Row(
                   children: [
                 _buildFilterChip(
-                  label: 'All',
+                  label: AppLocalizations.of(context)!.all,
                   value: 'all',
                   icon: LucideIcons.list,
                 ),
                 const SizedBox(width: 8),
                 _buildFilterChip(
-                  label: 'Active',
+                  label: AppLocalizations.of(context)!.active,
                   value: 'active',
                   icon: LucideIcons.checkCircle,
                   color: AppColors.success,
                 ),
                 const SizedBox(width: 8),
                 _buildFilterChip(
-                  label: 'Expired',
+                  label: AppLocalizations.of(context)!.expired,
                   value: 'expired',
                   icon: LucideIcons.xCircle,
                   color: AppColors.error,
@@ -636,7 +645,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             ),
             const SizedBox(height: 20),
             Text(
-              'No Members Yet',
+              AppLocalizations.of(context)!.noMembersYet,
               style: GoogleFonts.inter(
                 color: AppColors.textPrimary,
                 fontSize: 18,
@@ -645,7 +654,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Scan member QR codes to build your database',
+              AppLocalizations.of(context)!.scanMemberQRToBuild,
               style: GoogleFonts.inter(
                 color: AppColors.textMuted,
                 fontSize: 14,
@@ -676,7 +685,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             ),
             const SizedBox(height: 20),
             Text(
-              'No Members Found',
+              AppLocalizations.of(context)!.noMembersFound,
               style: GoogleFonts.inter(
                 color: AppColors.textPrimary,
                 fontSize: 18,
@@ -685,7 +694,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Try adjusting your search or filters',
+              AppLocalizations.of(context)!.tryAdjustingFilters,
               style: GoogleFonts.inter(
                 color: AppColors.textMuted,
                 fontSize: 14,

@@ -99,13 +99,13 @@ class AppLocalizationsRo extends AppLocalizations {
   String get duration => 'Durată';
 
   @override
-  String get plan => 'Abonament';
+  String get plan => 'ABONAMENT';
 
   @override
-  String get expires => 'Expiră';
+  String get expires => 'EXPIRĂ';
 
   @override
-  String get status => 'Status';
+  String get status => 'STARE';
 
   @override
   String get activeSession => 'Sesiune activă';
@@ -168,7 +168,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get searchByName => 'Caută după nume...';
 
   @override
-  String get noMembersFound => 'Nu s-au găsit membri';
+  String get noMembersFound => 'Niciun Membru Găsit';
 
   @override
   String get tryDifferentSearch => 'Încearcă o altă interogare de căutare';
@@ -785,4 +785,36 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get last30Days => 'Ultimele 30 Zile';
+
+  @override
+  String searchError(String error) {
+    return 'Eroare căutare: $error';
+  }
+
+  @override
+  String get noMembersToExport => 'Niciun membru de exportat';
+
+  @override
+  String get searchByNameMembers => 'Caută după nume...';
+
+  @override
+  String get noMembersYet => 'Niciun Membru Încă';
+
+  @override
+  String get scanMemberQRToBuild =>
+      'Scanează coduri QR pentru a construi baza de date';
+
+  @override
+  String get tryAdjustingFilters =>
+      'Încearcă să ajustezi căutarea sau filtrele';
+
+  @override
+  String memberFound(int count) {
+    return '$count membru găsit';
+  }
+
+  @override
+  String membersFound(int count) {
+    return '$count membri găsiți';
+  }
 }

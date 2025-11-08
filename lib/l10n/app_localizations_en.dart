@@ -99,13 +99,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get duration => 'Duration';
 
   @override
-  String get plan => 'Plan';
+  String get plan => 'PLAN';
 
   @override
-  String get expires => 'Expires';
+  String get expires => 'EXPIRES';
 
   @override
-  String get status => 'Status';
+  String get status => 'STATUS';
 
   @override
   String get activeSession => 'Active Session';
@@ -168,7 +168,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchByName => 'Search by name...';
 
   @override
-  String get noMembersFound => 'No members found';
+  String get noMembersFound => 'No Members Found';
 
   @override
   String get tryDifferentSearch => 'Try a different search query';
@@ -781,4 +781,35 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get last30Days => 'Last 30 Days';
+
+  @override
+  String searchError(String error) {
+    return 'Search error: $error';
+  }
+
+  @override
+  String get noMembersToExport => 'No members to export';
+
+  @override
+  String get searchByNameMembers => 'Search by name...';
+
+  @override
+  String get noMembersYet => 'No Members Yet';
+
+  @override
+  String get scanMemberQRToBuild =>
+      'Scan member QR codes to build your database';
+
+  @override
+  String get tryAdjustingFilters => 'Try adjusting your search or filters';
+
+  @override
+  String memberFound(int count) {
+    return '$count member found';
+  }
+
+  @override
+  String membersFound(int count) {
+    return '$count members found';
+  }
 }

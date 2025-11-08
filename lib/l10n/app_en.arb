@@ -365,5 +365,49 @@
   "last7Days": "Last 7 Days",
   "last30Days": "Last 30 Days",
   "thisMonth": "This Month",
-  "lastMonth": "Last Month"
+  "lastMonth": "Last Month",
+  "searchError": "Search error: {error}",
+  "@searchError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noMembersToExport": "No members to export",
+  "exportFailed": "Export failed: {error}",
+  "@exportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "searchByNameMembers": "Search by name...",
+  "noMembersYet": "No Members Yet",
+  "scanMemberQRToBuild": "Scan member QR codes to build your database",
+  "noMembersFound": "No Members Found",
+  "tryAdjustingFilters": "Try adjusting your search or filters",
+  "plan": "PLAN",
+  "expires": "EXPIRES",
+  "status": "STATUS",
+  "active": "Active",
+  "inactive": "Inactive",
+  "expired": "Expired",
+  "memberFound": "{count} member found",
+  "@memberFound": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "membersFound": "{count} members found",
+  "@membersFound": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

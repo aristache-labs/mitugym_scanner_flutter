@@ -269,19 +269,19 @@ abstract class AppLocalizations {
   /// No description provided for @plan.
   ///
   /// In en, this message translates to:
-  /// **'Plan'**
+  /// **'PLAN'**
   String get plan;
 
   /// No description provided for @expires.
   ///
   /// In en, this message translates to:
-  /// **'Expires'**
+  /// **'EXPIRES'**
   String get expires;
 
   /// No description provided for @status.
   ///
   /// In en, this message translates to:
-  /// **'Status'**
+  /// **'STATUS'**
   String get status;
 
   /// No description provided for @activeSession.
@@ -401,7 +401,7 @@ abstract class AppLocalizations {
   /// No description provided for @noMembersFound.
   ///
   /// In en, this message translates to:
-  /// **'No members found'**
+  /// **'No Members Found'**
   String get noMembersFound;
 
   /// No description provided for @tryDifferentSearch.
@@ -1591,6 +1591,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Last 30 Days'**
   String get last30Days;
+
+  /// No description provided for @searchError.
+  ///
+  /// In en, this message translates to:
+  /// **'Search error: {error}'**
+  String searchError(String error);
+
+  /// No description provided for @noMembersToExport.
+  ///
+  /// In en, this message translates to:
+  /// **'No members to export'**
+  String get noMembersToExport;
+
+  /// No description provided for @searchByNameMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name...'**
+  String get searchByNameMembers;
+
+  /// No description provided for @noMembersYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No Members Yet'**
+  String get noMembersYet;
+
+  /// No description provided for @scanMemberQRToBuild.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan member QR codes to build your database'**
+  String get scanMemberQRToBuild;
+
+  /// No description provided for @tryAdjustingFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Try adjusting your search or filters'**
+  String get tryAdjustingFilters;
+
+  /// No description provided for @memberFound.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} member found'**
+  String memberFound(int count);
+
+  /// No description provided for @membersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} members found'**
+  String membersFound(int count);
 }
 
 class _AppLocalizationsDelegate

@@ -289,5 +289,21 @@
   "last7Days": "Ultimele 7 Zile",
   "last30Days": "Ultimele 30 Zile",
   "thisMonth": "Luna Asta",
-  "lastMonth": "Luna Trecută"
+  "lastMonth": "Luna Trecută",
+  "searchError": "Eroare căutare: {error}",
+  "noMembersToExport": "Niciun membru de exportat",
+  "exportFailed": "Export eșuat: {error}",
+  "searchByNameMembers": "Caută după nume...",
+  "noMembersYet": "Niciun Membru Încă",
+  "scanMemberQRToBuild": "Scanează coduri QR pentru a construi baza de date",
+  "noMembersFound": "Niciun Membru Găsit",
+  "tryAdjustingFilters": "Încearcă să ajustezi căutarea sau filtrele",
+  "plan": "ABONAMENT",
+  "expires": "EXPIRĂ",
+  "status": "STARE",
+  "active": "Activ",
+  "inactive": "Inactiv",
+  "expired": "Expirat",
+  "memberFound": "{count} membru găsit",
+  "membersFound": "{count} membri găsiți"
 }
