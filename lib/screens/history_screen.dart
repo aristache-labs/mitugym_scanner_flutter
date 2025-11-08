@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../config/app_colors.dart';
 import '../models/activity_log.dart';
 import '../providers/history_provider.dart';
@@ -208,6 +209,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           'Exported ${format.toUpperCase()} to: $filePath',
           LucideIcons.checkCircle,
           ToastType.success,
+          filePath: filePath,
         );
       }
     } catch (e) {
@@ -1352,7 +1354,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   }
 
   // Premium Toast Helper
-  void _showPremiumToast(String message, IconData icon, ToastType type) {
+  void _showPremiumToast(String message, IconData icon, ToastType type, {String? filePath}) {
     final overlay = Overlay.of(context);
     late OverlayEntry overlayEntry;
 
@@ -1365,6 +1367,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             : type == ToastType.error
                 ? AppColors.error
                 : AppColors.warning,
+        filePath: filePath,
         onDismiss: () => overlayEntry.remove(),
       ),
     );
@@ -1379,12 +1382,14 @@ class _PremiumToast extends StatefulWidget {
   final String message;
   final IconData icon;
   final Color color;
+  final String? filePath;
   final VoidCallback onDismiss;
 
   const _PremiumToast({
     required this.message,
     required this.icon,
     required this.color,
+    this.filePath,
     required this.onDismiss,
   });
 
@@ -1397,6 +1402,7 @@ class _PremiumToastState extends State<_PremiumToast>
   late AnimationController _controller;
   late Animation<Offset> _slideAnimation;
   late Animation<double> _fadeAnimation;
+  bool _isHovered = false;
 
   @override
   void initState() {
@@ -1441,6 +1447,19 @@ class _PremiumToastState extends State<_PremiumToast>
     super.dispose();
   }
 
+  Future<void> _openFile() async {
+    if (widget.filePath == null) return;
+    
+    try {
+      final uri = Uri.file(widget.filePath!);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri);
+      }
+    } catch (e) {
+      debugPrint('Error opening file: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -1454,40 +1473,47 @@ class _PremiumToastState extends State<_PremiumToast>
             opacity: _fadeAnimation,
             child: Material(
               color: Colors.transparent,
-              child: Container(
-                constraints: const BoxConstraints(
-                  maxWidth: double.infinity,
-                  minWidth: 300,
-                ),
-                margin: const EdgeInsets.symmetric(horizontal: 40),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      AppColors.card.withValues(alpha: 0.95),
-                      AppColors.surface.withValues(alpha: 0.9),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: widget.color.withValues(alpha: 0.3),
-                    width: 1.5,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.25),
-                      blurRadius: 24,
-                      offset: const Offset(0, 12),
-                      spreadRadius: -4,
+              child: MouseRegion(
+                cursor: widget.filePath != null ? SystemMouseCursors.click : SystemMouseCursors.basic,
+                onEnter: (_) => setState(() => _isHovered = true),
+                onExit: (_) => setState(() => _isHovered = false),
+                child: GestureDetector(
+                  onTap: widget.filePath != null ? _openFile : null,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    constraints: const BoxConstraints(
+                      maxWidth: double.infinity,
+                      minWidth: 300,
                     ),
-                    BoxShadow(
-                      color: widget.color.withValues(alpha: 0.2),
-                      blurRadius: 16,
-                      spreadRadius: 0,
+                    margin: const EdgeInsets.symmetric(horizontal: 40),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          AppColors.card.withValues(alpha: _isHovered && widget.filePath != null ? 1.0 : 0.95),
+                          AppColors.surface.withValues(alpha: _isHovered && widget.filePath != null ? 0.95 : 0.9),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: widget.color.withValues(alpha: _isHovered && widget.filePath != null ? 0.5 : 0.3),
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.25),
+                          blurRadius: _isHovered && widget.filePath != null ? 32 : 24,
+                          offset: Offset(0, _isHovered && widget.filePath != null ? 16 : 12),
+                          spreadRadius: -4,
+                        ),
+                        BoxShadow(
+                          color: widget.color.withValues(alpha: _isHovered && widget.filePath != null ? 0.3 : 0.2),
+                          blurRadius: _isHovered && widget.filePath != null ? 20 : 16,
+                          spreadRadius: 0,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: Row(
+                    child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
@@ -1520,6 +1546,8 @@ class _PremiumToastState extends State<_PremiumToast>
                       ),
                     ),
                   ],
+                    ),
+                  ),
                 ),
               ),
             ),
