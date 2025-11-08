@@ -437,123 +437,157 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   }
 
   Widget _buildDisplayTab() {
-    return ListView(
-      padding: const EdgeInsets.all(20),
-      children: [
-        _buildSection(
-          'Scanner',
-          LucideIcons.qrCode,
-          [
-            _buildSlider(
-              label: 'Scan Cooldown',
-              value: _debounceDuration.toDouble(),
-              min: 2,
-              max: 15,
-              divisions: 13,
-              displayValue: '$_debounceDuration sec',
-              onChanged: (v) => setState(() => _debounceDuration = v.toInt()),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Left column
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                // Scanner Settings Card
+                _buildModernCard(
+                  icon: LucideIcons.qrCode,
+                  title: 'Scanner',
+                  subtitle: 'QR code scanning behavior',
+                  child: Column(
+                    children: [
+                      _buildCompactSlider(
+                        label: 'Scan Cooldown',
+                        icon: LucideIcons.timer,
+                        value: _debounceDuration.toDouble(),
+                        min: 2,
+                        max: 15,
+                        divisions: 13,
+                        displayValue: '$_debounceDuration sec',
+                        onChanged: (v) => setState(() => _debounceDuration = v.toInt()),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            _buildSwitch(
-              label: 'Show Camera by Default',
-              value: _cameraVisible,
-              onChanged: (v) => setState(() => _cameraVisible = v),
+          ),
+          
+          const SizedBox(width: 16),
+          
+          // Right column
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                // Display Preferences Card
+                _buildModernCard(
+                  icon: LucideIcons.eye,
+                  title: 'Display Preferences',
+                  subtitle: 'Camera and UI settings',
+                  child: Column(
+                    children: [
+                      _buildInlineSwitch(
+                        label: 'Show Camera by Default',
+                        description: 'Display camera preview on scanner screen',
+                        icon: LucideIcons.video,
+                        value: _cameraVisible,
+                        onChanged: (v) => setState(() => _cameraVisible = v),
+                      ),
+                      const SizedBox(height: 12),
+                      _buildInlineSwitch(
+                        label: 'Auto-start Scanning',
+                        description: 'Begin scanning when app launches',
+                        icon: LucideIcons.playCircle,
+                        value: _autoStartScanning,
+                        onChanged: (v) => setState(() => _autoStartScanning = v),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            _buildSwitch(
-              label: 'Auto-start Scanning',
-              value: _autoStartScanning,
-              onChanged: (v) => setState(() => _autoStartScanning = v),
-            ),
-          ],
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildAudioTab() {
-    return ListView(
-      padding: const EdgeInsets.all(20),
-      children: [
-        _buildSection(
-          'Sound Settings',
-          LucideIcons.volume2,
-          [
-            _buildSwitch(
-              label: 'Enable Audio Feedback',
-              value: _audioEnabled,
-              onChanged: (v) => setState(() => _audioEnabled = v),
-            ),
-            if (_audioEnabled) ...[
-              const SizedBox(height: 16),
-              _buildSlider(
-                label: 'Volume',
-                value: _soundVolume,
-                min: 0,
-                max: 1,
-                divisions: 10,
-                displayValue: '${(_soundVolume * 100).toInt()}%',
-                onChanged: (v) => setState(() => _soundVolume = v),
-              ),
-            ],
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAdvancedTab() {
-    return ListView(
-      padding: const EdgeInsets.all(20),
-      children: [
-        _buildSection(
-          'Data Management',
-          LucideIcons.database,
-          [
-            _buildSlider(
-              label: 'Log Retention',
-              value: _logRetentionDays.toDouble(),
-              min: 7,
-              max: 90,
-              divisions: 83,
-              displayValue: '$_logRetentionDays days',
-              onChanged: (v) => setState(() => _logRetentionDays = v.toInt()),
-            ),
-          ],
-        ),
-        const SizedBox(height: 24),
-        _buildSection(
-          'Logging',
-          LucideIcons.fileText,
-          [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Left column
+          Expanded(
+            flex: 1,
+            child: Column(
               children: [
-                _buildSwitch(
-                  label: 'Verbose Logging',
-                  value: _verboseLogging,
-                  onChanged: (v) => setState(() => _verboseLogging = v),
+                // Sound Settings Card
+                _buildModernCard(
+                  icon: LucideIcons.volume2,
+                  title: 'Sound Settings',
+                  subtitle: 'Audio feedback configuration',
+                  child: Column(
+                    children: [
+                      _buildInlineSwitch(
+                        label: 'Enable Audio Feedback',
+                        description: 'Play sound when scanning QR codes',
+                        icon: LucideIcons.volumeX,
+                        value: _audioEnabled,
+                        onChanged: (v) => setState(() => _audioEnabled = v),
+                      ),
+                      if (_audioEnabled) ...[
+                        const SizedBox(height: 16),
+                        _buildCompactSlider(
+                          label: 'Volume',
+                          icon: LucideIcons.volume2,
+                          value: _soundVolume,
+                          min: 0,
+                          max: 1,
+                          divisions: 10,
+                          displayValue: '${(_soundVolume * 100).toInt()}%',
+                          onChanged: (v) => setState(() => _soundVolume = v),
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 12),
+              ],
+            ),
+          ),
+          
+          const SizedBox(width: 16),
+          
+          // Right column - Empty placeholder for future settings
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(32),
                   decoration: BoxDecoration(
-                    color: AppColors.info.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    color: AppColors.surface.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: AppColors.info.withValues(alpha: 0.3),
+                      color: AppColors.border.withValues(alpha: 0.15),
+                      width: 1,
                     ),
                   ),
-                  child: Row(
+                  child: Column(
                     children: [
-                      Icon(LucideIcons.info, color: AppColors.info, size: 16),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'When enabled, all app logs including debug, warning, and trace information will be saved to daily .log files. Helpful for troubleshooting issues.',
-                          style: GoogleFonts.inter(
-                            color: AppColors.textSecondary,
-                            fontSize: 12,
-                          ),
+                      Icon(
+                        LucideIcons.music,
+                        size: 32,
+                        color: AppColors.textMuted.withValues(alpha: 0.5),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'More audio settings\ncoming soon',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.inter(
+                          color: AppColors.textMuted.withValues(alpha: 0.7),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
@@ -561,31 +595,137 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 ),
               ],
             ),
-          ],
-        ),
-        const SizedBox(height: 24),
-        _buildSection(
-          'History Management',
-          LucideIcons.history,
-          [
-            _buildSlider(
-              label: 'History Retention',
-              value: _historyRetentionDays.toDouble(),
-              min: 7,
-              max: 365,
-              divisions: 51,
-              displayValue: '$_historyRetentionDays days',
-              onChanged: (v) => setState(() => _historyRetentionDays = v.toInt()),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAdvancedTab() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Left column
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                // Data Management Card
+                _buildModernCard(
+                  icon: LucideIcons.database,
+                  title: 'Data Management',
+                  subtitle: 'Log and data retention settings',
+                  child: Column(
+                    children: [
+                      _buildCompactSlider(
+                        label: 'Log Retention',
+                        icon: LucideIcons.fileText,
+                        value: _logRetentionDays.toDouble(),
+                        min: 7,
+                        max: 90,
+                        divisions: 83,
+                        displayValue: '$_logRetentionDays days',
+                        onChanged: (v) => setState(() => _logRetentionDays = v.toInt()),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                
+                // Logging Card
+                _buildModernCard(
+                  icon: LucideIcons.terminal,
+                  title: 'Logging',
+                  subtitle: 'Application logging configuration',
+                  child: Column(
+                    children: [
+                      _buildInlineSwitch(
+                        label: 'Verbose Logging',
+                        description: 'Save debug, warning, and trace logs to files',
+                        icon: LucideIcons.bug,
+                        value: _verboseLogging,
+                        onChanged: (v) => setState(() => _verboseLogging = v),
+                      ),
+                      if (_verboseLogging) ...[
+                        const SizedBox(height: 12),
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppColors.info.withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: AppColors.info.withValues(alpha: 0.2),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                LucideIcons.info,
+                                color: AppColors.info.withValues(alpha: 0.8),
+                                size: 14,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  'Helpful for troubleshooting issues',
+                                  style: GoogleFonts.inter(
+                                    color: AppColors.textSecondary.withValues(alpha: 0.8),
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            _buildHistoryStatsRow(),
-            const SizedBox(height: 16),
-            _buildCleanupButton(),
-            const SizedBox(height: 12),
-            _buildSyncButton(),
-          ],
-        ),
-      ],
+          ),
+          
+          const SizedBox(width: 16),
+          
+          // Right column
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                // History Management Card
+                _buildModernCard(
+                  icon: LucideIcons.history,
+                  title: 'History Management',
+                  subtitle: 'Scan history and sync settings',
+                  child: Column(
+                    children: [
+                      _buildCompactSlider(
+                        label: 'History Retention',
+                        icon: LucideIcons.clock,
+                        value: _historyRetentionDays.toDouble(),
+                        min: 7,
+                        max: 365,
+                        divisions: 51,
+                        displayValue: '$_historyRetentionDays days',
+                        onChanged: (v) => setState(() => _historyRetentionDays = v.toInt()),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildHistoryStatsRow(),
+                      const SizedBox(height: 16),
+                      _buildCleanupButton(),
+                      const SizedBox(height: 12),
+                      _buildSyncButton(),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -1724,220 +1864,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     );
   }
 
-
-  Widget _buildSection(String title, IconData icon, List<Widget> children) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.card.withValues(alpha: 0.9),
-            AppColors.surface.withValues(alpha: 0.7),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.3),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-            spreadRadius: -2,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Section header
-          Container(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: AppColors.primary.withValues(alpha: 0.25),
-                      width: 1,
-                    ),
-                  ),
-                  child: Icon(icon, color: AppColors.primary, size: 20),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  title,
-                  style: GoogleFonts.inter(
-                    color: AppColors.textPrimary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.3,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          
-          // Section content
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-            child: Column(children: children),
-          ),
-        ],
-      ),
-    );
-  }
-
-
-  Widget _buildSlider({
-    required String label,
-    required double value,
-    required double min,
-    required double max,
-    required int divisions,
-    required String displayValue,
-    required ValueChanged<double> onChanged,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.surface.withValues(alpha: 0.8),
-            AppColors.surface.withValues(alpha: 0.6),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.3),
-          width: 1,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                label,
-                style: GoogleFonts.inter(
-                  color: AppColors.textPrimary,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.2,
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  gradient: AppColors.primaryGradient,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  displayValue,
-                  style: GoogleFonts.inter(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          SliderTheme(
-            data: SliderThemeData(
-              activeTrackColor: AppColors.primary,
-              inactiveTrackColor: AppColors.surface,
-              thumbColor: AppColors.primary,
-              overlayColor: AppColors.primary.withValues(alpha: 0.2),
-              trackHeight: 6,
-              thumbShape: const RoundSliderThumbShape(
-                enabledThumbRadius: 10,
-              ),
-            ),
-            child: Slider(
-              value: value,
-              min: min,
-              max: max,
-              divisions: divisions,
-              onChanged: onChanged,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSwitch({
-    required String label,
-    required bool value,
-    required ValueChanged<bool> onChanged,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.surface.withValues(alpha: 0.8),
-            AppColors.surface.withValues(alpha: 0.6),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.3),
-          width: 1,
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.inter(
-              color: AppColors.textPrimary,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              letterSpacing: 0.2,
-            ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Switch(
-              value: value,
-              onChanged: onChanged,
-              activeTrackColor: AppColors.primary.withValues(alpha: 0.5),
-              thumbColor: WidgetStateProperty.resolveWith((states) {
-                if (states.contains(WidgetState.selected)) {
-                  return AppColors.primary;
-                }
-                return AppColors.textMuted;
-              }),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
 }
 
