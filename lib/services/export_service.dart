@@ -48,16 +48,21 @@ class ExportService {
   }
 
   /// Export activity logs to CSV file
-  Future<String?> exportToCSV(List<ActivityLog> activities) async {
+  Future<String?> exportToCSV(List<ActivityLog> activities, {String? customPath}) async {
     try {
       if (activities.isEmpty) {
         _logger.w('No activities to export');
         return null;
       }
 
-      // Get documents directory
-      final directory = await getApplicationDocumentsDirectory();
-      final exportDir = Directory('${directory.path}/mitugym_exports');
+      // Get export directory - use custom path if provided, otherwise default
+      Directory exportDir;
+      if (customPath != null && customPath.isNotEmpty) {
+        exportDir = Directory(customPath);
+      } else {
+        final directory = await getApplicationDocumentsDirectory();
+        exportDir = Directory('${directory.path}/mitugym_exports');
+      }
       
       if (!await exportDir.exists()) {
         await exportDir.create(recursive: true);
@@ -123,16 +128,21 @@ class ExportService {
   }
 
   /// Export activity logs to PDF file
-  Future<String?> exportToPDF(List<ActivityLog> activities) async {
+  Future<String?> exportToPDF(List<ActivityLog> activities, {String? customPath}) async {
     try {
       if (activities.isEmpty) {
         _logger.w('No activities to export');
         return null;
       }
 
-      // Get documents directory
-      final directory = await getApplicationDocumentsDirectory();
-      final exportDir = Directory('${directory.path}/mitugym_exports');
+      // Get export directory - use custom path if provided, otherwise default
+      Directory exportDir;
+      if (customPath != null && customPath.isNotEmpty) {
+        exportDir = Directory(customPath);
+      } else {
+        final directory = await getApplicationDocumentsDirectory();
+        exportDir = Directory('${directory.path}/mitugym_exports');
+      }
       
       if (!await exportDir.exists()) {
         await exportDir.create(recursive: true);
@@ -392,16 +402,21 @@ class ExportService {
   }
 
   /// Export activity logs to formatted text file
-  Future<String?> exportToText(List<ActivityLog> activities) async {
+  Future<String?> exportToText(List<ActivityLog> activities, {String? customPath}) async {
     try {
       if (activities.isEmpty) {
         _logger.w('No activities to export');
         return null;
       }
 
-      // Get documents directory
-      final directory = await getApplicationDocumentsDirectory();
-      final exportDir = Directory('${directory.path}/mitugym_exports');
+      // Get export directory - use custom path if provided, otherwise default
+      Directory exportDir;
+      if (customPath != null && customPath.isNotEmpty) {
+        exportDir = Directory(customPath);
+      } else {
+        final directory = await getApplicationDocumentsDirectory();
+        exportDir = Directory('${directory.path}/mitugym_exports');
+      }
       
       if (!await exportDir.exists()) {
         await exportDir.create(recursive: true);
@@ -552,16 +567,21 @@ class ExportService {
   // ============================================================================
 
   /// Export members list to CSV file
-  Future<String?> exportMembersToCSV(List<MemberData> members) async {
+  Future<String?> exportMembersToCSV(List<MemberData> members, {String? customPath}) async {
     try {
       if (members.isEmpty) {
         _logger.w('No members to export');
         return null;
       }
 
-      // Get documents directory
-      final directory = await getApplicationDocumentsDirectory();
-      final exportDir = Directory('${directory.path}/mitugym_exports');
+      // Get export directory - use custom path if provided, otherwise default
+      Directory exportDir;
+      if (customPath != null && customPath.isNotEmpty) {
+        exportDir = Directory(customPath);
+      } else {
+        final directory = await getApplicationDocumentsDirectory();
+        exportDir = Directory('${directory.path}/mitugym_exports');
+      }
       
       if (!await exportDir.exists()) {
         await exportDir.create(recursive: true);
@@ -606,16 +626,21 @@ class ExportService {
   }
 
   /// Export members list to PDF file
-  Future<String?> exportMembersToPDF(List<MemberData> members) async {
+  Future<String?> exportMembersToPDF(List<MemberData> members, {String? customPath}) async {
     try {
       if (members.isEmpty) {
         _logger.w('No members to export');
         return null;
       }
 
-      // Get documents directory
-      final directory = await getApplicationDocumentsDirectory();
-      final exportDir = Directory('${directory.path}/mitugym_exports');
+      // Get export directory - use custom path if provided, otherwise default
+      Directory exportDir;
+      if (customPath != null && customPath.isNotEmpty) {
+        exportDir = Directory(customPath);
+      } else {
+        final directory = await getApplicationDocumentsDirectory();
+        exportDir = Directory('${directory.path}/mitugym_exports');
+      }
       
       if (!await exportDir.exists()) {
         await exportDir.create(recursive: true);
@@ -815,16 +840,21 @@ class ExportService {
   }
 
   /// Export members list to formatted text file
-  Future<String?> exportMembersToText(List<MemberData> members) async {
+  Future<String?> exportMembersToText(List<MemberData> members, {String? customPath}) async {
     try {
       if (members.isEmpty) {
         _logger.w('No members to export');
         return null;
       }
 
-      // Get documents directory
-      final directory = await getApplicationDocumentsDirectory();
-      final exportDir = Directory('${directory.path}/mitugym_exports');
+      // Get export directory - use custom path if provided, otherwise default
+      Directory exportDir;
+      if (customPath != null && customPath.isNotEmpty) {
+        exportDir = Directory(customPath);
+      } else {
+        final directory = await getApplicationDocumentsDirectory();
+        exportDir = Directory('${directory.path}/mitugym_exports');
+      }
       
       if (!await exportDir.exists()) {
         await exportDir.create(recursive: true);

@@ -15,6 +15,7 @@ class AppConfig {
   final double soundVolume;
   final int logRetentionDays;
   final String exportFormat;
+  final String exportPath;
   final bool autoStartScanning;
   final bool minimizeToTray;
   final bool cameraVisible;
@@ -40,6 +41,7 @@ class AppConfig {
     this.soundVolume = 1.0,
     this.logRetentionDays = 30,
     this.exportFormat = 'csv',
+    this.exportPath = '',
     this.autoStartScanning = false,
     this.minimizeToTray = false,
     this.cameraVisible = true,
@@ -64,6 +66,7 @@ class AppConfig {
       soundVolume: 1.0,
       logRetentionDays: 30,
       exportFormat: 'csv',
+      exportPath: '',
       autoStartScanning: false,
       minimizeToTray: false,
       cameraVisible: true,
@@ -97,6 +100,7 @@ class AppConfig {
       soundVolume: prefs.getDouble('soundVolume') ?? 1.0,
       logRetentionDays: prefs.getInt('logRetentionDays') ?? 30,
       exportFormat: prefs.getString('exportFormat') ?? 'csv',
+      exportPath: prefs.getString('exportPath') ?? '',
       autoStartScanning: prefs.getBool('autoStartScanning') ?? false,
       minimizeToTray: prefs.getBool('minimizeToTray') ?? false,
       cameraVisible: prefs.getBool('cameraVisible') ?? true,
@@ -123,6 +127,7 @@ class AppConfig {
     await prefs.setDouble('soundVolume', soundVolume);
     await prefs.setInt('logRetentionDays', logRetentionDays);
     await prefs.setString('exportFormat', exportFormat);
+    await prefs.setString('exportPath', exportPath);
     await prefs.setBool('autoStartScanning', autoStartScanning);
     await prefs.setBool('minimizeToTray', minimizeToTray);
     await prefs.setBool('cameraVisible', cameraVisible);
@@ -148,6 +153,7 @@ class AppConfig {
     double? soundVolume,
     int? logRetentionDays,
     String? exportFormat,
+    String? exportPath,
     bool? autoStartScanning,
     bool? minimizeToTray,
     bool? cameraVisible,
@@ -169,6 +175,7 @@ class AppConfig {
       soundVolume: soundVolume ?? this.soundVolume,
       logRetentionDays: logRetentionDays ?? this.logRetentionDays,
       exportFormat: exportFormat ?? this.exportFormat,
+      exportPath: exportPath ?? this.exportPath,
       autoStartScanning: autoStartScanning ?? this.autoStartScanning,
       minimizeToTray: minimizeToTray ?? this.minimizeToTray,
       cameraVisible: cameraVisible ?? this.cameraVisible,

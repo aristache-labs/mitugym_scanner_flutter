@@ -222,22 +222,27 @@ class HistoryNotifier extends Notifier<HistoryState> {
         verboseLogger: _verboseLogger,
       );
 
-      // Get last sync timestamp
-      final lastSync = config.lastHistorySync ?? 
-          DateTime.now().subtract(const Duration(days: 7));
+      // Check if local database has any records
+      final storage = ref.read(offlineStorageServiceProvider);
+      final existingRecordCount = await storage.getCheckInHistoryCount();
       
-      _verboseLogger.logDebug('Last sync was: $lastSync', source: 'HistoryProvider');
+      // Get last sync timestamp
+      // If no records exist locally, fetch from retention period instead of last sync
+      final lastSync = (config.lastHistorySync != null && existingRecordCount > 0)
+          ? config.lastHistorySync!
+          : DateTime.now().subtract(Duration(days: config.historyRetentionDays));
+      
+      _verboseLogger.logDebug('Last sync was: $lastSync (existing records: $existingRecordCount)', source: 'HistoryProvider');
 
       // Fetch history from server
       final serverHistory = await apiService.fetchHistoryFromServer(
         sinceDate: lastSync,
-        limit: 500,
+        limit: existingRecordCount > 0 ? 500 : 1000, // Fetch more on initial sync
       );
 
       _verboseLogger.logDebug('Received ${serverHistory.length} records from server', source: 'HistoryProvider');
 
       // Save to local database
-      final storage = ref.read(offlineStorageServiceProvider);
       for (final activity in serverHistory) {
         await storage.saveCheckInHistory(activity, synced: true);
       }

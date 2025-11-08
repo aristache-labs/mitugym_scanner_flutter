@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:file_picker/file_picker.dart';
 import '../config/app_colors.dart';
 import '../providers/config_provider.dart';
 import '../providers/history_provider.dart';
@@ -33,6 +34,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   late double _soundVolume;
   late int _cameraFrameRate;
   late int _logRetentionDays;
+  late String _exportPath;
   late bool _autoStartScanning;
   late bool _cameraVisible;
   late bool _startWithWindows;
@@ -55,6 +57,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     _soundVolume = config.soundVolume;
     _cameraFrameRate = config.cameraFrameRate;
     _logRetentionDays = config.logRetentionDays;
+    _exportPath = config.exportPath;
     _autoStartScanning = config.autoStartScanning;
     _cameraVisible = config.cameraVisible;
     _startWithWindows = config.startWithWindows;
@@ -68,6 +71,156 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     _apiUrlController.dispose();
     _apiKeyController.dispose();
     super.dispose();
+  }
+
+  Future<void> _selectExportPath() async {
+    // Show dialog with text field to enter path and browse button
+    final TextEditingController pathController = TextEditingController(text: _exportPath);
+    
+    final result = await showDialog<String>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          backgroundColor: AppColors.card,
+          title: Text(
+            'Set Export Path',
+            style: GoogleFonts.inter(
+              color: AppColors.textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Select or enter the folder path where export files should be saved:',
+                style: GoogleFonts.inter(
+                  color: AppColors.textSecondary,
+                  fontSize: 13,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: pathController,
+                      decoration: InputDecoration(
+                        hintText: 'C:\\Users\\YourName\\Documents\\exports',
+                        hintStyle: GoogleFonts.inter(
+                          color: AppColors.textMuted.withValues(alpha: 0.5),
+                          fontSize: 13,
+                        ),
+                        filled: true,
+                        fillColor: AppColors.surface.withValues(alpha: 0.3),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(color: AppColors.border.withValues(alpha: 0.3)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(color: AppColors.border.withValues(alpha: 0.3)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(color: AppColors.primary.withValues(alpha: 0.5)),
+                        ),
+                      ),
+                      style: GoogleFonts.inter(
+                        color: AppColors.textPrimary,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+                      if (selectedDirectory != null) {
+                        pathController.text = selectedDirectory;
+                      }
+                    },
+                    icon: const Icon(LucideIcons.folderSearch, size: 14),
+                    label: Text(
+                      'Browse',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                      foregroundColor: AppColors.primary.withValues(alpha: 0.95),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        side: BorderSide(
+                          color: AppColors.primary.withValues(alpha: 0.25),
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Leave empty to use default location',
+                style: GoogleFonts.inter(
+                  color: AppColors.textMuted.withValues(alpha: 0.7),
+                  fontSize: 11,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Cancel',
+                style: GoogleFonts.inter(
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, pathController.text),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                foregroundColor: AppColors.primary.withValues(alpha: 0.95),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  side: BorderSide(
+                    color: AppColors.primary.withValues(alpha: 0.25),
+                    width: 1,
+                  ),
+                ),
+              ),
+              child: Text(
+                'Save',
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    
+    if (result != null) {
+      setState(() {
+        _exportPath = result;
+      });
+    }
   }
 
   Future<void> _saveSettings() async {
@@ -94,6 +247,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     // Save settings from Advanced tab
     await ref.read(configProvider.notifier).updateCameraFrameRate(_cameraFrameRate);
     await ref.read(configProvider.notifier).updateLogRetentionDays(_logRetentionDays);
+    await ref.read(configProvider.notifier).updateExportPath(_exportPath);
     await ref.read(configProvider.notifier).updateVerboseLogging(_verboseLogging);
     
     // Update scanner service with new settings
@@ -239,6 +393,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                   _soundVolume = config.soundVolume;
                   _cameraFrameRate = config.cameraFrameRate;
                   _logRetentionDays = config.logRetentionDays;
+                  _exportPath = config.exportPath;
                   _autoStartScanning = config.autoStartScanning;
                   _cameraVisible = config.cameraVisible;
                   _startWithWindows = config.startWithWindows;
@@ -606,6 +761,82 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                         divisions: 83,
                         displayValue: '$_logRetentionDays days',
                         onChanged: (v) => setState(() => _logRetentionDays = v.toInt()),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                
+                // Export Settings Card
+                _buildModernCard(
+                  icon: LucideIcons.folderOutput,
+                  title: 'Export Settings',
+                  subtitle: 'Configure export file location',
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            LucideIcons.folder,
+                            color: AppColors.primary.withValues(alpha: 0.7),
+                            size: 16,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Export Path',
+                                  style: GoogleFonts.inter(
+                                    color: AppColors.textPrimary,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  _exportPath.isEmpty
+                                      ? 'Using default location'
+                                      : _exportPath,
+                                  style: GoogleFonts.inter(
+                                    color: AppColors.textMuted.withValues(alpha: 0.8),
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          ElevatedButton.icon(
+                            onPressed: _selectExportPath,
+                            icon: const Icon(LucideIcons.folderSearch, size: 14),
+                            label: Text(
+                              'Browse',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.2,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                              foregroundColor: AppColors.primary.withValues(alpha: 0.95),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                side: BorderSide(
+                                  color: AppColors.primary.withValues(alpha: 0.25),
+                                  width: 1,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

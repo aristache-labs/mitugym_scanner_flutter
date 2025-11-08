@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../config/app_colors.dart';
 import '../models/activity_log.dart';
 import '../providers/history_provider.dart';
+import '../providers/config_provider.dart';
 import '../services/export_service.dart';
 import '../widgets/member_avatar_modal.dart';
 import '../widgets/member_details_modal.dart';
@@ -186,18 +187,22 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     }
 
     try {
+      // Get custom export path from config
+      final config = ref.read(configProvider);
+      final customPath = config.exportPath.isNotEmpty ? config.exportPath : null;
+      
       // Export using selected format
       String? filePath;
       switch (format.toLowerCase()) {
         case 'csv':
-          filePath = await _exportService.exportToCSV(activities);
+          filePath = await _exportService.exportToCSV(activities, customPath: customPath);
           break;
         case 'pdf':
-          filePath = await _exportService.exportToPDF(activities);
+          filePath = await _exportService.exportToPDF(activities, customPath: customPath);
           break;
         case 'txt':
         default:
-          filePath = await _exportService.exportToText(activities);
+          filePath = await _exportService.exportToText(activities, customPath: customPath);
       }
       
       if (filePath == null) {

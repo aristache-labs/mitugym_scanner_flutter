@@ -1,5 +1,5 @@
 import 'package:logger/logger.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import '../models/pending_action.dart';
 import 'offline_storage_service.dart';
 import 'logger_service.dart';
@@ -78,7 +78,7 @@ class OfflineQueueService {
       final result = await db.rawQuery(
         'SELECT COUNT(*) as count FROM pending_actions WHERE synced = 0',
       );
-      final count = Sqflite.firstIntValue(result) ?? 0;
+      final count = (result.first['count'] as int?) ?? 0;
       _verboseLogger?.logTrace('Pending actions count: $count', source: 'OfflineQueue');
       return count;
     } catch (e) {
