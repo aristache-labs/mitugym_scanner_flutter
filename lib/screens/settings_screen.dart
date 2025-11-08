@@ -673,20 +673,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
         onPressed: _testApiEndpoints,
         icon: const Icon(LucideIcons.network, size: 16),
         label: Text(
-          'Test',
+          'Test API',
           style: GoogleFonts.inter(
             fontSize: 13,
             fontWeight: FontWeight.w600,
+            letterSpacing: 0.2,
           ),
         ),
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.info.withValues(alpha: 0.12),
-          foregroundColor: AppColors.info,
+          backgroundColor: AppColors.primary.withValues(alpha: 0.08),
+          foregroundColor: AppColors.primary.withValues(alpha: 0.9),
           padding: const EdgeInsets.symmetric(horizontal: 16),
+          elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
             side: BorderSide(
-              color: AppColors.info.withValues(alpha: 0.4),
+              color: AppColors.primary.withValues(alpha: 0.15),
               width: 1,
             ),
           ),
