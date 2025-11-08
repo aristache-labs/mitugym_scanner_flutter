@@ -9,6 +9,7 @@ import '../providers/gym_schedule_provider.dart';
 import '../providers/windows_scanner_provider.dart';
 import '../services/api_service.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../widgets/animated_tab_switcher.dart';
 
 /// Modern settings screen - Dashboard style
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -42,6 +43,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
+    _tabController.addListener(() => setState(() {}));
     
     // Initialize from current config
     final config = ref.read(configProvider);
@@ -159,75 +161,52 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     );
   }
 
-  /// Build modern header with tabs
+  /// Build premium header with tabs - Ultra Professional with Sliding Animation
   Widget _buildModernHeader() {
     return Container(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
           colors: [
-            AppColors.card.withValues(alpha: 0.9),
-            AppColors.surface.withValues(alpha: 0.7),
+            AppColors.card.withValues(alpha: 0.6),
+            AppColors.card.withValues(alpha: 0.3),
           ],
         ),
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(24),
-          bottomRight: Radius.circular(24),
+        border: Border(
+          bottom: BorderSide(
+            color: AppColors.border.withValues(alpha: 0.15),
+            width: 1,
+          ),
         ),
-        border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.3),
-          width: 1,
-        ),
-      ),
-                child: Column(
-                  children: [
-          // Tab bar
-          Container(
-            margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: AppColors.surface.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: TabBar(
-              controller: _tabController,
-              indicator: BoxDecoration(
-                gradient: AppColors.primaryGradient,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              indicatorSize: TabBarIndicatorSize.tab,
-              dividerColor: Colors.transparent,
-              labelColor: Colors.white,
-              unselectedLabelColor: AppColors.textMuted,
-              labelStyle: GoogleFonts.inter(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.5,
-              ),
-              unselectedLabelStyle: GoogleFonts.inter(
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-              ),
-              tabs: const [
-                Tab(text: 'GENERAL'),
-                Tab(text: 'DISPLAY'),
-                Tab(text: 'AUDIO'),
-                Tab(text: 'ADVANCED'),
-              ],
-            ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
+      child: Center(
+        child: AnimatedTabSwitcher(
+          tabs: const [
+            TabItem(label: 'General', icon: LucideIcons.home),
+            TabItem(label: 'Display', icon: LucideIcons.monitor),
+            TabItem(label: 'Audio', icon: LucideIcons.volume2),
+            TabItem(label: 'Advanced', icon: LucideIcons.settings2),
+          ],
+          selectedIndex: _tabController.index,
+          onTabSelected: (index) {
+            _tabController.animateTo(index);
+          },
+          height: 64,
+          tabWidth: 165,
+        ),
+      ),
     );
   }
+
 
   /// Build modern bottom action bar
   Widget _buildBottomActionBar() {
