@@ -128,35 +128,35 @@ class _AnimatedTabSwitcherState extends State<AnimatedTabSwitcher>
             animation: _slideAnimation,
             builder: (context, child) {
               return Positioned(
-                left: 6 + (_slideAnimation.value * widget.tabWidth!),
-                top: 4,
-                bottom: 4, // Fix bottom clipping
+                left: 3 + (_slideAnimation.value * widget.tabWidth!),
+                top: 3,
+                bottom: 3, // Fix bottom clipping
                 child: Container(
-                  width: widget.tabWidth! - 16,
+                  width: widget.tabWidth! - 6,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        AppColors.primary.withValues(alpha: 0.15),
-                        AppColors.primaryLight.withValues(alpha: 0.1),
+                        AppColors.primary.withValues(alpha: 0.18),
+                        AppColors.primaryLight.withValues(alpha: 0.12),
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(13),
                     border: Border.all(
-                      color: AppColors.primary.withValues(alpha: 0.4),
+                      color: AppColors.primary.withValues(alpha: 0.45),
                       width: 1.5,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.2),
-                        blurRadius: 12,
+                        color: AppColors.primary.withValues(alpha: 0.25),
+                        blurRadius: 16,
                         spreadRadius: 0,
                       ),
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.2),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
+                        color: Colors.black.withValues(alpha: 0.25),
+                        blurRadius: 6,
+                        offset: const Offset(0, 3),
                       ),
                     ],
                   ),

@@ -164,6 +164,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   /// Build premium header with tabs - Ultra Professional with Sliding Animation
   Widget _buildModernHeader() {
     return Container(
+      margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -174,17 +175,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
             AppColors.card.withValues(alpha: 0.3),
           ],
         ),
-        border: Border(
-          bottom: BorderSide(
-            color: AppColors.border.withValues(alpha: 0.15),
-            width: 1,
-          ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.border.withValues(alpha: 0.15),
+          width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
