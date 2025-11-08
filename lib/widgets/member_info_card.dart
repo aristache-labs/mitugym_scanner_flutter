@@ -91,6 +91,18 @@ class MemberInfoCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final statusColor = isSuccess ? AppColors.success : AppColors.error;
     
+    // Translate API message
+    String getTranslatedMessage() {
+      final message = scanResult.message.toLowerCase();
+      if (message.contains('check-in successful') || message.contains('check in successful')) {
+        return l10n.checkInSuccessful;
+      } else if (message.contains('check-out successful') || message.contains('check out successful')) {
+        return l10n.checkOutSuccessful;
+      }
+      // Return original message for other cases
+      return scanResult.message;
+    }
+    
     return Row(
       children: [
         // Status indicator - clean style
@@ -125,7 +137,7 @@ class MemberInfoCard extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                scanResult.message,
+                getTranslatedMessage(),
                 style: GoogleFonts.inter(
                   color: AppColors.textPrimary,
                   fontSize: 18,
@@ -179,7 +191,7 @@ class MemberInfoCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  _buildStatusBadge(data),
+                  _buildStatusBadge(context, data),
                 ],
               ),
             ),
@@ -246,7 +258,24 @@ class MemberInfoCard extends StatelessWidget {
   }
 
   /// Build modern status badge
-  Widget _buildStatusBadge(MemberData data) {
+  Widget _buildStatusBadge(BuildContext context, MemberData data) {
+    final l10n = AppLocalizations.of(context)!;
+    
+    // Translate status based on value
+    String getStatusText() {
+      final status = data.membershipStatus.toLowerCase();
+      switch (status) {
+        case 'active':
+          return l10n.active;
+        case 'inactive':
+          return l10n.inactive;
+        case 'expired':
+          return l10n.expired;
+        default:
+          return data.membershipStatus;
+      }
+    }
+    
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -274,7 +303,7 @@ class MemberInfoCard extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Text(
-            data.membershipStatus.toUpperCase(),
+            getStatusText().toUpperCase(),
             style: GoogleFonts.inter(
               color: data.isActive ? AppColors.success : AppColors.error,
               fontSize: 11,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/windows_qr_scanner_service.dart';
 import 'windows_camera_preview_widget.dart';
+import '../l10n/app_localizations.dart';
 
 /// Collapsible camera widget with toggle button
 /// Allows hiding/showing the camera preview to save space
@@ -104,7 +105,7 @@ class _CollapsibleCameraWidgetState extends State<CollapsibleCameraWidget>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Camera Preview',
+                      AppLocalizations.of(context)!.cameraPreview,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
