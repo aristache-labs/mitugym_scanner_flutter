@@ -5,6 +5,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../config/app_colors.dart';
 import '../models/member_data.dart';
+import '../providers/config_provider.dart';
 import '../services/search_service.dart';
 import '../services/offline_storage_service.dart';
 import '../services/export_service.dart';
@@ -186,18 +187,22 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     }
 
     try {
+      // Get custom export path from config
+      final config = ref.read(configProvider);
+      final customPath = config.exportPath.isNotEmpty ? config.exportPath : null;
+      
       // Export using selected format
       String? filePath;
       switch (format.toLowerCase()) {
         case 'csv':
-          filePath = await _exportService.exportMembersToCSV(members);
+          filePath = await _exportService.exportMembersToCSV(members, customPath: customPath);
           break;
         case 'pdf':
-          filePath = await _exportService.exportMembersToPDF(members);
+          filePath = await _exportService.exportMembersToPDF(members, customPath: customPath);
           break;
         case 'txt':
         default:
-          filePath = await _exportService.exportMembersToText(members);
+          filePath = await _exportService.exportMembersToText(members, customPath: customPath);
       }
       
       if (filePath == null) {
