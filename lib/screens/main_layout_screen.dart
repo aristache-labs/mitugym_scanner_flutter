@@ -166,7 +166,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
                   // Main Content Area - Changes based on selected page
                   Expanded(
                     child: Container(
-                      margin: const EdgeInsets.all(16),
+                      margin: _selectedIndex == 5 ? EdgeInsets.zero : const EdgeInsets.all(16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [

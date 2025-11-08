@@ -134,30 +134,42 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
+      children: [
+        Column(
           children: [
-        // Modern header with tabs
-        _buildModernHeader(),
+            // Modern header with tabs
+            _buildModernHeader(),
             
-            // Content
+            // Content with bottom padding for the action bar
             Expanded(
-              child: Form(
-                key: _formKey,
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _buildGeneralTab(),
-                    _buildDisplayTab(),
-                    _buildAudioTab(),
-                    _buildAdvancedTab(),
-                  ],
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 80), // Space for bottom bar
+                child: Form(
+                  key: _formKey,
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      _buildGeneralTab(),
+                      _buildDisplayTab(),
+                      _buildAudioTab(),
+                      _buildAdvancedTab(),
+                    ],
+                  ),
                 ),
               ),
             ),
-            
-            // Modern bottom bar
-            _buildBottomActionBar(),
           ],
+        ),
+        
+        // Modern bottom bar - positioned at the bottom
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: _buildBottomActionBar(),
+        ),
+      ],
     );
   }
 
@@ -211,7 +223,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   /// Build modern bottom action bar
   Widget _buildBottomActionBar() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.fromLTRB(
+        16,
+        16,
+        16,
+        16 + MediaQuery.of(context).padding.bottom,
+      ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
@@ -221,58 +238,54 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
             AppColors.surface.withValues(alpha: 0.7),
           ],
         ),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
-        ),
-        border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.3),
+        border: Border(
+          top: BorderSide(
+            color: AppColors.border.withValues(alpha: 0.3),
             width: 1,
+          ),
         ),
       ),
       child: Row(
         children: [
           Expanded(
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () {
-                  // Reset to original values
-                  final config = ref.read(configProvider);
-                  setState(() {
-                    _apiUrlController.text = config.apiUrl;
-                    _apiKeyController.text = config.apiKey;
-                    _cameraIndex = config.cameraIndex;
-                    _debounceDuration = config.debounceDuration;
-                    _audioEnabled = config.audioEnabled;
-                    _soundVolume = config.soundVolume;
-                    _cameraFrameRate = config.cameraFrameRate;
-                    _logRetentionDays = config.logRetentionDays;
-                    _autoStartScanning = config.autoStartScanning;
-                    _cameraVisible = config.cameraVisible;
-                    _startWithWindows = config.startWithWindows;
-                    _historyRetentionDays = config.historyRetentionDays;
-                  });
-                },
-                borderRadius: BorderRadius.circular(12),
-            child: Container(
-              height: 48,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                      color: AppColors.border,
-                  width: 1.5,
+            child: ElevatedButton.icon(
+              onPressed: () {
+                // Reset to original values
+                final config = ref.read(configProvider);
+                setState(() {
+                  _apiUrlController.text = config.apiUrl;
+                  _apiKeyController.text = config.apiKey;
+                  _cameraIndex = config.cameraIndex;
+                  _debounceDuration = config.debounceDuration;
+                  _audioEnabled = config.audioEnabled;
+                  _soundVolume = config.soundVolume;
+                  _cameraFrameRate = config.cameraFrameRate;
+                  _logRetentionDays = config.logRetentionDays;
+                  _autoStartScanning = config.autoStartScanning;
+                  _cameraVisible = config.cameraVisible;
+                  _startWithWindows = config.startWithWindows;
+                  _historyRetentionDays = config.historyRetentionDays;
+                });
+              },
+              icon: const Icon(LucideIcons.rotateCcw, size: 16),
+              label: Text(
+                'Reset',
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.2,
                 ),
               ),
-                  child: Center(
-                child: Text(
-                      'Reset',
-                  style: GoogleFonts.inter(
-                        color: AppColors.textSecondary,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.3,
-                      ),
-                    ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.surface.withValues(alpha: 0.3),
+                foregroundColor: AppColors.textSecondary.withValues(alpha: 0.85),
+                minimumSize: const Size(double.infinity, 44),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  side: BorderSide(
+                    color: AppColors.border.withValues(alpha: 0.2),
+                    width: 1,
                   ),
                 ),
               ),
@@ -281,38 +294,27 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
           const SizedBox(width: 12),
           Expanded(
             flex: 2,
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: _saveSettings,
-                borderRadius: BorderRadius.circular(12),
-            child: Container(
-              height: 48,
-              decoration: BoxDecoration(
-                gradient: AppColors.primaryGradient,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.3),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
+            child: ElevatedButton.icon(
+              onPressed: _saveSettings,
+              icon: const Icon(LucideIcons.save, size: 16),
+              label: Text(
+                'Save Settings',
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.2,
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                      const Icon(LucideIcons.save, size: 18, color: Colors.white),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Save Settings',
-                      style: GoogleFonts.inter(
-                          color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                  ],
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                foregroundColor: AppColors.primary.withValues(alpha: 0.95),
+                minimumSize: const Size(double.infinity, 44),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  side: BorderSide(
+                    color: AppColors.primary.withValues(alpha: 0.25),
+                    width: 1,
                   ),
                 ),
               ),
@@ -1589,17 +1591,28 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
             ),
           ),
           Transform.scale(
-            scale: 0.8,
+            scale: 0.95,
             child: Switch(
               value: value,
               onChanged: onChanged,
-              activeTrackColor: AppColors.primary.withValues(alpha: 0.5),
+              activeTrackColor: AppColors.primary.withValues(alpha: 0.75),
+              inactiveTrackColor: AppColors.surface.withValues(alpha: 0.9),
+              inactiveThumbColor: AppColors.textSecondary,
               thumbColor: WidgetStateProperty.resolveWith((states) {
                 if (states.contains(WidgetState.selected)) {
                   return AppColors.primary;
                 }
-                return AppColors.textMuted;
+                return AppColors.textSecondary;
               }),
+              trackOutlineColor: WidgetStateProperty.resolveWith((states) {
+                if (states.contains(WidgetState.selected)) {
+                  return AppColors.primary.withValues(alpha: 0.6);
+                }
+                return AppColors.border.withValues(alpha: 0.6);
+              }),
+              trackOutlineWidth: WidgetStateProperty.all(2.5),
+              overlayColor: WidgetStateProperty.all(Colors.transparent),
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
           ),
         ],
