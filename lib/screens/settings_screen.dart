@@ -324,76 +324,113 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   }
 
   Widget _buildGeneralTab() {
-    return ListView(
-      padding: const EdgeInsets.all(20),
-      children: [
-        _buildCompactSection(
-          'API Configuration',
-          LucideIcons.cloud,
-          [
-            _buildCompactTextField(
-              controller: _apiUrlController,
-              label: 'API URL',
-              hint: 'https://api.example.com',
-              icon: LucideIcons.link,
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Left column (equal width)
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                // API Configuration Card
+                _buildModernCard(
+                  icon: LucideIcons.cloud,
+                  title: 'API Configuration',
+                  subtitle: 'Manage your API connection',
+                  child: Column(
+                    children: [
+                      _buildInlineTextField(
+                        controller: _apiUrlController,
+                        label: 'API URL',
+                        hint: 'https://api.example.com',
+                        icon: LucideIcons.link,
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildInlineTextField(
+                              controller: _apiKeyController,
+                              label: 'API Key',
+                              hint: 'Enter your API key',
+                              icon: LucideIcons.key,
+                              obscure: true,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 20),
+                            child: _buildTestApiButton(),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                
+                // Application Preferences Card
+                _buildModernCard(
+                  icon: LucideIcons.settings,
+                  title: 'Application Preferences',
+                  subtitle: 'Startup and behavior settings',
+                  child: _buildInlineSwitch(
+                    label: 'Start with Windows',
+                    description: 'Launch automatically when Windows starts',
+                    icon: LucideIcons.power,
+                    value: _startWithWindows,
+                    onChanged: (v) => setState(() => _startWithWindows = v),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            _buildCompactTextField(
-              controller: _apiKeyController,
-              label: 'API Key',
-              hint: 'Your API key',
-              icon: LucideIcons.key,
-              obscure: true,
+          ),
+          
+          const SizedBox(width: 16),
+          
+          // Right column (equal width)
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                // Camera Settings Card
+                _buildModernCard(
+                  icon: LucideIcons.video,
+                  title: 'Camera',
+                  subtitle: 'Device and capture settings',
+                  child: Column(
+                    children: [
+                      _buildCompactSlider(
+                        label: 'Device',
+                        icon: LucideIcons.camera,
+                        value: _cameraIndex.toDouble(),
+                        min: 0,
+                        max: 5,
+                        divisions: 5,
+                        displayValue: 'Camera $_cameraIndex',
+                        onChanged: (v) => setState(() => _cameraIndex = v.toInt()),
+                      ),
+                      const SizedBox(height: 12),
+                      _buildCompactSlider(
+                        label: 'Frame Rate',
+                        icon: LucideIcons.zap,
+                        value: _cameraFrameRate.toDouble(),
+                        min: 5,
+                        max: 30,
+                        divisions: 25,
+                        displayValue: '$_cameraFrameRate FPS',
+                        onChanged: (v) => setState(() => _cameraFrameRate = v.toInt()),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            _buildTestApiButton(),
-          ],
-        ),
-        const SizedBox(height: 16),
-        
-        // Compact grid for settings
-        _buildCompactSection(
-          'Application Settings',
-          LucideIcons.settings,
-          [
-            _buildCompactSwitch(
-              label: 'Start with Windows',
-              icon: LucideIcons.power,
-              value: _startWithWindows,
-              onChanged: (v) => setState(() => _startWithWindows = v),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        
-        _buildCompactSection(
-          'Camera Settings',
-          LucideIcons.camera,
-          [
-            _buildCompactSlider(
-              label: 'Camera Device',
-              icon: LucideIcons.video,
-              value: _cameraIndex.toDouble(),
-              min: 0,
-              max: 5,
-              divisions: 5,
-              displayValue: 'Device $_cameraIndex',
-              onChanged: (v) => setState(() => _cameraIndex = v.toInt()),
-            ),
-            const SizedBox(height: 12),
-            _buildCompactSlider(
-              label: 'Frame Rate',
-              icon: LucideIcons.zap,
-              value: _cameraFrameRate.toDouble(),
-              min: 5,
-              max: 30,
-              divisions: 25,
-              displayValue: '$_cameraFrameRate FPS',
-              onChanged: (v) => setState(() => _cameraFrameRate = v.toInt()),
-            ),
-          ],
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -630,18 +667,28 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   
   /// Build test API button
   Widget _buildTestApiButton() {
-    return ElevatedButton.icon(
-      onPressed: _testApiEndpoints,
-      icon: const Icon(LucideIcons.network),
-      label: const Text('Test API Connection'),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.info.withValues(alpha: 0.15),
-        foregroundColor: AppColors.info,
-        minimumSize: const Size(double.infinity, 48),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: BorderSide(
-            color: AppColors.info.withValues(alpha: 0.3),
+    return SizedBox(
+      height: 40,
+      child: ElevatedButton.icon(
+        onPressed: _testApiEndpoints,
+        icon: const Icon(LucideIcons.network, size: 16),
+        label: Text(
+          'Test',
+          style: GoogleFonts.inter(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.info.withValues(alpha: 0.12),
+          foregroundColor: AppColors.info,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            side: BorderSide(
+              color: AppColors.info.withValues(alpha: 0.4),
+              width: 1,
+            ),
           ),
         ),
       ),
@@ -1298,6 +1345,265 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     }
   }
 
+
+  /// Build modern card with icon, title, subtitle and content
+  Widget _buildModernCard({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Widget child,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.card.withValues(alpha: 0.4),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppColors.border.withValues(alpha: 0.2),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Card header
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: AppColors.border.withValues(alpha: 0.15),
+                  width: 1,
+                ),
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.primary.withValues(alpha: 0.15),
+                        AppColors.primary.withValues(alpha: 0.08),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: AppColors.primary.withValues(alpha: 0.25),
+                      width: 1,
+                    ),
+                  ),
+                  child: Icon(icon, color: AppColors.primary, size: 18),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: GoogleFonts.inter(
+                          color: AppColors.textPrimary,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        style: GoogleFonts.inter(
+                          color: AppColors.textSecondary.withValues(alpha: 0.7),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // Card content
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: child,
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Build inline text field (label on top, compact)
+  Widget _buildInlineTextField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required IconData icon,
+    bool obscure = false,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.inter(
+            color: AppColors.textSecondary,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.3,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          height: 40,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 4,
+                offset: const Offset(0, 1),
+              ),
+            ],
+          ),
+          child: TextFormField(
+            controller: controller,
+            obscureText: obscure,
+            style: GoogleFonts.inter(
+              color: AppColors.textPrimary,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: GoogleFonts.inter(
+                color: AppColors.textMuted.withValues(alpha: 0.4),
+                fontSize: 13,
+              ),
+              prefixIcon: Container(
+                margin: const EdgeInsets.all(6),
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Icon(icon, color: AppColors.primary, size: 13),
+              ),
+              filled: true,
+              fillColor: AppColors.surface.withValues(alpha: 0.5),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(
+                  color: AppColors.border.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(
+                  color: AppColors.border.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(
+                  color: AppColors.primary.withValues(alpha: 0.8),
+                  width: 1.5,
+                ),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 10,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Build inline switch with description
+  Widget _buildInlineSwitch({
+    required String label,
+    required String description,
+    required IconData icon,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.surface.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: AppColors.border.withValues(alpha: 0.15),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Icon(icon, color: AppColors.primary, size: 14),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: GoogleFonts.inter(
+                    color: AppColors.textPrimary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  description,
+                  style: GoogleFonts.inter(
+                    color: AppColors.textSecondary.withValues(alpha: 0.7),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Transform.scale(
+            scale: 0.8,
+            child: Switch(
+              value: value,
+              onChanged: onChanged,
+              activeTrackColor: AppColors.primary.withValues(alpha: 0.5),
+              thumbColor: WidgetStateProperty.resolveWith((states) {
+                if (states.contains(WidgetState.selected)) {
+                  return AppColors.primary;
+                }
+                return AppColors.textMuted;
+              }),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   /// Build compact section with smaller padding and tighter spacing
   Widget _buildCompactSection(String title, IconData icon, List<Widget> children) {
