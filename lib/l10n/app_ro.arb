@@ -43,6 +43,7 @@
   "active": "Activ",
   "inactive": "Inactiv",
   "expired": "Expirat",
+  "pending": "În așteptare",
   
   "historyTitle": "Istoric",
   "historySubtitle": "Înregistrare completă a tuturor intrărilor și ieșirilor membrilor",
@@ -400,5 +401,19 @@
   "dioExceptionConnectionTimeout": "Timeout conexiune - Serverul a durat prea mult să răspundă",
   "dioExceptionReceiveTimeout": "Timeout recepție - Transferul de date a durat prea mult",
   "dioExceptionConnectionError": "Eroare conexiune - Nu se poate conecta la server",
-  "dioExceptionUnknown": "Eroare de rețea"
+  "dioExceptionUnknown": "Eroare de rețea",
+  "tapToEnlarge": "Apasă pentru a mări",
+  "membership": "ABONAMENT",
+  "contactAndAddress": "CONTACT & ADRESĂ",
+  "planLabel": "Abonament",
+  "expiresLabel": "Expiră",
+  "birthDateLabel": "Data nașterii",
+  "emailLabel": "Email",
+  "phoneLabel": "Telefon",
+  "addressLabel": "Adresă",
+  "noContactInformation": "Fără informații de contact",
+  "notProvided": "Necompletat",
+  "viewFullProfile": "Vezi Profilul Complet",
+  "couldNotOpenProfile": "Nu s-a putut deschide profilul: {url}",
+  "errorOpeningProfile": "Eroare la deschiderea profilului: {error}"
 }

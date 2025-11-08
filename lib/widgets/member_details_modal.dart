@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../config/app_colors.dart';
 import '../models/member_data.dart';
 import '../providers/config_provider.dart';
+import '../l10n/app_localizations.dart';
 import 'member_avatar_modal.dart';
 
 /// Modal dialog to show full member details
@@ -31,6 +32,7 @@ class _MemberDetailsModalContent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final statusColor = _getStatusColor(member.membershipStatus);
     final isActive = member.isActive;
 
@@ -159,7 +161,7 @@ class _MemberDetailsModalContent extends ConsumerWidget {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            'Tap to enlarge',
+                            l10n.tapToEnlarge,
                             style: GoogleFonts.inter(
                               color: Colors.white,
                               fontSize: 10,
@@ -208,7 +210,7 @@ class _MemberDetailsModalContent extends ConsumerWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    member.membershipStatus.toUpperCase(),
+                    _translateStatus(member.membershipStatus, l10n).toUpperCase(),
                     style: GoogleFonts.inter(
                       color: statusColor,
                       fontSize: 13,
@@ -231,7 +233,7 @@ class _MemberDetailsModalContent extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'MEMBERSHIP',
+                        l10n.membership,
                         style: GoogleFonts.inter(
                           color: AppColors.textMuted,
                           fontSize: 11,
@@ -240,12 +242,12 @@ class _MemberDetailsModalContent extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      _buildCompactDetailRow(Icons.card_membership_rounded, 'Plan', member.planName),
+                      _buildCompactDetailRow(context, Icons.card_membership_rounded, l10n.planLabel, member.planName),
                       const SizedBox(height: 8),
-                      _buildCompactDetailRow(Icons.calendar_today_rounded, 'Expires', member.formattedExpiryDate),
+                      _buildCompactDetailRow(context, Icons.calendar_today_rounded, l10n.expiresLabel, member.formattedExpiryDate),
                       if (member.dateOfBirth != null) ...[
                         const SizedBox(height: 8),
-                        _buildCompactDetailRow(Icons.cake_rounded, 'Birth Date', member.formattedBirthDate ?? member.dateOfBirth!),
+                        _buildCompactDetailRow(context, Icons.cake_rounded, l10n.birthDateLabel, member.formattedBirthDate ?? member.dateOfBirth!),
                       ],
                     ],
                   ),
@@ -257,7 +259,7 @@ class _MemberDetailsModalContent extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'CONTACT & ADDRESS',
+                        l10n.contactAndAddress,
                         style: GoogleFonts.inter(
                           color: AppColors.textMuted,
                           fontSize: 11,
@@ -267,24 +269,25 @@ class _MemberDetailsModalContent extends ConsumerWidget {
                       ),
                       const SizedBox(height: 12),
                       if (member.email != null) ...[
-                        _buildCompactDetailRow(Icons.email_rounded, 'Email', member.email!),
+                        _buildCompactDetailRow(context, Icons.email_rounded, l10n.emailLabel, member.email!),
                         const SizedBox(height: 8),
                       ],
                       if (member.phone != null) ...[
-                        _buildCompactDetailRow(Icons.phone_rounded, 'Phone', member.phone!),
+                        _buildCompactDetailRow(context, Icons.phone_rounded, l10n.phoneLabel, member.phone!),
                         const SizedBox(height: 8),
                       ],
                       if (member.hasAddressDetails) ...[
                         _buildCompactDetailRow(
+                          context,
                           Icons.location_on_rounded, 
-                          'Address', 
-                          _buildAddressString(member),
+                          l10n.addressLabel, 
+                          _buildAddressString(context, member),
                         ),
                       ],
                       // Show placeholder if no contact/address info
                       if (!member.hasContactDetails && !member.hasAddressDetails)
                         Text(
-                          'No contact information',
+                          l10n.noContactInformation,
                           style: GoogleFonts.inter(
                             color: AppColors.textMuted,
                             fontSize: 12,
@@ -302,43 +305,27 @@ class _MemberDetailsModalContent extends ConsumerWidget {
             // View Full Profile button
             SizedBox(
               width: double.infinity,
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () => _openMemberProfile(context, ref, member.memberId),
-                  borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    decoration: BoxDecoration(
-                      gradient: AppColors.primaryGradient,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primary.withValues(alpha: 0.3),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.open_in_new_rounded,
-                          color: Colors.white,
-                          size: 18,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'View Full Profile',
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.inter(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
+              child: ElevatedButton.icon(
+                onPressed: () => _openMemberProfile(context, ref, member.memberId),
+                icon: const Icon(Icons.open_in_new_rounded, size: 18),
+                label: Text(
+                  l10n.viewFullProfile,
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                  foregroundColor: AppColors.primary.withValues(alpha: 0.95),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(
+                      color: AppColors.primary.withValues(alpha: 0.3),
+                      width: 1.5,
                     ),
                   ),
                 ),
@@ -349,29 +336,38 @@ class _MemberDetailsModalContent extends ConsumerWidget {
             // Close button
             SizedBox(
               width: double.infinity,
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () => Navigator.pop(context),
+              child: Container(
+                decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    decoration: BoxDecoration(
-                      color: AppColors.surface.withValues(alpha: 0.5),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: AppColors.border.withValues(alpha: 0.3),
-                        width: 1,
-                      ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.error.withValues(alpha: 0.12),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
                     ),
-                    child: Text(
-                      'Close',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.inter(
-                        color: AppColors.textPrimary,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
+                  ],
+                ),
+                child: OutlinedButton.icon(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.close_rounded, size: 18),
+                  label: Text(
+                    l10n.close,
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: AppColors.error.withValues(alpha: 0.08),
+                    foregroundColor: AppColors.error.withValues(alpha: 0.9),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    side: BorderSide(
+                      color: AppColors.error.withValues(alpha: 0.3),
+                      width: 1.5,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                 ),
@@ -405,9 +401,10 @@ class _MemberDetailsModalContent extends ConsumerWidget {
         await launchUrl(profileUrl, mode: LaunchMode.externalApplication);
       } else {
         if (context.mounted) {
+          final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Could not open profile: $profileUrl'),
+              content: Text(l10n.couldNotOpenProfile(profileUrl.toString())),
               backgroundColor: AppColors.error,
             ),
           );
@@ -415,9 +412,10 @@ class _MemberDetailsModalContent extends ConsumerWidget {
       }
     } catch (e) {
       if (context.mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error opening profile: $e'),
+            content: Text(l10n.errorOpeningProfile(e.toString())),
             backgroundColor: AppColors.error,
           ),
         );
@@ -425,7 +423,7 @@ class _MemberDetailsModalContent extends ConsumerWidget {
     }
   }
 
-  Widget _buildCompactDetailRow(IconData icon, String label, String value) {
+  Widget _buildCompactDetailRow(BuildContext context, IconData icon, String label, String value) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -476,7 +474,8 @@ class _MemberDetailsModalContent extends ConsumerWidget {
     );
   }
 
-  String _buildAddressString(MemberData member) {
+  String _buildAddressString(BuildContext context, MemberData member) {
+    final l10n = AppLocalizations.of(context)!;
     final parts = <String>[];
     if (member.address != null && member.address!.isNotEmpty) {
       parts.add(member.address!);
@@ -487,7 +486,22 @@ class _MemberDetailsModalContent extends ConsumerWidget {
     if (member.county != null && member.county!.isNotEmpty) {
       parts.add(member.county!);
     }
-    return parts.isEmpty ? 'Not provided' : parts.join(', ');
+    return parts.isEmpty ? l10n.notProvided : parts.join(', ');
+  }
+  
+  String _translateStatus(String status, AppLocalizations l10n) {
+    switch (status.toLowerCase()) {
+      case 'active':
+        return l10n.active;
+      case 'inactive':
+        return l10n.inactive;
+      case 'expired':
+        return l10n.expired;
+      case 'pending':
+        return l10n.pending;
+      default:
+        return status;
+    }
   }
 
   Color _getStatusColor(String status) {

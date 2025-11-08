@@ -129,6 +129,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get expired => 'Expirat';
 
   @override
+  String get pending => 'În așteptare';
+
+  @override
   String get historyTitle => 'Istoric';
 
   @override
@@ -1067,4 +1070,50 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get dioExceptionUnknown => 'Eroare de rețea';
+
+  @override
+  String get tapToEnlarge => 'Apasă pentru a mări';
+
+  @override
+  String get membership => 'ABONAMENT';
+
+  @override
+  String get contactAndAddress => 'CONTACT & ADRESĂ';
+
+  @override
+  String get planLabel => 'Abonament';
+
+  @override
+  String get expiresLabel => 'Expiră';
+
+  @override
+  String get birthDateLabel => 'Data nașterii';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get phoneLabel => 'Telefon';
+
+  @override
+  String get addressLabel => 'Adresă';
+
+  @override
+  String get noContactInformation => 'Fără informații de contact';
+
+  @override
+  String get notProvided => 'Necompletat';
+
+  @override
+  String get viewFullProfile => 'Vezi Profilul Complet';
+
+  @override
+  String couldNotOpenProfile(String url) {
+    return 'Nu s-a putut deschide profilul: $url';
+  }
+
+  @override
+  String errorOpeningProfile(String error) {
+    return 'Eroare la deschiderea profilului: $error';
+  }
 }

@@ -326,6 +326,12 @@ abstract class AppLocalizations {
   /// **'Expired'**
   String get expired;
 
+  /// No description provided for @pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pending;
+
   /// No description provided for @historyTitle.
   ///
   /// In en, this message translates to:
@@ -2077,6 +2083,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Network error occurred'**
   String get dioExceptionUnknown;
+
+  /// No description provided for @tapToEnlarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to enlarge'**
+  String get tapToEnlarge;
+
+  /// No description provided for @membership.
+  ///
+  /// In en, this message translates to:
+  /// **'MEMBERSHIP'**
+  String get membership;
+
+  /// No description provided for @contactAndAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'CONTACT & ADDRESS'**
+  String get contactAndAddress;
+
+  /// No description provided for @planLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan'**
+  String get planLabel;
+
+  /// No description provided for @expiresLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires'**
+  String get expiresLabel;
+
+  /// No description provided for @birthDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Birth Date'**
+  String get birthDateLabel;
+
+  /// No description provided for @emailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get emailLabel;
+
+  /// No description provided for @phoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get phoneLabel;
+
+  /// No description provided for @addressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get addressLabel;
+
+  /// No description provided for @noContactInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'No contact information'**
+  String get noContactInformation;
+
+  /// No description provided for @notProvided.
+  ///
+  /// In en, this message translates to:
+  /// **'Not provided'**
+  String get notProvided;
+
+  /// No description provided for @viewFullProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'View Full Profile'**
+  String get viewFullProfile;
+
+  /// No description provided for @couldNotOpenProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open profile: {url}'**
+  String couldNotOpenProfile(String url);
+
+  /// No description provided for @errorOpeningProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Error opening profile: {error}'**
+  String errorOpeningProfile(String error);
 }
 
 class _AppLocalizationsDelegate

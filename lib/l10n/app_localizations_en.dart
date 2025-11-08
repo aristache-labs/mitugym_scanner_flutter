@@ -129,6 +129,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get expired => 'Expired';
 
   @override
+  String get pending => 'Pending';
+
+  @override
   String get historyTitle => 'History';
 
   @override
@@ -1055,4 +1058,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dioExceptionUnknown => 'Network error occurred';
+
+  @override
+  String get tapToEnlarge => 'Tap to enlarge';
+
+  @override
+  String get membership => 'MEMBERSHIP';
+
+  @override
+  String get contactAndAddress => 'CONTACT & ADDRESS';
+
+  @override
+  String get planLabel => 'Plan';
+
+  @override
+  String get expiresLabel => 'Expires';
+
+  @override
+  String get birthDateLabel => 'Birth Date';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get phoneLabel => 'Phone';
+
+  @override
+  String get addressLabel => 'Address';
+
+  @override
+  String get noContactInformation => 'No contact information';
+
+  @override
+  String get notProvided => 'Not provided';
+
+  @override
+  String get viewFullProfile => 'View Full Profile';
+
+  @override
+  String couldNotOpenProfile(String url) {
+    return 'Could not open profile: $url';
+  }
+
+  @override
+  String errorOpeningProfile(String error) {
+    return 'Error opening profile: $error';
+  }
 }

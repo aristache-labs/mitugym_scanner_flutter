@@ -57,6 +57,7 @@
   "active": "Active",
   "inactive": "Inactive",
   "expired": "Expired",
+  "pending": "Pending",
   
   "historyTitle": "History",
   "historySubtitle": "Complete record of all member check-ins and check-outs",
@@ -567,5 +568,33 @@
   "dioExceptionConnectionTimeout": "Connection timeout - Server took too long to respond",
   "dioExceptionReceiveTimeout": "Receive timeout - Data transfer took too long",
   "dioExceptionConnectionError": "Connection error - Unable to connect to server",
-  "dioExceptionUnknown": "Network error occurred"
+  "dioExceptionUnknown": "Network error occurred",
+  "tapToEnlarge": "Tap to enlarge",
+  "membership": "MEMBERSHIP",
+  "contactAndAddress": "CONTACT & ADDRESS",
+  "planLabel": "Plan",
+  "expiresLabel": "Expires",
+  "birthDateLabel": "Birth Date",
+  "emailLabel": "Email",
+  "phoneLabel": "Phone",
+  "addressLabel": "Address",
+  "noContactInformation": "No contact information",
+  "notProvided": "Not provided",
+  "viewFullProfile": "View Full Profile",
+  "couldNotOpenProfile": "Could not open profile: {url}",
+  "@couldNotOpenProfile": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningProfile": "Error opening profile: {error}",
+  "@errorOpeningProfile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }
