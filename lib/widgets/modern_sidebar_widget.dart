@@ -178,6 +178,25 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
     );
   }
 
+  /// Build elegant stat separator
+  Widget _buildStatSeparator() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      height: 1,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.transparent,
+            AppColors.border.withValues(alpha: 0.2),
+            AppColors.primary.withValues(alpha: 0.08),
+            AppColors.border.withValues(alpha: 0.2),
+            Colors.transparent,
+          ],
+        ),
+      ),
+    );
+  }
+
   /// Build compact navigation item
   Widget _buildCompactNavItem({
     required IconData icon,
@@ -283,21 +302,21 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
             value: '$todayCheckIns',
             color: AppColors.success,
           ),
-          const SizedBox(height: 12),
+          _buildStatSeparator(),
           _buildCompactStatRow(
             icon: LucideIcons.userMinus,
             label: 'Check-outs',
             value: '$todayCheckOuts',
             color: AppColors.warning,
           ),
-          const SizedBox(height: 12),
+          _buildStatSeparator(),
           _buildCompactStatRow(
             icon: LucideIcons.userX,
             label: 'Denied',
             value: '$todayDenied',
             color: AppColors.error,
           ),
-          const SizedBox(height: 12),
+          _buildStatSeparator(),
           _buildCompactStatRow(
             icon: LucideIcons.scanLine,
             label: 'Total Scans',
