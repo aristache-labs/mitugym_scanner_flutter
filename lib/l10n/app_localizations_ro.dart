@@ -465,8 +465,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get scannerTitle => 'Scanner QR';
 
   @override
-  String get scannerSubtitle =>
-      'Scanează coduri QR membre pentru check-in/check-out';
+  String get scannerSubtitle => 'Scanează coduri QR pentru check-in/check-out';
 
   @override
   String get scanningActive => 'Scanare activă';

@@ -164,7 +164,7 @@
   "invalidCredentials": "Nume utilizator sau parolă invalidă",
   
   "scannerTitle": "Scanner QR",
-  "scannerSubtitle": "Scanează coduri QR membre pentru check-in/check-out",
+  "scannerSubtitle": "Scanează coduri QR pentru check-in/check-out",
   "scanningActive": "Scanare activă",
   "scanningPaused": "Scanare întreruptă",
   "startScanning": "Începe scanarea",
