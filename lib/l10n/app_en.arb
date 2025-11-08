@@ -294,5 +294,14 @@
   "afternoon": "Afternoon",
   "evening": "Evening",
   "noDataYet": "No data yet",
-  "recentActivityWithCount": "Recent Activity ({count} entries)"
+  "recentActivityWithCount": "Recent Activity ({count} entries)",
+  
+  "liveGymOccupancy": "Live gym occupancy throughout the day",
+  "liveOccupancy": "Live occupancy",
+  "futureHours": "Future hours",
+  "people": "people",
+  "person": "person",
+  "todaysTraffic": "Today's Traffic",
+  "peak": "Peak: ",
+  "updatesEveryHour": "Updates every hour"
 }

@@ -710,4 +710,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noDataYet => 'No data yet';
+
+  @override
+  String get liveGymOccupancy => 'Live gym occupancy throughout the day';
+
+  @override
+  String get liveOccupancy => 'Live occupancy';
+
+  @override
+  String get futureHours => 'Future hours';
+
+  @override
+  String get people => 'people';
+
+  @override
+  String get person => 'person';
+
+  @override
+  String get todaysTraffic => 'Today\'s Traffic';
+
+  @override
+  String get peak => 'Peak: ';
+
+  @override
+  String get updatesEveryHour => 'Updates every hour';
 }

@@ -252,5 +252,14 @@
   "afternoon": "După-amiază",
   "evening": "Seara",
   "noDataYet": "Nicio dată încă",
-  "recentActivityWithCount": "Activitate recentă ({count} înregistrări)"
+  "recentActivityWithCount": "Activitate recentă ({count} înregistrări)",
+  
+  "liveGymOccupancy": "Ocuparea sălii în timp real pe parcursul zilei",
+  "liveOccupancy": "Ocupare în timp real",
+  "futureHours": "Ore viitoare",
+  "people": "persoane",
+  "person": "persoană",
+  "todaysTraffic": "Traficul de azi",
+  "peak": "Vârf: ",
+  "updatesEveryHour": "Actualizare la fiecare oră"
 }

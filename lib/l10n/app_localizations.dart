@@ -1465,6 +1465,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No data yet'**
   String get noDataYet;
+
+  /// No description provided for @liveGymOccupancy.
+  ///
+  /// In en, this message translates to:
+  /// **'Live gym occupancy throughout the day'**
+  String get liveGymOccupancy;
+
+  /// No description provided for @liveOccupancy.
+  ///
+  /// In en, this message translates to:
+  /// **'Live occupancy'**
+  String get liveOccupancy;
+
+  /// No description provided for @futureHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Future hours'**
+  String get futureHours;
+
+  /// No description provided for @people.
+  ///
+  /// In en, this message translates to:
+  /// **'people'**
+  String get people;
+
+  /// No description provided for @person.
+  ///
+  /// In en, this message translates to:
+  /// **'person'**
+  String get person;
+
+  /// No description provided for @todaysTraffic.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Traffic'**
+  String get todaysTraffic;
+
+  /// No description provided for @peak.
+  ///
+  /// In en, this message translates to:
+  /// **'Peak: '**
+  String get peak;
+
+  /// No description provided for @updatesEveryHour.
+  ///
+  /// In en, this message translates to:
+  /// **'Updates every hour'**
+  String get updatesEveryHour;
 }
 
 class _AppLocalizationsDelegate

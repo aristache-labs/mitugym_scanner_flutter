@@ -713,4 +713,29 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get noDataYet => 'Nicio dată încă';
+
+  @override
+  String get liveGymOccupancy =>
+      'Ocuparea sălii în timp real pe parcursul zilei';
+
+  @override
+  String get liveOccupancy => 'Ocupare în timp real';
+
+  @override
+  String get futureHours => 'Ore viitoare';
+
+  @override
+  String get people => 'persoane';
+
+  @override
+  String get person => 'persoană';
+
+  @override
+  String get todaysTraffic => 'Traficul de azi';
+
+  @override
+  String get peak => 'Vârf: ';
+
+  @override
+  String get updatesEveryHour => 'Actualizare la fiecare oră';
 }

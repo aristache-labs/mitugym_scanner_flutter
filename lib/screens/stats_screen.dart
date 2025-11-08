@@ -199,7 +199,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
             child: Column(
               children: [
                 // Today's Traffic Chart
-                _buildTodaysTrafficChart(todayActivities.toList(), peakOccupancy),
+                _buildTodaysTrafficChart(context, todayActivities.toList(), peakOccupancy),
                 const SizedBox(height: 20),
                 
                 // Charts and analytics section
@@ -310,7 +310,9 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
   }
   
   /// Build Today's Traffic Chart
-  Widget _buildTodaysTrafficChart(List<dynamic> activities, int peakOccupancy) {
+  Widget _buildTodaysTrafficChart(BuildContext context, List<dynamic> activities, int peakOccupancy) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -339,7 +341,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Today\'s Traffic',
+                      l10n.todaysTraffic,
                       style: GoogleFonts.inter(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -348,7 +350,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Live gym occupancy throughout the day',
+                      l10n.liveGymOccupancy,
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         color: AppColors.textMuted,
@@ -378,7 +380,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Peak: ',
+                      l10n.peak,
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         color: AppColors.textSecondary,
@@ -395,7 +397,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      'people',
+                      l10n.people,
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         color: AppColors.textSecondary,
@@ -412,7 +414,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
           // Chart
           SizedBox(
             height: 200,
-            child: _buildLineChart(activities),
+            child: _buildLineChart(context, activities),
           ),
           
           const SizedBox(height: 20),
@@ -421,9 +423,9 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildLegendItem('Live occupancy', AppColors.primary, true),
+              _buildLegendItem(l10n.liveOccupancy, AppColors.primary, true),
               const SizedBox(width: 24),
-              _buildLegendItem('Future hours', AppColors.textMuted.withValues(alpha: 0.3), false),
+              _buildLegendItem(l10n.futureHours, AppColors.textMuted.withValues(alpha: 0.3), false),
             ],
           ),
           
@@ -432,7 +434,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
           // Updates info
           Center(
             child: Text(
-              'Updates every hour',
+              l10n.updatesEveryHour,
               style: GoogleFonts.inter(
                 fontSize: 11,
                 color: AppColors.textMuted,
@@ -473,7 +475,8 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
   }
   
   /// Build the line chart
-  Widget _buildLineChart(List<dynamic> activities) {
+  Widget _buildLineChart(BuildContext context, List<dynamic> activities) {
+    final l10n = AppLocalizations.of(context)!;
     final scheduleNotifier = ref.read(gymScheduleProvider.notifier);
     
     // Get gym opening hours (default to 0-23 if no schedule)
@@ -653,7 +656,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
                 final hour = spot.x.toInt();
                 final count = spot.y.toInt();
                 return LineTooltipItem(
-                  '${hour.toString().padLeft(2, '0')}:00\n$count ${count == 1 ? 'person' : 'people'}',
+                  '${hour.toString().padLeft(2, '0')}:00\n$count ${count == 1 ? l10n.person : l10n.people}',
                   GoogleFonts.inter(
                     color: AppColors.textPrimary,
                     fontSize: 12,
