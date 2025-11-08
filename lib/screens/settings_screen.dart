@@ -8,6 +8,7 @@ import '../providers/config_provider.dart';
 import '../providers/history_provider.dart';
 import '../providers/gym_schedule_provider.dart';
 import '../providers/windows_scanner_provider.dart';
+import '../providers/language_provider.dart';
 import '../services/api_service.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../widgets/animated_tab_switcher.dart';
@@ -511,12 +512,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                   icon: LucideIcons.settings,
                   title: 'Application Preferences',
                   subtitle: 'Startup and behavior settings',
-                  child: _buildInlineSwitch(
-                    label: 'Start with Windows',
-                    description: 'Launch automatically when Windows starts',
-                    icon: LucideIcons.power,
-                    value: _startWithWindows,
-                    onChanged: (v) => setState(() => _startWithWindows = v),
+                  child: Column(
+                    children: [
+                      _buildLanguageSelector(),
+                      const SizedBox(height: 12),
+                      _buildInlineSwitch(
+                        label: 'Start with Windows',
+                        description: 'Launch automatically when Windows starts',
+                        icon: LucideIcons.power,
+                        value: _startWithWindows,
+                        onChanged: (v) => setState(() => _startWithWindows = v),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -2030,6 +2037,99 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
           ),
         ),
       ],
+    );
+  }
+
+  /// Build language selector dropdown
+  Widget _buildLanguageSelector() {
+    final currentLocale = ref.watch(languageProvider);
+    
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.surface.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: AppColors.border.withValues(alpha: 0.15),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Icon(LucideIcons.languages, color: AppColors.primary, size: 14),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Language',
+                  style: GoogleFonts.inter(
+                    color: AppColors.textPrimary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Select your preferred language',
+                  style: GoogleFonts.inter(
+                    color: AppColors.textSecondary.withValues(alpha: 0.7),
+                    fontSize: 11,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: AppColors.surface.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(
+                color: AppColors.border.withValues(alpha: 0.2),
+                width: 1,
+              ),
+            ),
+            child: DropdownButton<Locale>(
+              value: currentLocale,
+              isDense: true,
+              underline: const SizedBox(),
+              dropdownColor: AppColors.card,
+              style: GoogleFonts.inter(
+                color: AppColors.textPrimary,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+              icon: Icon(
+                LucideIcons.chevronDown,
+                size: 14,
+                color: AppColors.textMuted,
+              ),
+              items: LanguageNotifier.supportedLocales.map((locale) {
+                return DropdownMenuItem<Locale>(
+                  value: locale,
+                  child: Text(LanguageNotifier.getLocaleName(locale)),
+                );
+              }).toList(),
+              onChanged: (Locale? newLocale) {
+                if (newLocale != null) {
+                  ref.read(languageProvider.notifier).changeLocale(newLocale);
+                }
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 

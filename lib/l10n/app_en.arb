@@ -1,0 +1,269 @@
+{
+  "@@locale": "en",
+  
+  "navDashboard": "Dashboard",
+  "navQRScanner": "QR Scanner",
+  "navCheckIns": "Check-ins",
+  "navHistory": "History",
+  "navMembers": "Members",
+  "navSettings": "Settings",
+  
+  "dashboardTitle": "Dashboard",
+  "dashboardSubtitle": "Overview of total scans, check-ins, check-outs and gym activity",
+  "todayActivity": "Today's Activity",
+  "todayActivityWithCount": "Today's Activity ({count} entries)",
+  "@todayActivityWithCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "totalScans": "Total Scans",
+  "allScansToday": "All scans today",
+  "checkIns": "Check-ins",
+  "successfulEntries": "Successful entries",
+  "checkOuts": "Check-outs",
+  "successfulExits": "Successful exits",
+  "denied": "Denied",
+  "failedScans": "Failed scans",
+  
+  "statsTitle": "Check-ins",
+  "statsSubtitle": "Real-time activity tracking and member statistics",
+  "recentActivity": "Recent Activity",
+  "recentActivityWithCount": "Recent Activity ({count} entries)",
+  "@recentActivityWithCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "todayStats": "Today's Stats",
+  "recent": "Recent",
+  
+  "member": "Member",
+  "checkedIn": "Checked In",
+  "checkedOut": "Checked Out",
+  "duration": "Duration",
+  "plan": "Plan",
+  "expires": "Expires",
+  "status": "Status",
+  
+  "activeSession": "Active Session",
+  "stillInGym": "Still in GYM",
+  "planExpired": "Plan Expired",
+  "accessDenied": "Access Denied",
+  "active": "Active",
+  "inactive": "Inactive",
+  "expired": "Expired",
+  
+  "historyTitle": "History",
+  "historySubtitle": "Complete record of all member check-ins and check-outs",
+  "searchPlaceholder": "Search history...",
+  "loadMore": "Load More",
+  "loadingMore": "Loading more...",
+  "noMoreHistory": "No more history",
+  "scans": "scans",
+  "scansCount": "{count} scans",
+  "@scansCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "searchTitle": "Members",
+  "searchSubtitle": "Search and manage gym members",
+  "searchMembers": "Search members...",
+  "searchByName": "Search by name, phone, or email",
+  "noMembersFound": "No members found",
+  "tryDifferentSearch": "Try a different search query",
+  
+  "settingsTitle": "Settings",
+  "settingsSubtitle": "Configure application preferences and system settings",
+  "general": "General",
+  "scanner": "Scanner",
+  "data": "Data",
+  "about": "About",
+  
+  "apiConfiguration": "API Configuration",
+  "apiUrl": "API URL",
+  "apiUrlHint": "Backend server URL",
+  "apiKey": "API Key",
+  "apiKeyHint": "Authentication key",
+  "testConnection": "Test Connection",
+  "testing": "Testing...",
+  "connectionSuccessful": "Connection Successful",
+  "connectionFailed": "Connection Failed",
+  "language": "Language",
+  "selectLanguage": "Select Language",
+  "english": "English",
+  "romanian": "Romanian",
+  
+  "cameraSettings": "Camera Settings",
+  "cameraDevice": "Camera Device",
+  "selectCamera": "Select Camera",
+  "frameRate": "Frame Rate",
+  "fps": "FPS",
+  "scanDebounce": "Scan Debounce",
+  "milliseconds": "milliseconds",
+  "scannerBehavior": "Scanner Behavior",
+  "autoStartScanning": "Auto-start scanning",
+  "autoStartDesc": "Begin scanning automatically when opening scanner screen",
+  "cameraVisible": "Camera visible",
+  "cameraVisibleDesc": "Show camera preview while scanning",
+  "audioSettings": "Audio Settings",
+  "enableAudio": "Enable audio feedback",
+  "audioDesc": "Play sounds on successful/failed scans",
+  "soundVolume": "Sound Volume",
+  
+  "dataManagement": "Data Management",
+  "historyRetention": "History Retention",
+  "days": "days",
+  "exportSettings": "Export Settings",
+  "exportPath": "Export Path",
+  "browse": "Browse",
+  "logSettings": "Log Settings",
+  "logRetention": "Log Retention",
+  "verboseLogging": "Verbose logging",
+  "verboseLoggingDesc": "Include detailed debug information",
+  "clearData": "Clear Data",
+  "clearHistory": "Clear History",
+  "clearHistoryDesc": "Remove all local check-in history",
+  "clearLogs": "Clear Logs",
+  "clearLogsDesc": "Remove all application logs",
+  
+  "applicationInfo": "Application Information",
+  "version": "Version",
+  "buildNumber": "Build Number",
+  "launchBehavior": "Launch Behavior",
+  "startWithWindows": "Start with Windows",
+  "startWithWindowsDesc": "Launch application when Windows starts",
+  
+  "save": "Save",
+  "cancel": "Cancel",
+  "close": "Close",
+  "delete": "Delete",
+  "edit": "Edit",
+  "export": "Export",
+  "import": "Import",
+  "refresh": "Refresh",
+  "search": "Search",
+  "filter": "Filter",
+  "sort": "Sort",
+  "clear": "Clear",
+  "apply": "Apply",
+  "reset": "Reset",
+  "confirm": "Confirm",
+  "back": "Back",
+  "next": "Next",
+  "finish": "Finish",
+  "ok": "OK",
+  "yes": "Yes",
+  "no": "No",
+  
+  "saveSuccess": "Settings saved successfully",
+  "saveFailed": "Failed to save settings",
+  "error": "Error",
+  "warning": "Warning",
+  "info": "Information",
+  "success": "Success",
+  "loading": "Loading...",
+  "pleaseWait": "Please wait...",
+  "noData": "No data available",
+  "noResults": "No results found",
+  
+  "loginTitle": "Login",
+  "loginSubtitle": "Sign in to access MituGym Scanner",
+  "username": "Username",
+  "password": "Password",
+  "login": "Login",
+  "loggingIn": "Logging in...",
+  "loginFailed": "Login failed",
+  "invalidCredentials": "Invalid username or password",
+  
+  "scannerTitle": "QR Scanner",
+  "scannerSubtitle": "Scan member QR codes for check-in/check-out",
+  "scanningActive": "Scanning Active",
+  "scanningPaused": "Scanning Paused",
+  "startScanning": "Start Scanning",
+  "stopScanning": "Stop Scanning",
+  "scanSuccess": "Scan Successful",
+  "scanFailed": "Scan Failed",
+  "invalidQRCode": "Invalid QR Code",
+  "processingQRCode": "Processing QR Code...",
+  
+  "memberDetails": "Member Details",
+  "memberInfo": "Member Information",
+  "fullName": "Full Name",
+  "email": "Email",
+  "phone": "Phone",
+  "dateOfBirth": "Date of Birth",
+  "address": "Address",
+  "city": "City",
+  "county": "County",
+  "gender": "Gender",
+  "membershipInfo": "Membership Information",
+  "membershipStatus": "Membership Status",
+  "currentPlan": "Current Plan",
+  "startDate": "Start Date",
+  "expiryDate": "Expiry Date",
+  "daysRemaining": "Days Remaining",
+  "daysRemainingCount": "{count} days remaining",
+  "@daysRemainingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "offline": "Offline",
+  "online": "Online",
+  "offlineMode": "Offline Mode",
+  "offlineModeDesc": "Working offline - data will sync when connection is restored",
+  "syncPending": "Sync Pending",
+  "syncPendingCount": "{count} actions pending sync",
+  "@syncPendingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "today": "Today",
+  "yesterday": "Yesterday",
+  "thisWeek": "This Week",
+  "thisMonth": "This Month",
+  "lastMonth": "Last Month",
+  "customRange": "Custom Range",
+  "selectDateRange": "Select Date Range",
+  "from": "From",
+  "to": "To",
+  
+  "exportData": "Export Data",
+  "exportHistory": "Export History",
+  "exportMembers": "Export Members",
+  "exportFormat": "Export Format",
+  "csvFormat": "CSV",
+  "pdfFormat": "PDF",
+  "excelFormat": "Excel",
+  "exportSuccess": "Export successful",
+  "exportFailed": "Export failed",
+  "exportLocation": "Exported to: {path}",
+  "@exportLocation": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "setExportPath": "Set Export Path",
+  "selectFolderPath": "Select or enter the folder path where export files should be saved:",
+  "enterPath": "Enter path manually",
+  "selectFolder": "Select Folder"
+}

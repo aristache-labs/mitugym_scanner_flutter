@@ -6,6 +6,7 @@ import '../config/app_themes.dart';
 import '../config/app_colors.dart';
 import '../providers/history_provider.dart';
 import '../models/activity_log.dart';
+import '../l10n/app_localizations.dart';
 
 /// Modern dashboard-style sidebar widget
 class ModernSidebarWidget extends ConsumerStatefulWidget {
@@ -108,6 +109,8 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
 
   /// Build compact icon-based navigation menu like the image
   Widget _buildCompactNavigationMenu() {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -115,42 +118,42 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
         children: [
           _buildCompactNavItem(
             icon: LucideIcons.home,
-            label: 'Dashboard',
+            label: l10n.navDashboard,
             isActive: widget.selectedIndex == 0,
             onTap: () => widget.onNavigate(0),
           ),
           _buildMenuSeparator(),
           _buildCompactNavItem(
             icon: LucideIcons.qrCode,
-            label: 'QR Scanner',
+            label: l10n.navQRScanner,
             isActive: widget.selectedIndex == 1,
             onTap: () => widget.onNavigate(1),
           ),
           _buildMenuSeparator(),
           _buildCompactNavItem(
             icon: LucideIcons.activity,
-            label: 'Check-ins',
+            label: l10n.navCheckIns,
             isActive: widget.selectedIndex == 2,
             onTap: () => widget.onNavigate(2),
           ),
           _buildMenuSeparator(),
           _buildCompactNavItem(
             icon: LucideIcons.history,
-            label: 'History',
+            label: l10n.navHistory,
             isActive: widget.selectedIndex == 3,
             onTap: () => widget.onNavigate(3),
           ),
           _buildMenuSeparator(),
           _buildCompactNavItem(
             icon: LucideIcons.users,
-            label: 'Members',
+            label: l10n.navMembers,
             isActive: widget.selectedIndex == 4,
             onTap: () => widget.onNavigate(4),
           ),
           _buildMenuSeparator(),
           _buildCompactNavItem(
             icon: LucideIcons.settings,
-            label: 'Settings',
+            label: l10n.navSettings,
             isActive: widget.selectedIndex == 5,
             onTap: () => widget.onNavigate(5),
           ),
@@ -214,6 +217,8 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
 
   /// Build compact stats card
   Widget _buildCompactStatsCard(HistoryState historyState) {
+    final l10n = AppLocalizations.of(context)!;
+    
     // Filter for today's activities from the full history
     final now = DateTime.now();
     final todayStart = DateTime(now.year, now.month, now.day);
@@ -285,7 +290,7 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
               ),
               const SizedBox(width: 12),
               Text(
-                'Today\'s Stats',
+                l10n.todayStats,
                 style: GoogleFonts.inter(
                   color: AppColors.textPrimary,
                   fontSize: 14,
@@ -298,28 +303,28 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
           
           _buildCompactStatRow(
             icon: LucideIcons.userCheck,
-            label: 'Check-ins',
+            label: l10n.checkIns,
             value: '$todayCheckIns',
             color: AppColors.success,
           ),
           _buildStatSeparator(),
           _buildCompactStatRow(
             icon: LucideIcons.userMinus,
-            label: 'Check-outs',
+            label: l10n.checkOuts,
             value: '$todayCheckOuts',
             color: AppColors.warning,
           ),
           _buildStatSeparator(),
           _buildCompactStatRow(
             icon: LucideIcons.userX,
-            label: 'Denied',
+            label: l10n.denied,
             value: '$todayDenied',
             color: AppColors.error,
           ),
           _buildStatSeparator(),
           _buildCompactStatRow(
             icon: LucideIcons.scanLine,
-            label: 'Total Scans',
+            label: l10n.totalScans,
             value: '$totalScans',
             color: AppColors.primary,
           ),
@@ -363,6 +368,7 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
 
   /// Build compact activity card
   Widget _buildCompactActivityCard(HistoryState historyState) {
+    final l10n = AppLocalizations.of(context)!;
     final recentActivities = historyState.items.take(4).toList();
 
     if (recentActivities.isEmpty) {
@@ -398,7 +404,7 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
               ),
               const SizedBox(width: 8),
               Text(
-                'Recent',
+                l10n.recent,
                 style: GoogleFonts.inter(
                   color: AppColors.textPrimary,
                   fontSize: 13,

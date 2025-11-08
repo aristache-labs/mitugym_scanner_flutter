@@ -1,11 +1,14 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'l10n/app_localizations.dart';
 import 'config/theme.dart';
 import 'screens/splash_screen.dart';
+import 'providers/language_provider.dart';
 
 // Global navigator key for accessing navigator context from anywhere
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -53,16 +56,39 @@ void main() async {
   );
 }
 
-class MituGymScannerApp extends StatelessWidget {
+class MituGymScannerApp extends ConsumerWidget {
   const MituGymScannerApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final locale = ref.watch(languageProvider);
+    
     return MaterialApp(
-      navigatorKey: navigatorKey, // Add global navigator key
+      navigatorKey: navigatorKey,
       title: 'MituGym Scanner',
       theme: appTheme,
       debugShowCheckedModeBanner: false,
+      
+      // Localization configuration
+      locale: locale,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: LanguageNotifier.supportedLocales,
+      localeResolutionCallback: (locale, supportedLocales) {
+        // Check if the current device locale is supported
+        for (var supportedLocale in supportedLocales) {
+          if (supportedLocale.languageCode == locale?.languageCode) {
+            return supportedLocale;
+          }
+        }
+        // If the device locale is not supported, return English as fallback
+        return LanguageNotifier.englishLocale;
+      },
+      
       home: const SplashScreen(),
     );
   }
