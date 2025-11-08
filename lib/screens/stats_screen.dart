@@ -1018,7 +1018,7 @@ class _ActivityTableHeaderDelegate extends SliverPersistentHeaderDelegate {
                     'MEMBER',
                     'member',
                     padding: const EdgeInsets.only(
-                      left: 4,
+                      left: 56,
                       right: 4,
                       top: 6,
                       bottom: 6,
