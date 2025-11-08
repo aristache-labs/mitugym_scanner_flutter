@@ -1333,6 +1333,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'API URL not configured'**
   String get apiUrlNotConfigured;
+
+  /// No description provided for @cameraPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera Preview'**
+  String get cameraPreview;
+
+  /// No description provided for @readyToScan.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to scan'**
+  String get readyToScan;
+
+  /// No description provided for @accessGranted.
+  ///
+  /// In en, this message translates to:
+  /// **'Access Granted'**
+  String get accessGranted;
+
+  /// No description provided for @waitingForScan.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for scan...'**
+  String get waitingForScan;
+
+  /// No description provided for @scanQRPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan a QR code to view member details'**
+  String get scanQRPrompt;
+
+  /// No description provided for @scanningStopped.
+  ///
+  /// In en, this message translates to:
+  /// **'Scanning stopped'**
+  String get scanningStopped;
+
+  /// No description provided for @readyToScanEllipsis.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to scan...'**
+  String get readyToScanEllipsis;
+
+  /// No description provided for @processing.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing...'**
+  String get processing;
+
+  /// No description provided for @initializingCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Initializing camera...'**
+  String get initializingCamera;
+
+  /// No description provided for @cameraStarting.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera starting...'**
+  String get cameraStarting;
+
+  /// No description provided for @pressStartToBegin.
+  ///
+  /// In en, this message translates to:
+  /// **'Press START to begin'**
+  String get pressStartToBegin;
 }
 
 class _AppLocalizationsDelegate

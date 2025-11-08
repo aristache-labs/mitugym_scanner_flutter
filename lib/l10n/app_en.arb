@@ -269,5 +269,17 @@
   
   "welcomeBack": "WELCOME BACK",
   "logout": "Logout",
-  "apiUrlNotConfigured": "API URL not configured"
+  "apiUrlNotConfigured": "API URL not configured",
+  
+  "cameraPreview": "Camera Preview",
+  "readyToScan": "Ready to scan",
+  "accessGranted": "Access Granted",
+  "waitingForScan": "Waiting for scan...",
+  "scanQRPrompt": "Scan a QR code to view member details",
+  "scanningStopped": "Scanning stopped",
+  "readyToScanEllipsis": "Ready to scan...",
+  "processing": "Processing...",
+  "initializingCamera": "Initializing camera...",
+  "cameraStarting": "Camera starting...",
+  "pressStartToBegin": "Press START to begin"
 }

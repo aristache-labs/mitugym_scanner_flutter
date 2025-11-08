@@ -9,6 +9,7 @@ import '../providers/windows_scanner_provider.dart';
 import '../widgets/collapsible_camera_widget.dart';
 import '../widgets/member_info_card.dart';
 import '../widgets/countdown_timer.dart';
+import '../l10n/app_localizations.dart';
 
 /// Scanner screen - QR Code scanning interface with modern, compact design
 class ScannerScreen extends ConsumerWidget {
@@ -31,7 +32,7 @@ class ScannerScreen extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 // Scanner card with compact design
-                _buildScannerCard(scannerState, scanState, ref),
+                _buildScannerCard(context, scannerState, scanState, ref),
                 const SizedBox(height: 12),
                 
                 // Start/Stop scanner button
@@ -53,9 +54,9 @@ class ScannerScreen extends ConsumerWidget {
               children: [
                 // Member info card or placeholder
                 if (scanState.lastResult != null)
-                  _buildMemberInfoCard(scanState)
+                  _buildMemberInfoCard(context, scanState)
                 else
-                  _buildPlaceholderCard(),
+                  _buildPlaceholderCard(context),
                 
                 const SizedBox(height: 12),
                 
@@ -72,10 +73,12 @@ class ScannerScreen extends ConsumerWidget {
 
   /// Build scanner card with modern, compact design matching app style
   Widget _buildScannerCard(
+    BuildContext context,
     WindowsScannerControllerState scannerState,
     ScanState scanState,
     WidgetRef ref,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -147,7 +150,7 @@ class ScannerScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Camera Preview',
+                        l10n.cameraPreview,
                         style: GoogleFonts.inter(
                           color: AppColors.textPrimary,
                           fontSize: 14,
@@ -189,7 +192,7 @@ class ScannerScreen extends ConsumerWidget {
                           const SizedBox(width: 6),
                           Expanded(
                             child: Text(
-                              scanState.statusMessage ?? 'Ready to scan',
+                              _getLocalizedStatus(context, scanState.statusMessage),
                               style: GoogleFonts.inter(
                                 color: AppColors.textSecondary,
                                 fontSize: 11,
@@ -229,7 +232,7 @@ class ScannerScreen extends ConsumerWidget {
                     child: CollapsibleCameraWidget(
                       scannerService: scannerState.service,
                       isScanning: scannerState.isActive,
-                      statusMessage: scanState.statusMessage ?? 'Ready',
+                      statusMessage: _getLocalizedStatus(context, scanState.statusMessage),
                     ),
                   ),
                 ),
@@ -242,7 +245,8 @@ class ScannerScreen extends ConsumerWidget {
   }
 
   /// Build member info card with modern, compact design
-  Widget _buildMemberInfoCard(ScanState scanState) {
+  Widget _buildMemberInfoCard(BuildContext context, ScanState scanState) {
+    final l10n = AppLocalizations.of(context)!;
     final isSuccess = scanState.lastResult?.success ?? false;
     final statusColor = isSuccess ? AppColors.success : AppColors.error;
     
@@ -315,7 +319,7 @@ class ScannerScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Member Details',
+                        l10n.memberDetails,
                         style: GoogleFonts.inter(
                           color: AppColors.textPrimary,
                           fontSize: 14,
@@ -325,7 +329,7 @@ class ScannerScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        isSuccess ? 'Access Granted' : 'Access Denied',
+                        isSuccess ? l10n.accessGranted : l10n.accessDenied,
                         style: GoogleFonts.inter(
                           color: statusColor,
                           fontSize: 11,
@@ -355,7 +359,8 @@ class ScannerScreen extends ConsumerWidget {
   }
 
   /// Build placeholder card when no member scanned - compact design
-  Widget _buildPlaceholderCard() {
+  Widget _buildPlaceholderCard(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 24),
       decoration: BoxDecoration(
@@ -409,7 +414,7 @@ class ScannerScreen extends ConsumerWidget {
               ),
           const SizedBox(height: 16),
           Text(
-            'Waiting for scan...',
+            l10n.waitingForScan,
             style: GoogleFonts.inter(
               color: AppColors.textSecondary,
               fontSize: 14,
@@ -419,7 +424,7 @@ class ScannerScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            'Scan a QR code to view member details',
+            l10n.scanQRPrompt,
             style: GoogleFonts.inter(
               color: AppColors.textMuted,
               fontSize: 12,
@@ -549,6 +554,26 @@ class ScannerScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  /// Translate status messages from provider to localized text
+  String _getLocalizedStatus(BuildContext context, String? status) {
+    if (status == null) return AppLocalizations.of(context)!.readyToScan;
+    
+    final l10n = AppLocalizations.of(context)!;
+    
+    // Map English status messages to localized versions
+    switch (status) {
+      case 'Ready to scan...':
+        return l10n.readyToScanEllipsis;
+      case 'Scanning stopped':
+        return l10n.scanningStopped;
+      case 'Processing...':
+        return l10n.processing;
+      default:
+        // Return as-is for dynamic messages (errors, member names, etc.)
+        return status;
+    }
   }
 }
 

@@ -227,5 +227,17 @@
   
   "welcomeBack": "BINE AI REVENIT",
   "logout": "Deconectare",
-  "apiUrlNotConfigured": "URL-ul API nu este configurat"
+  "apiUrlNotConfigured": "URL-ul API nu este configurat",
+  
+  "cameraPreview": "Previzualizare cameră",
+  "readyToScan": "Pregătit pentru scanare",
+  "accessGranted": "Acces acordat",
+  "waitingForScan": "Se așteaptă scanarea...",
+  "scanQRPrompt": "Scanați un cod QR pentru a vedea detaliile membrului",
+  "scanningStopped": "Scanare oprită",
+  "readyToScanEllipsis": "Pregătit pentru scanare...",
+  "processing": "Se procesează...",
+  "initializingCamera": "Se inițializează camera...",
+  "cameraStarting": "Camera pornește...",
+  "pressStartToBegin": "Apăsați START pentru a începe"
 }

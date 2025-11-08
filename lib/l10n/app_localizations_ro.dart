@@ -646,4 +646,38 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get apiUrlNotConfigured => 'URL-ul API nu este configurat';
+
+  @override
+  String get cameraPreview => 'Previzualizare cameră';
+
+  @override
+  String get readyToScan => 'Pregătit pentru scanare';
+
+  @override
+  String get accessGranted => 'Acces acordat';
+
+  @override
+  String get waitingForScan => 'Se așteaptă scanarea...';
+
+  @override
+  String get scanQRPrompt =>
+      'Scanați un cod QR pentru a vedea detaliile membrului';
+
+  @override
+  String get scanningStopped => 'Scanare oprită';
+
+  @override
+  String get readyToScanEllipsis => 'Pregătit pentru scanare...';
+
+  @override
+  String get processing => 'Se procesează...';
+
+  @override
+  String get initializingCamera => 'Se inițializează camera...';
+
+  @override
+  String get cameraStarting => 'Camera pornește...';
+
+  @override
+  String get pressStartToBegin => 'Apăsați START pentru a începe';
 }

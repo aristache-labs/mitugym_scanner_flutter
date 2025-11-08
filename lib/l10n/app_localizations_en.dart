@@ -644,4 +644,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get apiUrlNotConfigured => 'API URL not configured';
+
+  @override
+  String get cameraPreview => 'Camera Preview';
+
+  @override
+  String get readyToScan => 'Ready to scan';
+
+  @override
+  String get accessGranted => 'Access Granted';
+
+  @override
+  String get waitingForScan => 'Waiting for scan...';
+
+  @override
+  String get scanQRPrompt => 'Scan a QR code to view member details';
+
+  @override
+  String get scanningStopped => 'Scanning stopped';
+
+  @override
+  String get readyToScanEllipsis => 'Ready to scan...';
+
+  @override
+  String get processing => 'Processing...';
+
+  @override
+  String get initializingCamera => 'Initializing camera...';
+
+  @override
+  String get cameraStarting => 'Camera starting...';
+
+  @override
+  String get pressStartToBegin => 'Press START to begin';
 }

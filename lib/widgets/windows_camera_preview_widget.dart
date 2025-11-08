@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import '../services/windows_qr_scanner_service.dart';
+import '../l10n/app_localizations.dart';
 
 /// Windows-compatible camera preview widget with QR scanner
 class WindowsCameraPreviewWidget extends StatelessWidget {
@@ -17,16 +18,18 @@ class WindowsCameraPreviewWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     if (scannerService == null || scannerService!.controller == null) {
-      return _buildPlaceholder('Initializing camera...');
+      return _buildPlaceholder(context, l10n.initializingCamera);
     }
 
     if (!scannerService!.controller!.value.isInitialized) {
-      return _buildPlaceholder('Camera starting...');
+      return _buildPlaceholder(context, l10n.cameraStarting);
     }
 
     if (!isScanning) {
-      return _buildPlaceholder('Scanner stopped\nPress START to begin');
+      return _buildPlaceholder(context, '${l10n.scanningStopped}\n${l10n.pressStartToBegin}');
     }
 
     return Stack(
@@ -84,7 +87,7 @@ class WindowsCameraPreviewWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildPlaceholder(String message) {
+  Widget _buildPlaceholder(BuildContext context, String message) {
     return Container(
       color: Colors.black,
       child: Center(
