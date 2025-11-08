@@ -5,6 +5,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../config/app_colors.dart';
 import '../providers/history_provider.dart';
 import '../widgets/unified_activity_table.dart';
+import '../l10n/app_localizations.dart';
 
 /// Dashboard screen - Overview and quick stats
 class DashboardScreen extends ConsumerStatefulWidget {
@@ -93,6 +94,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   }
 
   Widget _buildStatsOverview(HistoryState historyState) {
+    final l10n = AppLocalizations.of(context)!;
+    
     // Filter for today's activities from the full history
     final now = DateTime.now();
     final todayStart = DateTime(now.year, now.month, now.day);
@@ -124,11 +127,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             onEnter: (_) => setState(() => _hoveredCardIndex = 0),
             onExit: (_) => setState(() => _hoveredCardIndex = -1),
             child: _buildPremiumStatCard(
-            'Total Scans',
+            l10n.totalScans,
             '$totalScans',
             LucideIcons.scanLine,
             AppColors.primary,
-            'All scans today',
+            l10n.allScansToday,
             isHovered: _hoveredCardIndex == 0,
           ),
           ),
@@ -139,11 +142,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             onEnter: (_) => setState(() => _hoveredCardIndex = 1),
             onExit: (_) => setState(() => _hoveredCardIndex = -1),
             child: _buildPremiumStatCard(
-            'Check-ins',
+            l10n.checkIns,
             '$checkIns',
             LucideIcons.userCheck,
             AppColors.success,
-            'Successful entries',
+            l10n.successfulEntries,
             isHovered: _hoveredCardIndex == 1,
           ),
           ),
@@ -154,11 +157,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             onEnter: (_) => setState(() => _hoveredCardIndex = 2),
             onExit: (_) => setState(() => _hoveredCardIndex = -1),
             child: _buildPremiumStatCard(
-            'Check-outs',
+            l10n.checkOuts,
             '$checkOuts',
             LucideIcons.userMinus,
             AppColors.warning,
-            'Successful exits',
+            l10n.successfulExits,
             isHovered: _hoveredCardIndex == 2,
           ),
           ),
@@ -169,11 +172,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             onEnter: (_) => setState(() => _hoveredCardIndex = 3),
             onExit: (_) => setState(() => _hoveredCardIndex = -1),
             child: _buildPremiumStatCard(
-            'Denied',
+            l10n.denied,
             '$denied',
             LucideIcons.userX,
             AppColors.error,
-            'Failed scans',
+            l10n.failedScans,
             isHovered: _hoveredCardIndex == 3,
           ),
           ),
@@ -384,6 +387,8 @@ class _ActivityTableHeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Container(
       height: 122.0,
       padding: const EdgeInsets.only(top: 16),
@@ -407,7 +412,7 @@ class _ActivityTableHeaderDelegate extends SliverPersistentHeaderDelegate {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
             child: Text(
-              'Today\'s Activity ($activityCount entries)',
+              l10n.todayActivityWithCount(activityCount),
               style: GoogleFonts.inter(
                 color: AppColors.textPrimary,
                 fontSize: 18,
@@ -451,7 +456,7 @@ class _ActivityTableHeaderDelegate extends SliverPersistentHeaderDelegate {
                 SizedBox(
                   width: 200,
                   child: _buildSortableHeader(
-                    'MEMBER',
+                    l10n.member.toUpperCase(),
                     'member',
                     padding: const EdgeInsets.only(
                       left: 56,
@@ -468,7 +473,7 @@ class _ActivityTableHeaderDelegate extends SliverPersistentHeaderDelegate {
                 Expanded(
                   flex: 3,
                   child: _buildSortableHeader(
-                    'CHECKED IN',
+                    l10n.checkedIn.toUpperCase(),
                     'checkIn',
                     alignment: Alignment.center,
                     padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
@@ -481,7 +486,7 @@ class _ActivityTableHeaderDelegate extends SliverPersistentHeaderDelegate {
                 Expanded(
                   flex: 2,
                   child: _buildSortableHeader(
-                    'CHECKED OUT',
+                    l10n.checkedOut.toUpperCase(),
                     'checkOut',
                     alignment: Alignment.center,
                     padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
@@ -494,7 +499,7 @@ class _ActivityTableHeaderDelegate extends SliverPersistentHeaderDelegate {
                 SizedBox(
                   width: 120,
                   child: _buildSortableHeader(
-                    'DURATION',
+                    l10n.duration.toUpperCase(),
                     'duration',
                     alignment: Alignment.center,
                     padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),

@@ -635,4 +635,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selectFolder => 'Select Folder';
+
+  @override
+  String get welcomeBack => 'WELCOME BACK';
+
+  @override
+  String get logout => 'Logout';
+
+  @override
+  String get apiUrlNotConfigured => 'API URL not configured';
 }

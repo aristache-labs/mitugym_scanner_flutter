@@ -5,6 +5,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../config/app_colors.dart';
 import '../models/activity_log.dart';
+import '../l10n/app_localizations.dart';
 import 'member_avatar_modal.dart';
 import 'member_details_modal.dart';
 
@@ -261,7 +262,7 @@ class UnifiedActivityTable extends StatelessWidget {
           // Checked In column
           Expanded(
             flex: 3,
-            child: _buildCheckInCell(activity),
+            child: _buildCheckInCell(context, activity),
           ),
           
           const SizedBox(width: 10),
@@ -269,7 +270,7 @@ class UnifiedActivityTable extends StatelessWidget {
           // Checked Out column
           Expanded(
             flex: 2,
-            child: _buildCheckOutCell(activity),
+            child: _buildCheckOutCell(context, activity),
           ),
           
           const SizedBox(width: 10),
@@ -277,7 +278,7 @@ class UnifiedActivityTable extends StatelessWidget {
           // Duration column
           SizedBox(
             width: 120,
-            child: _buildDurationCell(activity),
+            child: _buildDurationCell(context, activity),
           ),
         ],
       ),
@@ -294,7 +295,7 @@ class UnifiedActivityTable extends StatelessWidget {
     return card;
   }
 
-  Widget _buildCheckInCell(ActivityLog activity) {
+  Widget _buildCheckInCell(BuildContext context, ActivityLog activity) {
     if (activity.checkInTime != null) {
       return Align(
         alignment: Alignment.center,
@@ -365,7 +366,7 @@ class UnifiedActivityTable extends StatelessWidget {
               ),
               const SizedBox(width: 5),
               Text(
-                'Plan Expired',
+                AppLocalizations.of(context)!.planExpired,
                 style: GoogleFonts.inter(
                   color: AppColors.error,
                   fontSize: 12,
@@ -387,7 +388,7 @@ class UnifiedActivityTable extends StatelessWidget {
     );
   }
 
-  Widget _buildCheckOutCell(ActivityLog activity) {
+  Widget _buildCheckOutCell(BuildContext context, ActivityLog activity) {
     if (activity.checkOutTime != null) {
       return Align(
         alignment: Alignment.center,
@@ -458,7 +459,7 @@ class UnifiedActivityTable extends StatelessWidget {
               ),
               const SizedBox(width: 5),
               Text(
-                'Access Denied',
+                AppLocalizations.of(context)!.accessDenied,
                 style: GoogleFonts.inter(
                   color: AppColors.error,
                   fontSize: 12,
@@ -494,7 +495,7 @@ class UnifiedActivityTable extends StatelessWidget {
               ),
               const SizedBox(width: 5),
               Text(
-                'Still in GYM',
+                AppLocalizations.of(context)!.stillInGym,
                 style: GoogleFonts.inter(
                   color: AppColors.success,
                   fontSize: 12,
@@ -520,7 +521,7 @@ class UnifiedActivityTable extends StatelessWidget {
     );
   }
 
-  Widget _buildDurationCell(ActivityLog activity) {
+  Widget _buildDurationCell(BuildContext context, ActivityLog activity) {
     if (activity.checkInTime != null && activity.checkOutTime != null) {
       return Align(
         alignment: Alignment.center,
@@ -570,7 +571,7 @@ class UnifiedActivityTable extends StatelessWidget {
               const SizedBox(width: 4),
               Flexible(
                 child: Text(
-                  'Active Session',
+                  AppLocalizations.of(context)!.activeSession,
                   style: GoogleFonts.inter(
                     color: AppColors.warning,
                     fontSize: 11,

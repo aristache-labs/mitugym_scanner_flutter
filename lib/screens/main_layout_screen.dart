@@ -13,11 +13,13 @@ import '../providers/scan_provider.dart';
 import '../providers/windows_scanner_provider.dart';
 import '../providers/offline_provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/language_provider.dart';
 import '../widgets/modern_sidebar_widget.dart';
 import '../widgets/offline_banner_widget.dart';
 import '../services/export_service.dart';
 import '../services/history_sync_service.dart';
 import '../services/tray_service.dart';
+import '../l10n/app_localizations.dart';
 import 'dashboard_screen.dart';
 import 'scanner_screen.dart';
 import 'history_screen.dart';
@@ -101,16 +103,6 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
     SettingsScreen(),       // 5 - Settings
   ];
 
-  // Page titles
-  final List<String> _pageTitles = const [
-    'Dashboard',
-    'QR Code Scanner',
-    'Check-ins',
-    'History',
-    'Members',
-    'Settings',
-  ];
-  
   // Page icons
   final List<IconData> _pageIcons = const [
     LucideIcons.layoutDashboard,
@@ -121,15 +113,31 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
     LucideIcons.settings,
   ];
   
-  // Page subtitles
-  final List<String> _pageSubtitles = const [
-    'Overview of total scans, check-ins, check-outs and gym activity',
-    'Scan QR codes for member check-in and check-out',
-    'View and analyze member activity statistics',
-    'Review all check-in and check-out history',
-    'Search and manage member information',
-    'Configure application settings and preferences',
-  ];
+  // Get localized page titles
+  List<String> _getPageTitles(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return [
+      l10n.dashboardTitle,
+      l10n.scannerTitle,
+      l10n.statsTitle,
+      l10n.historyTitle,
+      l10n.searchTitle,
+      l10n.settingsTitle,
+    ];
+  }
+  
+  // Get localized page subtitles
+  List<String> _getPageSubtitles(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return [
+      l10n.dashboardSubtitle,
+      l10n.scannerSubtitle,
+      l10n.statsSubtitle,
+      l10n.historySubtitle,
+      l10n.searchSubtitle,
+      l10n.settingsSubtitle,
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -196,7 +204,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      _pageTitles[_selectedIndex],
+                                      _getPageTitles(context)[_selectedIndex],
                                       style: GoogleFonts.inter(
                                         color: AppColors.textPrimary,
                                         fontSize: 24,
@@ -206,7 +214,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      _pageSubtitles[_selectedIndex],
+                                      _getPageSubtitles(context)[_selectedIndex],
                                       style: GoogleFonts.inter(
                                         color: AppColors.textSecondary,
                                         fontSize: 13,
@@ -239,14 +247,22 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
 
   /// Build date and time display
   Widget _buildDateTimeDisplay() {
-    final dateFormat = DateFormat('EEEE, MMMM d, yyyy');
-    final timeFormat = DateFormat('HH:mm');
+    final locale = ref.watch(languageProvider);
+    final dateFormat = DateFormat('EEEE, d MMMM, yyyy', locale.languageCode);
+    final timeFormat = DateFormat('HH:mm', locale.languageCode);
+    
+    // Format the date and capitalize first letter of each word
+    String formattedDate = dateFormat.format(_currentTime);
+    formattedDate = formattedDate.split(' ').map((word) {
+      if (word.isEmpty) return word;
+      return word[0].toUpperCase() + word.substring(1);
+    }).join(' ');
     
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          dateFormat.format(_currentTime),
+          formattedDate,
           style: GoogleFonts.inter(
             color: AppColors.textSecondary,
             fontSize: 13,
@@ -531,7 +547,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'WELCOME BACK',
+                            AppLocalizations.of(context)!.welcomeBack,
                             style: GoogleFonts.inter(
                               color: AppColors.textMuted,
                               fontSize: 9,
@@ -591,7 +607,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
               ),
               const SizedBox(width: 12),
               Text(
-                'Settings',
+                AppLocalizations.of(context)!.navSettings,
                 style: GoogleFonts.inter(
                   color: AppColors.textPrimary,
                   fontSize: 14,
@@ -631,7 +647,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
               ),
               const SizedBox(width: 12),
               Text(
-                'Logout',
+                AppLocalizations.of(context)!.logout,
                 style: GoogleFonts.inter(
                   color: AppColors.error,
                   fontSize: 14,
@@ -654,8 +670,8 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
     if (apiUrl.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('API URL not configured'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.apiUrlNotConfigured),
             backgroundColor: AppColors.error,
           ),
         );

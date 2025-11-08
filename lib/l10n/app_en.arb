@@ -265,5 +265,9 @@
   "setExportPath": "Set Export Path",
   "selectFolderPath": "Select or enter the folder path where export files should be saved:",
   "enterPath": "Enter path manually",
-  "selectFolder": "Select Folder"
+  "selectFolder": "Select Folder",
+  
+  "welcomeBack": "WELCOME BACK",
+  "logout": "Logout",
+  "apiUrlNotConfigured": "API URL not configured"
 }

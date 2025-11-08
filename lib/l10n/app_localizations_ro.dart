@@ -637,4 +637,13 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get selectFolder => 'Selectează folder';
+
+  @override
+  String get welcomeBack => 'BINE AI REVENIT';
+
+  @override
+  String get logout => 'Deconectare';
+
+  @override
+  String get apiUrlNotConfigured => 'URL-ul API nu este configurat';
 }

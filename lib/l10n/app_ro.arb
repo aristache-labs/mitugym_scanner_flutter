@@ -223,5 +223,9 @@
   "setExportPath": "Setează calea de export",
   "selectFolderPath": "Selectează sau introdu calea către folderul unde vor fi salvate fișierele exportate:",
   "enterPath": "Introdu calea manual",
-  "selectFolder": "Selectează folder"
+  "selectFolder": "Selectează folder",
+  
+  "welcomeBack": "BINE AI REVENIT",
+  "logout": "Deconectare",
+  "apiUrlNotConfigured": "URL-ul API nu este configurat"
 }

@@ -1315,6 +1315,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select Folder'**
   String get selectFolder;
+
+  /// No description provided for @welcomeBack.
+  ///
+  /// In en, this message translates to:
+  /// **'WELCOME BACK'**
+  String get welcomeBack;
+
+  /// No description provided for @logout.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logout;
+
+  /// No description provided for @apiUrlNotConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'API URL not configured'**
+  String get apiUrlNotConfigured;
 }
 
 class _AppLocalizationsDelegate
