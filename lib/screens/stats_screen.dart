@@ -186,40 +186,174 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
     // Calculate peak occupancy
     final peakOccupancy = _calculatePeakOccupancy(todayActivities.toList());
     
+    // Apply sorting to activities
+    var recentActivities = todayActivities.toList();
+    final sortedActivities = _applySorting(recentActivities);
+    
     return RefreshIndicator(
       onRefresh: _refreshData,
       color: AppColors.primary,
-      child: SingleChildScrollView(
+      child: CustomScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Today's Traffic Chart
-            _buildTodaysTrafficChart(todayActivities.toList(), peakOccupancy),
-            const SizedBox(height: 20),
-            
-            // Charts and analytics section
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        slivers: [
+          // Charts and analytics section
+          SliverToBoxAdapter(
+            child: Column(
               children: [
-                // Success rate chart
-                Expanded(
-                  child: _buildSuccessRateCard(successRate, checkIns, checkOuts, denied),
-                ),
-                const SizedBox(width: 16),
+                // Today's Traffic Chart
+                _buildTodaysTrafficChart(todayActivities.toList(), peakOccupancy),
+                const SizedBox(height: 20),
                 
-                // Peak hours
-                Expanded(
-                  child: _buildPeakHoursCard(todayActivities.toList()),
+                // Charts and analytics section
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Success rate chart
+                    Expanded(
+                      child: _buildSuccessRateCard(successRate, checkIns, checkOuts, denied),
+                    ),
+                    const SizedBox(width: 16),
+                    
+                    // Peak hours
+                    Expanded(
+                      child: _buildPeakHoursCard(todayActivities.toList()),
+                    ),
+                  ],
                 ),
+                const SizedBox(height: 20),
               ],
             ),
-            const SizedBox(height: 20),
-            
-            // Recent check-ins list
-            _buildRecentCheckIns(todayActivities.toList(), context),
-          ],
-        ),
+          ),
+          
+          // Sticky header for Recent Activity
+          SliverPersistentHeader(
+            pinned: true,
+            delegate: _ActivitySectionHeaderDelegate(
+              minHeight: 150,
+              maxHeight: 150,
+              child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppColors.card,
+                        AppColors.surface,
+                      ],
+                    ),
+                    border: Border.all(
+                      color: AppColors.border.withValues(alpha: 0.3),
+                      width: 1,
+                    ),
+                  ),
+                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 4),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Recent Activity (${sortedActivities.length} entries)',
+                        style: GoogleFonts.inter(
+                          color: AppColors.textPrimary,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      _buildActivityTableHeader(),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          
+          // Activity items list
+          if (sortedActivities.isEmpty)
+            SliverToBoxAdapter(
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      AppColors.card.withValues(alpha: 0.9),
+                      AppColors.surface.withValues(alpha: 0.7),
+                    ],
+                  ),
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(16),
+                    bottomRight: Radius.circular(16),
+                  ),
+                  border: Border.all(
+                    color: AppColors.border.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    'No recent activity',
+                    style: GoogleFonts.inter(
+                      color: AppColors.textMuted,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ),
+            )
+          else
+            SliverPadding(
+              padding: const EdgeInsets.only(bottom: 24),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    return Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            AppColors.card.withValues(alpha: 0.9),
+                            AppColors.surface.withValues(alpha: 0.7),
+                          ],
+                        ),
+                        border: Border(
+                          left: BorderSide(
+                            color: AppColors.border.withValues(alpha: 0.3),
+                            width: 1,
+                          ),
+                          right: BorderSide(
+                            color: AppColors.border.withValues(alpha: 0.3),
+                            width: 1,
+                          ),
+                          bottom: index == sortedActivities.length - 1
+                              ? BorderSide(
+                                  color: AppColors.border.withValues(alpha: 0.3),
+                                  width: 1,
+                                )
+                              : BorderSide.none,
+                        ),
+                        borderRadius: index == sortedActivities.length - 1
+                            ? const BorderRadius.only(
+                                bottomLeft: Radius.circular(16),
+                                bottomRight: Radius.circular(16),
+                              )
+                            : null,
+                      ),
+                      child: _buildActivityItem(sortedActivities[index], context),
+                    );
+                  },
+                  childCount: sortedActivities.length,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -853,64 +987,6 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
     }).length;
   }
 
-  /// Build recent check-ins list
-  Widget _buildRecentCheckIns(List activities, BuildContext context) {
-    var recent = activities.toList();
-    
-    // Apply sorting
-    recent = _applySorting(recent);
-    
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.card.withValues(alpha: 0.9),
-            AppColors.surface.withValues(alpha: 0.7),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.3),
-          width: 1,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Recent Activity',
-            style: GoogleFonts.inter(
-              color: AppColors.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 16),
-          
-          if (recent.isEmpty)
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(32.0),
-                child: Text(
-                  'No recent activity',
-                  style: GoogleFonts.inter(
-                    color: AppColors.textMuted,
-                    fontSize: 14,
-                  ),
-                ),
-              ),
-            )
-          else ...[
-            _buildActivityTableHeader(),
-            ...recent.map((activity) => _buildActivityItem(activity, context)),
-          ],
-        ],
-      ),
-    );
-  }
 
   /// Build activity table header (matching dashboard/history) with sorting
   Widget _buildActivityTableHeader() {
@@ -1435,5 +1511,35 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
       ],
       ),
     );
+  }
+}
+
+/// Custom delegate for the sticky activity section header
+class _ActivitySectionHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final double minHeight;
+  final double maxHeight;
+  final Widget child;
+
+  _ActivitySectionHeaderDelegate({
+    required this.minHeight,
+    required this.maxHeight,
+    required this.child,
+  });
+
+  @override
+  double get minExtent => minHeight;
+
+  @override
+  double get maxExtent => maxHeight;
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return SizedBox.expand(child: child);
+  }
+
+  @override
+  bool shouldRebuild(_ActivitySectionHeaderDelegate oldDelegate) {
+    return maxHeight != oldDelegate.maxHeight ||
+        minHeight != oldDelegate.minHeight;
   }
 }
