@@ -46,6 +46,7 @@ dependencies:
   
   # Window Management
   window_manager: ^0.5.1
+  tray_manager: ^0.5.2
   
   # Audio
   audioplayers: ^6.1.0

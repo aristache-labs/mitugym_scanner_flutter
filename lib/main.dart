@@ -22,6 +22,8 @@ void main() async {
   await windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.show();
     await windowManager.focus();
+    // Prevent default close behavior to allow tray service to handle it
+    await windowManager.setPreventClose(true);
   });
 
   runApp(

@@ -17,6 +17,7 @@ import '../widgets/modern_sidebar_widget.dart';
 import '../widgets/offline_banner_widget.dart';
 import '../services/export_service.dart';
 import '../services/history_sync_service.dart';
+import '../services/tray_service.dart';
 import 'dashboard_screen.dart';
 import 'scanner_screen.dart';
 import 'history_screen.dart';
@@ -53,6 +54,9 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
         ref.read(windowsScannerControllerProvider.notifier).startScanner();
       }
       
+      // Initialize system tray
+      _initializeSystemTray();
+      
       // Start periodic sync service (history already loaded in splash screen)
       _initializeHistorySyncService();
     });
@@ -73,6 +77,13 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
   
   /// Initialize periodic history sync service
   /// Note: Initial history load is done in splash screen for faster startup
+  /// Initialize system tray
+  void _initializeSystemTray() {
+    final trayService = TrayService();
+    trayService.initialize(context);
+    debugPrint('✅ System tray initialized');
+  }
+
   void _initializeHistorySyncService() {
     // Start periodic sync service for incremental updates every 30 minutes
     final syncService = ref.read(historySyncServiceProvider);
