@@ -705,11 +705,30 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     );
   }
 
+  String _formatDateHeader(DateTime date) {
+    final locale = Localizations.localeOf(context);
+    
+    // Custom Romanian date format: "Sâmbătă, 8 Noiembrie, 2025"
+    if (locale.languageCode == 'ro') {
+      const romanianDays = ['Luni', 'Marți', 'Miercuri', 'Joi', 'Vineri', 'Sâmbătă', 'Duminică'];
+      const romanianMonths = ['Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie',
+                              'Iulie', 'August', 'Septembrie', 'Octombrie', 'Noiembrie', 'Decembrie'];
+      
+      final dayName = romanianDays[date.weekday - 1];
+      final monthName = romanianMonths[date.month - 1];
+      
+      return '$dayName, ${date.day} $monthName, ${date.year}';
+    }
+    
+    // English format: "Saturday, November 8, 2025"
+    return DateFormat('EEEE, MMMM d, y', locale.toString()).format(date);
+  }
+
   Widget _buildActivityList(List<ActivityLog> activities) {
     // Group activities by date
     final grouped = <String, List<ActivityLog>>{};
     for (final activity in activities) {
-      final dateKey = DateFormat('EEEE, MMMM d, y').format(activity.time);
+      final dateKey = _formatDateHeader(activity.time);
       grouped.putIfAbsent(dateKey, () => []).add(activity);
     }
 

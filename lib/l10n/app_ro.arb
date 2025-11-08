@@ -205,7 +205,7 @@
   "thisMonth": "Luna aceasta",
   "lastMonth": "Luna trecută",
   "customRange": "Interval personalizat",
-  "selectDateRange": "Selectează interval de date",
+  "selectDateRange": "Selectează interval",
   "from": "De la",
   "to": "Până la",
   
@@ -279,7 +279,7 @@
   "pickDate": "Alege Data",
   "dateRange": "Interval Date",
   
-  "selectDateRange": "Selectează Interval Date",
+  "selectDateRange": "Selectează Interval",
   "selectStartDate": "Selectează data de început",
   "from": "De la {date}...",
   "cancel": "Anulează",

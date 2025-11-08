@@ -584,7 +584,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get customRange => 'Interval personalizat';
 
   @override
-  String get selectDateRange => 'Selectează Interval Date';
+  String get selectDateRange => 'Selectează Interval';
 
   @override
   String from(String date) {
