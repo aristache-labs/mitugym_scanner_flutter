@@ -46,6 +46,14 @@ class UnifiedActivityTable extends StatelessWidget {
       ],
     );
   }
+  
+  /// Get time format based on locale (12h for English, 24h for Romanian)
+  DateFormat _getTimeFormat(BuildContext context) {
+    final locale = Localizations.localeOf(context);
+    return locale.languageCode == 'ro'
+        ? DateFormat('HH:mm')  // 24-hour for Romanian
+        : DateFormat('h:mm a'); // 12-hour for English
+  }
 
   Widget _buildTableHeader() {
     return Container(
@@ -313,7 +321,7 @@ class UnifiedActivityTable extends StatelessWidget {
             text: TextSpan(
               children: [
                 TextSpan(
-                  text: DateFormat('h:mm a').format(activity.checkInTime!),
+                  text: _getTimeFormat(context).format(activity.checkInTime!),
                   style: GoogleFonts.inter(
                     color: AppColors.primary,
                     fontSize: 13,
@@ -406,7 +414,7 @@ class UnifiedActivityTable extends StatelessWidget {
             text: TextSpan(
               children: [
                 TextSpan(
-                  text: DateFormat('h:mm a').format(activity.checkOutTime!),
+                  text: _getTimeFormat(context).format(activity.checkOutTime!),
                   style: GoogleFonts.inter(
                     color: AppColors.warning,
                     fontSize: 13,

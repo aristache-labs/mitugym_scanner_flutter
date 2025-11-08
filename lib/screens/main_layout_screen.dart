@@ -249,7 +249,11 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
   Widget _buildDateTimeDisplay() {
     final locale = ref.watch(languageProvider);
     final dateFormat = DateFormat('EEEE, d MMMM, yyyy', locale.languageCode);
-    final timeFormat = DateFormat('HH:mm', locale.languageCode);
+    
+    // Use 12-hour format for English, 24-hour format for Romanian
+    final timeFormat = locale.languageCode == 'ro' 
+        ? DateFormat('HH:mm', locale.languageCode)  // 24-hour for Romanian
+        : DateFormat('h:mm a', locale.languageCode); // 12-hour for English
     
     // Format the date and capitalize first letter of each word
     String formattedDate = dateFormat.format(_currentTime);
