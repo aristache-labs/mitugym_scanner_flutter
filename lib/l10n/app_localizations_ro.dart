@@ -680,4 +680,23 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get pressStartToBegin => 'Apăsați START pentru a începe';
+
+  @override
+  String get scanSuccessful => 'Scanare reușită';
+
+  @override
+  String get scanFailedTitle => 'Scanare eșuată';
+
+  @override
+  String get checkInSuccessful => 'Check-in reușit';
+
+  @override
+  String get checkOutSuccessful => 'Check-out reușit';
+
+  @override
+  String get cooldownActive => 'Pauză activă';
+
+  @override
+  String get pleaseWaitBeforeNextScan =>
+      'Vă rugăm așteptați înainte de următoarea scanare';
 }

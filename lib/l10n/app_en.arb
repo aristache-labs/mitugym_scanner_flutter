@@ -281,5 +281,11 @@
   "processing": "Processing...",
   "initializingCamera": "Initializing camera...",
   "cameraStarting": "Camera starting...",
-  "pressStartToBegin": "Press START to begin"
+  "pressStartToBegin": "Press START to begin",
+  "scanSuccessful": "Scan Successful",
+  "scanFailedTitle": "Scan Failed",
+  "checkInSuccessful": "Check-in successful",
+  "checkOutSuccessful": "Check-out successful",
+  "cooldownActive": "Cooldown Active",
+  "pleaseWaitBeforeNextScan": "Please wait before next scan"
 }

@@ -465,7 +465,7 @@ class ScannerScreen extends ConsumerWidget {
         .slideY(begin: -0.1, end: 0, duration: 400.ms, curve: Curves.easeOutQuart);
   }
 
-  /// Build scanner control button with compact design and smooth animations
+  /// Build scanner control button with professional, premium design
   Widget _buildScannerButton(
     WindowsScannerControllerState scannerState,
     WidgetRef ref,
@@ -485,30 +485,40 @@ class ScannerScreen extends ConsumerWidget {
               await ref.read(windowsScannerControllerProvider.notifier).startScanner();
             }
           },
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(8),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
             decoration: BoxDecoration(
-              gradient: isScanning
-                  ? LinearGradient(
-                      colors: [
-                        AppColors.error,
-                        AppColors.errorLight,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: isScanning
+                    ? [
+                        AppColors.error.withValues(alpha: 0.15),
+                        AppColors.errorLight.withValues(alpha: 0.12),
+                      ]
+                    : [
+                        AppColors.card.withValues(alpha: 0.85),
+                        AppColors.surface.withValues(alpha: 0.65),
                       ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    )
-                  : AppColors.primaryGradient,
-              borderRadius: BorderRadius.circular(10),
+              ),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: isScanning
+                    ? AppColors.error.withValues(alpha: 0.3)
+                    : AppColors.primary.withValues(alpha: 0.2),
+                width: 1,
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: (isScanning ? AppColors.error : AppColors.primary)
-                      .withValues(alpha: 0.25),
-                  blurRadius: 10,
-                  offset: const Offset(0, 3),
-                  spreadRadius: -1,
+                  color: isScanning
+                      ? AppColors.error.withValues(alpha: 0.15)
+                      : AppColors.primary.withValues(alpha: 0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                  spreadRadius: 0,
                 ),
               ],
             ),
@@ -516,33 +526,42 @@ class ScannerScreen extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  transitionBuilder: (child, animation) {
-                    return ScaleTransition(
-                      scale: animation,
-                      child: FadeTransition(
-                        opacity: animation,
-                        child: child,
-                      ),
-                    );
-                  },
-                  child: Icon(
-                    isScanning ? LucideIcons.square : LucideIcons.play,
-                    key: ValueKey(isScanning),
-                    color: Colors.white,
-                    size: 18,
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: isScanning
+                        ? AppColors.error.withValues(alpha: 0.15)
+                        : AppColors.primary.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    transitionBuilder: (child, animation) {
+                      return ScaleTransition(
+                        scale: animation,
+                        child: FadeTransition(
+                          opacity: animation,
+                          child: child,
+                        ),
+                      );
+                    },
+                    child: Icon(
+                      isScanning ? LucideIcons.square : LucideIcons.play,
+                      key: ValueKey(isScanning),
+                      color: isScanning ? AppColors.error : AppColors.primary,
+                      size: 16,
+                    ),
                   ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 12),
                 AnimatedDefaultTextStyle(
                   duration: const Duration(milliseconds: 300),
                   curve: Curves.easeInOut,
                   style: GoogleFonts.inter(
-                    color: Colors.white,
+                    color: isScanning ? AppColors.error : AppColors.primary,
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    letterSpacing: 0.3,
+                    letterSpacing: 0.5,
                   ),
                   child: Text(
                     isScanning ? 'STOP SCANNER' : 'START SCANNER',

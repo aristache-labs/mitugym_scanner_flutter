@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../config/app_colors.dart';
+import '../l10n/app_localizations.dart';
 
 /// Compact countdown timer widget - Shows remaining time in cooldown
 class CountdownTimer extends StatelessWidget {
@@ -13,6 +14,8 @@ class CountdownTimer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Row(
       children: [
         Container(
@@ -34,7 +37,7 @@ class CountdownTimer extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Cooldown Active',
+                l10n.cooldownActive,
                 style: GoogleFonts.inter(
                   color: AppColors.warning,
                   fontSize: 13,
@@ -44,7 +47,7 @@ class CountdownTimer extends StatelessWidget {
               ),
               const SizedBox(height: 2),
               Text(
-                'Please wait before next scan',
+                l10n.pleaseWaitBeforeNextScan,
                 style: GoogleFonts.inter(
                   color: AppColors.textSecondary,
                   fontSize: 11,

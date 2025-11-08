@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../models/scan_result.dart';
 import '../models/member_data.dart';
 import '../config/app_colors.dart';
+import '../l10n/app_localizations.dart';
 
 /// Modern member info card widget - Dashboard style
 /// Displays scan result with elegant card design and animations
@@ -59,7 +60,7 @@ class MemberInfoCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header with status and message
-              _buildHeader(isSuccess),
+              _buildHeader(context, isSuccess),
               
               if (data != null) ...[
                 const SizedBox(height: 24),
@@ -67,7 +68,7 @@ class MemberInfoCard extends StatelessWidget {
                 const SizedBox(height: 24),
                 
                 // Member info section
-                _buildMemberInfo(data, isSuccess),
+                _buildMemberInfo(context, data, isSuccess),
               ],
 
               // Error section
@@ -86,7 +87,8 @@ class MemberInfoCard extends StatelessWidget {
   }
 
   /// Build header with status indicator and message
-  Widget _buildHeader(bool isSuccess) {
+  Widget _buildHeader(BuildContext context, bool isSuccess) {
+    final l10n = AppLocalizations.of(context)!;
     final statusColor = isSuccess ? AppColors.success : AppColors.error;
     
     return Row(
@@ -113,7 +115,7 @@ class MemberInfoCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                isSuccess ? 'Scan Successful' : 'Scan Failed',
+                isSuccess ? l10n.scanSuccessful : l10n.scanFailedTitle,
                 style: GoogleFonts.inter(
                   color: isSuccess ? AppColors.success : AppColors.error,
                   fontSize: 14,
@@ -155,7 +157,7 @@ class MemberInfoCard extends StatelessWidget {
   }
 
   /// Build member information section
-  Widget _buildMemberInfo(MemberData data, bool isSuccess) {
+  Widget _buildMemberInfo(BuildContext context, MemberData data, bool isSuccess) {
     return Column(
       children: [
         // Profile section with avatar and basic info
@@ -187,7 +189,7 @@ class MemberInfoCard extends StatelessWidget {
         const SizedBox(height: 24),
         
         // Info grid
-        _buildInfoGrid(data),
+        _buildInfoGrid(context, data),
       ],
     );
   }
@@ -286,13 +288,16 @@ class MemberInfoCard extends StatelessWidget {
   }
 
   /// Build information grid with modern cards
-  Widget _buildInfoGrid(MemberData data) {
+  Widget _buildInfoGrid(BuildContext context, MemberData data) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Row(
       children: [
         Expanded(
           child: _buildInfoCard(
+            context,
             icon: Icons.card_membership_rounded,
-            label: 'Plan',
+            label: l10n.plan,
             value: data.planName,
             gradient: AppColors.primaryGradient,
           ),
@@ -300,8 +305,9 @@ class MemberInfoCard extends StatelessWidget {
         const SizedBox(width: 12),
         Expanded(
           child: _buildInfoCard(
+            context,
             icon: Icons.calendar_today_rounded,
-            label: 'Expires',
+            label: l10n.expires,
             value: data.formattedExpiryDate,
             gradient: AppColors.accentGradient,
           ),
@@ -311,7 +317,8 @@ class MemberInfoCard extends StatelessWidget {
   }
 
   /// Build individual info card
-  Widget _buildInfoCard({
+  Widget _buildInfoCard(
+    BuildContext context, {
     required IconData icon,
     required String label,
     required String value,

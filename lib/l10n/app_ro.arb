@@ -239,5 +239,11 @@
   "processing": "Se procesează...",
   "initializingCamera": "Se inițializează camera...",
   "cameraStarting": "Camera pornește...",
-  "pressStartToBegin": "Apăsați START pentru a începe"
+  "pressStartToBegin": "Apăsați START pentru a începe",
+  "scanSuccessful": "Scanare reușită",
+  "scanFailedTitle": "Scanare eșuată",
+  "checkInSuccessful": "Check-in reușit",
+  "checkOutSuccessful": "Check-out reușit",
+  "cooldownActive": "Pauză activă",
+  "pleaseWaitBeforeNextScan": "Vă rugăm așteptați înainte de următoarea scanare"
 }

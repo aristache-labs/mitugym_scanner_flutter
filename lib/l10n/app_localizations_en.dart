@@ -677,4 +677,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pressStartToBegin => 'Press START to begin';
+
+  @override
+  String get scanSuccessful => 'Scan Successful';
+
+  @override
+  String get scanFailedTitle => 'Scan Failed';
+
+  @override
+  String get checkInSuccessful => 'Check-in successful';
+
+  @override
+  String get checkOutSuccessful => 'Check-out successful';
+
+  @override
+  String get cooldownActive => 'Cooldown Active';
+
+  @override
+  String get pleaseWaitBeforeNextScan => 'Please wait before next scan';
 }

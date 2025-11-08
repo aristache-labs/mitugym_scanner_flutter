@@ -1399,6 +1399,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Press START to begin'**
   String get pressStartToBegin;
+
+  /// No description provided for @scanSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan Successful'**
+  String get scanSuccessful;
+
+  /// No description provided for @scanFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan Failed'**
+  String get scanFailedTitle;
+
+  /// No description provided for @checkInSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-in successful'**
+  String get checkInSuccessful;
+
+  /// No description provided for @checkOutSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-out successful'**
+  String get checkOutSuccessful;
+
+  /// No description provided for @cooldownActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Cooldown Active'**
+  String get cooldownActive;
+
+  /// No description provided for @pleaseWaitBeforeNextScan.
+  ///
+  /// In en, this message translates to:
+  /// **'Please wait before next scan'**
+  String get pleaseWaitBeforeNextScan;
 }
 
 class _AppLocalizationsDelegate
