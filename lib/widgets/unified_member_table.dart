@@ -94,20 +94,24 @@ class UnifiedMemberTable extends StatelessWidget {
             ),
           ),
           
+          const SizedBox(width: 20),
+          
           // Plan column
           Expanded(
-            flex: 2,
+            flex: 3,
             child: _buildSortableHeader(
               'PLAN',
               'plan',
               padding: const EdgeInsets.only(
-                left: 100,
+                left: 170,
                 right: 4,
                 top: 6,
                 bottom: 6,
               ),
             ),
           ),
+          
+          const SizedBox(width: 20),
           
           // Expires column
           Expanded(
@@ -124,9 +128,11 @@ class UnifiedMemberTable extends StatelessWidget {
             ),
           ),
           
+          const SizedBox(width: 20),
+          
           // Status column
           SizedBox(
-            width: 100,
+            width: 120,
             child: _buildSortableHeader(
               'STATUS',
               'status',
@@ -273,11 +279,13 @@ class UnifiedMemberTable extends StatelessWidget {
                   ),
                 ),
                 
+                const SizedBox(width: 20),
+                
                 // Plan column
                 Expanded(
-                  flex: 2,
+                  flex: 3,
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 80),
+                    padding: const EdgeInsets.only(left: 150),
                     child: Text(
                       member.planName,
                       style: GoogleFonts.inter(
@@ -288,6 +296,8 @@ class UnifiedMemberTable extends StatelessWidget {
                     ),
                   ),
                 ),
+                
+                const SizedBox(width: 20),
                 
                 // Expires column
                 Expanded(
@@ -301,9 +311,11 @@ class UnifiedMemberTable extends StatelessWidget {
                   ),
                 ),
                 
+                const SizedBox(width: 20),
+                
                 // Status column
                 SizedBox(
-                  width: 100,
+                  width: 120,
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
