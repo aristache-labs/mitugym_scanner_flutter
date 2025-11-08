@@ -222,32 +222,36 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
             ),
           ),
           
-          // Recent Activity - Using Unified Table Component
-          SliverToBoxAdapter(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Text(
-                    'Recent Activity (${sortedActivities.length} entries)',
-                    style: GoogleFonts.inter(
-                      color: AppColors.textPrimary,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                UnifiedActivityTable(
-                  activities: sortedActivities.cast(),
+          // Sticky title + table header
+          SliverPersistentHeader(
+            pinned: true,
+            delegate: _ActivityTableHeaderDelegate(
+              sortBy: _sortBy,
+              sortAscending: _sortAscending,
+              onSort: _toggleSort,
+              activityCount: sortedActivities.length,
+            ),
+          ),
+
+          // Table rows
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final activity = sortedActivities[index];
+                return UnifiedActivityTable(
+                  activities: [activity],
                   sortBy: _sortBy,
                   sortAscending: _sortAscending,
                   onSort: _toggleSort,
-                  showHeader: true,
-                ),
-                const SizedBox(height: 24),
-              ],
+                  showHeader: false,
+                );
+              },
+              childCount: sortedActivities.length,
             ),
+          ),
+
+          SliverToBoxAdapter(
+            child: const SizedBox(height: 24),
           ),
         ],
       ),
@@ -919,5 +923,163 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
     });
     
     return sorted;
+  }
+}
+
+/// Delegate for sticky table header with title
+class _ActivityTableHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final String sortBy;
+  final bool sortAscending;
+  final Function(String) onSort;
+  final int activityCount;
+
+  _ActivityTableHeaderDelegate({
+    required this.sortBy,
+    required this.sortAscending,
+    required this.onSort,
+    required this.activityCount,
+  });
+
+  @override
+  double get minExtent => 122.0;
+
+  @override
+  double get maxExtent => 122.0;
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      height: 122.0,
+      padding: const EdgeInsets.only(top: 16),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 20, 26, 26),
+        boxShadow: overlapsContent
+            ? [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ]
+            : null,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Title
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+            child: Text(
+              'Recent Activity ($activityCount entries)',
+              style: GoogleFonts.inter(
+                color: AppColors.textPrimary,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          
+          // Table header
+          Container(
+            height: 48,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              color: AppColors.surface.withValues(alpha: 0.5),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
+              ),
+              border: Border(
+                top: BorderSide(
+                  color: AppColors.border.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+                left: BorderSide(
+                  color: AppColors.border.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+                right: BorderSide(
+                  color: AppColors.border.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+                bottom: BorderSide(
+                  color: AppColors.border.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+            ),
+            child: Row(
+              children: [
+                // Member column
+                SizedBox(
+                  width: 220,
+                  child: _buildSortableHeader('MEMBER', 'member'),
+                ),
+                
+                // Checked In column
+                Expanded(
+                  flex: 2,
+                  child: _buildSortableHeader('CHECKED IN', 'checkIn'),
+                ),
+                
+                // Checked Out column
+                Expanded(
+                  flex: 2,
+                  child: _buildSortableHeader('CHECKED OUT', 'checkOut'),
+                ),
+                
+                // Duration column
+                SizedBox(
+                  width: 160,
+                  child: _buildSortableHeader('DURATION', 'duration'),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSortableHeader(String label, String sortKey) {
+    final isActive = sortBy == sortKey;
+    
+    return InkWell(
+      onTap: () => onSort(sortKey),
+      borderRadius: BorderRadius.circular(6),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                color: isActive ? AppColors.primary : AppColors.textMuted,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.8,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Icon(
+              isActive
+                  ? (sortAscending ? LucideIcons.arrowUp : LucideIcons.arrowDown)
+                  : LucideIcons.arrowUpDown,
+              size: 14,
+              color: isActive ? AppColors.primary : AppColors.textMuted.withValues(alpha: 0.5),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  bool shouldRebuild(_ActivityTableHeaderDelegate oldDelegate) {
+    return sortBy != oldDelegate.sortBy || 
+           sortAscending != oldDelegate.sortAscending ||
+           activityCount != oldDelegate.activityCount;
   }
 }
