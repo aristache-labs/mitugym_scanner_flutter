@@ -98,9 +98,9 @@ class _AnimatedTabSwitcherState extends State<AnimatedTabSwitcher>
   Widget build(BuildContext context) {
     final backgroundColor = widget.backgroundColor ?? 
         AppColors.surface.withValues(alpha: 0.5);
-    final selectedTextColor = widget.selectedTextColor ?? AppColors.textPrimary;
+    final selectedTextColor = widget.selectedTextColor ?? AppColors.primary;
     final unselectedTextColor = widget.unselectedTextColor ?? 
-        AppColors.textMuted.withValues(alpha: 0.6);
+        AppColors.textSecondary;
 
     return Container(
       height: widget.height,
@@ -224,7 +224,7 @@ class _AnimatedTabSwitcherState extends State<AnimatedTabSwitcher>
               child: AnimatedDefaultTextStyle(
                 duration: const Duration(milliseconds: 200),
                 style: GoogleFonts.inter(
-                  fontSize: 14.5,
+                  fontSize: 14,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                   color: isSelected ? selectedColor : unselectedColor,
                   letterSpacing: 0.2,
