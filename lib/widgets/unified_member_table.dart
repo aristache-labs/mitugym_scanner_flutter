@@ -137,8 +137,8 @@ class UnifiedMemberTable extends StatelessWidget {
               'STATUS',
               'status',
               padding: const EdgeInsets.only(
-                left: 8,
-                right: 4,
+                left: 25,
+                right: 0,
                 top: 6,
                 bottom: 6,
               ),
