@@ -8,6 +8,7 @@ import '../config/app_colors.dart';
 import '../providers/history_provider.dart';
 import '../providers/gym_schedule_provider.dart';
 import '../widgets/unified_activity_table.dart';
+import '../l10n/app_localizations.dart';
 
 /// Check-ins Analytics Screen - Modern design
 class StatsScreen extends ConsumerStatefulWidget {
@@ -213,7 +214,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
                     
                     // Peak hours
                     Expanded(
-                      child: _buildPeakHoursCard(todayActivities.toList()),
+                      child: _buildPeakHoursCard(context, todayActivities.toList()),
                     ),
                   ],
                 ),
@@ -777,7 +778,9 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
   }
 
   /// Build peak hours card
-  Widget _buildPeakHoursCard(List activities) {
+  Widget _buildPeakHoursCard(BuildContext context, List activities) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -818,7 +821,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
               ),
               const SizedBox(width: 12),
               Text(
-                'Peak Hours',
+                l10n.peakHours,
                 style: GoogleFonts.inter(
                   color: AppColors.textPrimary,
                   fontSize: 16,
@@ -834,7 +837,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Text(
-                  'No data yet',
+                  l10n.noDataYet,
                   style: GoogleFonts.inter(
                     color: AppColors.textMuted,
                     fontSize: 14,
@@ -843,32 +846,39 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
               ),
             )
           else
-            ...['Morning', 'Afternoon', 'Evening'].map((time) {
-              final count = _getCountByPeriod(activities, time);
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      time,
-                      style: GoogleFonts.inter(
-                        color: AppColors.textSecondary,
-                        fontSize: 14,
-                      ),
-                    ),
-                    Text(
-                      '$count',
-                      style: GoogleFonts.inter(
-                  color: AppColors.textPrimary,
-                  fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                ),
-              ),
+            ...[
+              _buildPeakHourRow(context, l10n.morning, activities, 'Morning'),
+              _buildPeakHourRow(context, l10n.afternoon, activities, 'Afternoon'),
+              _buildPeakHourRow(context, l10n.evening, activities, 'Evening'),
             ],
-                ),
-              );
-            }),
+        ],
+      ),
+    );
+  }
+  
+  /// Build a single peak hour row
+  Widget _buildPeakHourRow(BuildContext context, String label, List activities, String period) {
+    final count = _getCountByPeriod(activities, period);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.inter(
+              color: AppColors.textSecondary,
+              fontSize: 14,
+            ),
+          ),
+          Text(
+            '$count',
+            style: GoogleFonts.inter(
+              color: AppColors.textPrimary,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ],
       ),
     );
@@ -971,7 +981,7 @@ class _ActivityTableHeaderDelegate extends SliverPersistentHeaderDelegate {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
             child: Text(
-              'Recent Activity ($activityCount entries)',
+              AppLocalizations.of(context)!.recentActivityWithCount(activityCount),
               style: GoogleFonts.inter(
                 color: AppColors.textPrimary,
                 fontSize: 18,

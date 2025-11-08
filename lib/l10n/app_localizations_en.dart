@@ -695,4 +695,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pleaseWaitBeforeNextScan => 'Please wait before next scan';
+
+  @override
+  String get peakHours => 'Peak Hours';
+
+  @override
+  String get morning => 'Morning';
+
+  @override
+  String get afternoon => 'Afternoon';
+
+  @override
+  String get evening => 'Evening';
+
+  @override
+  String get noDataYet => 'No data yet';
 }

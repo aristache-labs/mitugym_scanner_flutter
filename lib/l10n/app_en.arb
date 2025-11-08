@@ -287,5 +287,12 @@
   "checkInSuccessful": "Check-in successful",
   "checkOutSuccessful": "Check-out successful",
   "cooldownActive": "Cooldown Active",
-  "pleaseWaitBeforeNextScan": "Please wait before next scan"
+  "pleaseWaitBeforeNextScan": "Please wait before next scan",
+  
+  "peakHours": "Peak Hours",
+  "morning": "Morning",
+  "afternoon": "Afternoon",
+  "evening": "Evening",
+  "noDataYet": "No data yet",
+  "recentActivityWithCount": "Recent Activity ({count} entries)"
 }

@@ -698,4 +698,19 @@ class AppLocalizationsRo extends AppLocalizations {
   @override
   String get pleaseWaitBeforeNextScan =>
       'Vă rugăm așteptați înainte de următoarea scanare';
+
+  @override
+  String get peakHours => 'Ore de vârf';
+
+  @override
+  String get morning => 'Dimineața';
+
+  @override
+  String get afternoon => 'După-amiază';
+
+  @override
+  String get evening => 'Seara';
+
+  @override
+  String get noDataYet => 'Nicio dată încă';
 }

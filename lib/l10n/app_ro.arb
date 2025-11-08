@@ -245,5 +245,12 @@
   "checkInSuccessful": "Check-in reușit",
   "checkOutSuccessful": "Check-out reușit",
   "cooldownActive": "Pauză activă",
-  "pleaseWaitBeforeNextScan": "Vă rugăm așteptați înainte de următoarea scanare"
+  "pleaseWaitBeforeNextScan": "Vă rugăm așteptați înainte de următoarea scanare",
+  
+  "peakHours": "Ore de vârf",
+  "morning": "Dimineața",
+  "afternoon": "După-amiază",
+  "evening": "Seara",
+  "noDataYet": "Nicio dată încă",
+  "recentActivityWithCount": "Activitate recentă ({count} înregistrări)"
 }

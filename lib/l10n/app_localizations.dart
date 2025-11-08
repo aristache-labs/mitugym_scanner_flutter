@@ -1435,6 +1435,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please wait before next scan'**
   String get pleaseWaitBeforeNextScan;
+
+  /// No description provided for @peakHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Peak Hours'**
+  String get peakHours;
+
+  /// No description provided for @morning.
+  ///
+  /// In en, this message translates to:
+  /// **'Morning'**
+  String get morning;
+
+  /// No description provided for @afternoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Afternoon'**
+  String get afternoon;
+
+  /// No description provided for @evening.
+  ///
+  /// In en, this message translates to:
+  /// **'Evening'**
+  String get evening;
+
+  /// No description provided for @noDataYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No data yet'**
+  String get noDataYet;
 }
 
 class _AppLocalizationsDelegate
