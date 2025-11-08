@@ -11,6 +11,7 @@ import '../providers/config_provider.dart';
 import '../services/export_service.dart';
 import '../widgets/unified_activity_table.dart';
 import '../widgets/date_range_picker_modal.dart';
+import '../l10n/app_localizations.dart';
 
 /// History screen with filtering and modern design
 class HistoryScreen extends ConsumerStatefulWidget {
@@ -208,8 +209,9 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
       }
       
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         _showPremiumToast(
-          'Exported ${format.toUpperCase()} to: $filePath',
+          l10n.exportedTo(format.toUpperCase(), filePath),
           LucideIcons.checkCircle,
           ToastType.success,
           filePath: filePath,
@@ -217,8 +219,9 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         _showPremiumToast(
-          'Export failed: $e',
+          l10n.exportFailed(e.toString()),
           LucideIcons.xCircle,
           ToastType.error,
         );
@@ -227,6 +230,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   }
 
   void _showExportMenu(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final RenderBox? renderBox = _exportButtonKey.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox == null) return;
     
@@ -257,7 +261,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Text(
-              'Export Format',
+              l10n.exportFormat,
               style: GoogleFonts.inter(
                 color: AppColors.textMuted,
                 fontSize: 11,
@@ -270,7 +274,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         _buildExportMenuItem(
           icon: LucideIcons.fileSpreadsheet,
           label: 'CSV',
-          description: 'Comma-separated values',
+          description: l10n.csvDescription,
           onTap: () {
             Navigator.pop(context);
             _exportHistory('csv');
@@ -279,7 +283,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         _buildExportMenuItem(
           icon: LucideIcons.fileText,
           label: 'PDF',
-          description: 'Portable document format',
+          description: l10n.pdfDescription,
           onTap: () {
             Navigator.pop(context);
             _exportHistory('pdf');
@@ -288,7 +292,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         _buildExportMenuItem(
           icon: LucideIcons.fileType,
           label: 'TXT',
-          description: 'Plain text file',
+          description: l10n.txtDescription,
           onTap: () {
             Navigator.pop(context);
             _exportHistory('txt');
@@ -386,6 +390,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   }
 
   Widget _buildHeader(int total, int filtered) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -393,7 +399,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Showing $filtered of $total',
+              l10n.showingOfTotal(filtered, total),
               style: GoogleFonts.inter(
                 color: AppColors.textMuted,
                 fontSize: 14,
@@ -420,7 +426,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Export',
+                l10n.export,
                 style: GoogleFonts.inter(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
@@ -454,6 +460,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   }
 
   Widget _buildFiltersSection() {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -483,7 +491,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             },
             style: GoogleFonts.inter(color: AppColors.textPrimary),
             decoration: InputDecoration(
-              hintText: 'Search by name...',
+              hintText: l10n.searchByName,
               hintStyle: GoogleFonts.inter(
                 color: AppColors.textMuted,
                 fontSize: 14,
@@ -516,20 +524,20 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             child: Row(
               children: [
                 _buildFilterChip(
-                  label: 'All',
+                  label: l10n.all,
                   value: 'all',
                   icon: LucideIcons.list,
                 ),
                 const SizedBox(width: 8),
                 _buildFilterChip(
-                  label: 'Success',
+                  label: l10n.success,
                   value: 'success',
                   icon: LucideIcons.checkCircle,
                   color: AppColors.success,
                 ),
                 const SizedBox(width: 8),
                 _buildFilterChip(
-                  label: 'Denied',
+                  label: l10n.denied,
                   value: 'failed',
                   icon: LucideIcons.shieldAlert,
                   color: AppColors.error,
@@ -593,6 +601,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   }
 
   Widget _buildDateRangeChip() {
+    final l10n = AppLocalizations.of(context)!;
     final isSelected = _dateRange != null;
     return InkWell(
       onTap: _selectDateRange,
@@ -617,7 +626,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             ),
             const SizedBox(width: 6),
             Text(
-              isSelected ? 'Date Range' : 'Pick Date',
+              isSelected ? l10n.dateRange : l10n.pickDate,
               style: GoogleFonts.inter(
                 color: isSelected ? AppColors.warning : AppColors.textMuted,
                 fontSize: 13,
@@ -631,6 +640,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   }
 
   Widget _buildClearFiltersChip() {
+    final l10n = AppLocalizations.of(context)!;
+    
     return InkWell(
       onTap: _clearFilters,
       borderRadius: BorderRadius.circular(10),
@@ -650,7 +661,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             const Icon(LucideIcons.x, size: 16, color: AppColors.error),
             const SizedBox(width: 6),
             Text(
-              'Clear',
+              l10n.clear,
               style: GoogleFonts.inter(
                 color: AppColors.error,
                 fontSize: 13,
@@ -869,6 +880,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
 
   /// Build table header (like web panel) with sorting
   Widget _buildTableHeader() {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Container(
       height: 48,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -903,7 +916,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           SizedBox(
             width: 200,
             child: _buildSortableHeader(
-              'MEMBER',
+              l10n.member.toUpperCase(),
               'member',
               padding: const EdgeInsets.only(
                 left: 56,
@@ -920,7 +933,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           Expanded(
             flex: 3,
             child: _buildSortableHeader(
-              'CHECKED IN',
+              l10n.checkedIn.toUpperCase(),
               'checkIn',
               alignment: Alignment.center,
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
@@ -933,7 +946,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           Expanded(
             flex: 2,
             child: _buildSortableHeader(
-              'CHECKED OUT',
+              l10n.checkedOut.toUpperCase(),
               'checkOut',
               alignment: Alignment.center,
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
@@ -946,7 +959,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           SizedBox(
             width: 120,
             child: _buildSortableHeader(
-              'DURATION',
+              l10n.duration.toUpperCase(),
               'duration',
               alignment: Alignment.center,
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),

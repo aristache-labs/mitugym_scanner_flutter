@@ -165,7 +165,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchMembers => 'Search members...';
 
   @override
-  String get searchByName => 'Search by name, phone, or email';
+  String get searchByName => 'Search by name...';
 
   @override
   String get noMembersFound => 'No members found';
@@ -586,7 +586,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectDateRange => 'Select Date Range';
 
   @override
-  String get from => 'From';
+  String from(String date) {
+    return 'From $date...';
+  }
 
   @override
   String get to => 'To';
@@ -616,7 +618,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportSuccess => 'Export successful';
 
   @override
-  String get exportFailed => 'Export failed';
+  String exportFailed(String error) {
+    return 'Export failed: $error';
+  }
 
   @override
   String exportLocation(String path) {
@@ -737,4 +741,44 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get successRate => 'Success Rate';
+
+  @override
+  String get csvDescription => 'Comma-separated values';
+
+  @override
+  String get pdfDescription => 'Portable document format';
+
+  @override
+  String get txtDescription => 'Plain text file';
+
+  @override
+  String exportedTo(String format, String path) {
+    return 'Exported $format to: $path';
+  }
+
+  @override
+  String showingOfTotal(int filtered, int total) {
+    return 'Showing $filtered of $total';
+  }
+
+  @override
+  String get all => 'All';
+
+  @override
+  String get pickDate => 'Pick Date';
+
+  @override
+  String get dateRange => 'Date Range';
+
+  @override
+  String get selectStartDate => 'Select start date';
+
+  @override
+  String get applyFilter => 'Apply Filter';
+
+  @override
+  String get last7Days => 'Last 7 Days';
+
+  @override
+  String get last30Days => 'Last 30 Days';
 }

@@ -262,5 +262,32 @@
   "todaysTraffic": "Traficul de azi",
   "peak": "Vârf: ",
   "updatesEveryHour": "Actualizare la fiecare oră",
-  "successRate": "Rata de succes"
+  "successRate": "Rata de succes",
+  
+  "export": "Exportă",
+  "exportFormat": "Format export",
+  "csvDescription": "Valori separate prin virgulă",
+  "pdfDescription": "Format document portabil",
+  "txtDescription": "Fișier text simplu",
+  "exportedTo": "Exportat {format} la: {path}",
+  "exportFailed": "Export eșuat: {error}",
+  "searchByName": "Caută după nume...",
+  "clear": "Șterge",
+  "showingOfTotal": "Se afișează {filtered} din {total}",
+  "all": "Toate",
+  "success": "Succes",
+  "pickDate": "Alege Data",
+  "dateRange": "Interval Date",
+  
+  "selectDateRange": "Selectează Interval Date",
+  "selectStartDate": "Selectează data de început",
+  "from": "De la {date}...",
+  "cancel": "Anulează",
+  "applyFilter": "Aplică Filtru",
+  "today": "Astăzi",
+  "yesterday": "Ieri",
+  "last7Days": "Ultimele 7 Zile",
+  "last30Days": "Ultimele 30 Zile",
+  "thisMonth": "Luna Asta",
+  "lastMonth": "Luna Trecută"
 }

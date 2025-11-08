@@ -963,6 +963,8 @@ class _ActivityTableHeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Container(
       height: 122.0,
       padding: const EdgeInsets.only(top: 16),
@@ -1030,7 +1032,7 @@ class _ActivityTableHeaderDelegate extends SliverPersistentHeaderDelegate {
                 SizedBox(
                   width: 200,
                   child: _buildSortableHeader(
-                    'MEMBER',
+                    l10n.member.toUpperCase(),
                     'member',
                     padding: const EdgeInsets.only(
                       left: 56,
@@ -1045,7 +1047,7 @@ class _ActivityTableHeaderDelegate extends SliverPersistentHeaderDelegate {
                 Expanded(
                   flex: 3,
                   child: _buildSortableHeader(
-                    'CHECKED IN',
+                    l10n.checkedIn.toUpperCase(),
                     'checkIn',
                     alignment: Alignment.center,
                     padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
@@ -1056,7 +1058,7 @@ class _ActivityTableHeaderDelegate extends SliverPersistentHeaderDelegate {
                 Expanded(
                   flex: 2,
                   child: _buildSortableHeader(
-                    'CHECKED OUT',
+                    l10n.checkedOut.toUpperCase(),
                     'checkOut',
                     alignment: Alignment.center,
                     padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
@@ -1067,7 +1069,7 @@ class _ActivityTableHeaderDelegate extends SliverPersistentHeaderDelegate {
                 SizedBox(
                   width: 120,
                   child: _buildSortableHeader(
-                    'DURATION',
+                    l10n.duration.toUpperCase(),
                     'duration',
                     alignment: Alignment.center,
                     padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),

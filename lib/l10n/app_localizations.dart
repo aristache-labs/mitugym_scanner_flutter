@@ -395,7 +395,7 @@ abstract class AppLocalizations {
   /// No description provided for @searchByName.
   ///
   /// In en, this message translates to:
-  /// **'Search by name, phone, or email'**
+  /// **'Search by name...'**
   String get searchByName;
 
   /// No description provided for @noMembersFound.
@@ -1223,8 +1223,8 @@ abstract class AppLocalizations {
   /// No description provided for @from.
   ///
   /// In en, this message translates to:
-  /// **'From'**
-  String get from;
+  /// **'From {date}...'**
+  String from(String date);
 
   /// No description provided for @to.
   ///
@@ -1283,8 +1283,8 @@ abstract class AppLocalizations {
   /// No description provided for @exportFailed.
   ///
   /// In en, this message translates to:
-  /// **'Export failed'**
-  String get exportFailed;
+  /// **'Export failed: {error}'**
+  String exportFailed(String error);
 
   /// No description provided for @exportLocation.
   ///
@@ -1519,6 +1519,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Success Rate'**
   String get successRate;
+
+  /// No description provided for @csvDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Comma-separated values'**
+  String get csvDescription;
+
+  /// No description provided for @pdfDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Portable document format'**
+  String get pdfDescription;
+
+  /// No description provided for @txtDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Plain text file'**
+  String get txtDescription;
+
+  /// No description provided for @exportedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Exported {format} to: {path}'**
+  String exportedTo(String format, String path);
+
+  /// No description provided for @showingOfTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing {filtered} of {total}'**
+  String showingOfTotal(int filtered, int total);
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @pickDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick Date'**
+  String get pickDate;
+
+  /// No description provided for @dateRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Date Range'**
+  String get dateRange;
+
+  /// No description provided for @selectStartDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select start date'**
+  String get selectStartDate;
+
+  /// No description provided for @applyFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply Filter'**
+  String get applyFilter;
+
+  /// No description provided for @last7Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 7 Days'**
+  String get last7Days;
+
+  /// No description provided for @last30Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 30 Days'**
+  String get last30Days;
 }
 
 class _AppLocalizationsDelegate

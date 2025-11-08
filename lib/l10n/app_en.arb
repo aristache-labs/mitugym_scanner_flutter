@@ -304,5 +304,66 @@
   "todaysTraffic": "Today's Traffic",
   "peak": "Peak: ",
   "updatesEveryHour": "Updates every hour",
-  "successRate": "Success Rate"
+  "successRate": "Success Rate",
+  
+  "export": "Export",
+  "exportFormat": "Export Format",
+  "csvDescription": "Comma-separated values",
+  "pdfDescription": "Portable document format",
+  "txtDescription": "Plain text file",
+  "exportedTo": "Exported {format} to: {path}",
+  "@exportedTo": {
+    "placeholders": {
+      "format": {
+        "type": "String"
+      },
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "exportFailed": "Export failed: {error}",
+  "@exportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "searchByName": "Search by name...",
+  "clear": "Clear",
+  "showingOfTotal": "Showing {filtered} of {total}",
+  "@showingOfTotal": {
+    "placeholders": {
+      "filtered": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "all": "All",
+  "success": "Success",
+  "pickDate": "Pick Date",
+  "dateRange": "Date Range",
+  
+  "selectDateRange": "Select Date Range",
+  "selectStartDate": "Select start date",
+  "from": "From {date}...",
+  "@from": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "cancel": "Cancel",
+  "applyFilter": "Apply Filter",
+  "today": "Today",
+  "yesterday": "Yesterday",
+  "last7Days": "Last 7 Days",
+  "last30Days": "Last 30 Days",
+  "thisMonth": "This Month",
+  "lastMonth": "Last Month"
 }

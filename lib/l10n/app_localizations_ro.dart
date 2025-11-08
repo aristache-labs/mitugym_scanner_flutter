@@ -165,7 +165,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get searchMembers => 'Caută membri...';
 
   @override
-  String get searchByName => 'Caută după nume, telefon sau email';
+  String get searchByName => 'Caută după nume...';
 
   @override
   String get noMembersFound => 'Nu s-au găsit membri';
@@ -378,7 +378,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get sort => 'Sortează';
 
   @override
-  String get clear => 'Curăță';
+  String get clear => 'Șterge';
 
   @override
   String get apply => 'Aplică';
@@ -575,19 +575,21 @@ class AppLocalizationsRo extends AppLocalizations {
   String get thisWeek => 'Această săptămână';
 
   @override
-  String get thisMonth => 'Luna aceasta';
+  String get thisMonth => 'Luna Asta';
 
   @override
-  String get lastMonth => 'Luna trecută';
+  String get lastMonth => 'Luna Trecută';
 
   @override
   String get customRange => 'Interval personalizat';
 
   @override
-  String get selectDateRange => 'Selectează interval de date';
+  String get selectDateRange => 'Selectează Interval Date';
 
   @override
-  String get from => 'De la';
+  String from(String date) {
+    return 'De la $date...';
+  }
 
   @override
   String get to => 'Până la';
@@ -617,7 +619,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get exportSuccess => 'Export reușit';
 
   @override
-  String get exportFailed => 'Export eșuat';
+  String exportFailed(String error) {
+    return 'Export eșuat: $error';
+  }
 
   @override
   String exportLocation(String path) {
@@ -741,4 +745,44 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get successRate => 'Rata de succes';
+
+  @override
+  String get csvDescription => 'Valori separate prin virgulă';
+
+  @override
+  String get pdfDescription => 'Format document portabil';
+
+  @override
+  String get txtDescription => 'Fișier text simplu';
+
+  @override
+  String exportedTo(String format, String path) {
+    return 'Exportat $format la: $path';
+  }
+
+  @override
+  String showingOfTotal(int filtered, int total) {
+    return 'Se afișează $filtered din $total';
+  }
+
+  @override
+  String get all => 'Toate';
+
+  @override
+  String get pickDate => 'Alege Data';
+
+  @override
+  String get dateRange => 'Interval Date';
+
+  @override
+  String get selectStartDate => 'Selectează data de început';
+
+  @override
+  String get applyFilter => 'Aplică Filtru';
+
+  @override
+  String get last7Days => 'Ultimele 7 Zile';
+
+  @override
+  String get last30Days => 'Ultimele 30 Zile';
 }

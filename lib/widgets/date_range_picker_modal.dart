@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import '../config/app_colors.dart';
+import '../l10n/app_localizations.dart';
 
 /// Modern compact date range picker modal
 class DateRangePickerModal extends StatefulWidget {
@@ -107,6 +108,7 @@ class _DateRangePickerModalState extends State<DateRangePickerModal> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     
@@ -177,7 +179,7 @@ class _DateRangePickerModalState extends State<DateRangePickerModal> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Select Date Range',
+                          l10n.selectDateRange,
                           style: GoogleFonts.inter(
                             color: AppColors.textPrimary,
                             fontSize: 18,
@@ -189,8 +191,8 @@ class _DateRangePickerModalState extends State<DateRangePickerModal> {
                           _startDate != null && _endDate != null
                               ? '${DateFormat('MMM d, yyyy').format(_startDate!)} - ${DateFormat('MMM d, yyyy').format(_endDate!)}'
                               : _startDate != null
-                                  ? 'From ${DateFormat('MMM d, yyyy').format(_startDate!)}...'
-                                  : 'Select start date',
+                                  ? l10n.from(DateFormat('MMM d, yyyy').format(_startDate!))
+                                  : l10n.selectStartDate,
                           style: GoogleFonts.inter(
                             color: AppColors.textMuted,
                             fontSize: 12,
@@ -244,18 +246,24 @@ class _DateRangePickerModalState extends State<DateRangePickerModal> {
                     child: OutlinedButton(
                       onPressed: () => Navigator.pop(context),
                       style: OutlinedButton.styleFrom(
+                        backgroundColor: AppColors.error.withValues(alpha: 0.12),
+                        foregroundColor: AppColors.error.withValues(alpha: 0.95),
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        side: BorderSide(color: AppColors.border),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(
+                          color: AppColors.error.withValues(alpha: 0.25),
+                          width: 1,
                         ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        elevation: 0,
                       ),
                       child: Text(
-                        'Cancel',
+                        l10n.cancel,
                         style: GoogleFonts.inter(
-                          color: AppColors.textSecondary,
-                          fontSize: 14,
+                          fontSize: 13,
                           fontWeight: FontWeight.w600,
+                          letterSpacing: 0.2,
                         ),
                       ),
                     ),
@@ -263,33 +271,35 @@ class _DateRangePickerModalState extends State<DateRangePickerModal> {
                   const SizedBox(width: 12),
                   Expanded(
                     flex: 2,
-                    child: ElevatedButton(
+                    child: ElevatedButton.icon(
                       onPressed: _startDate != null && _endDate != null
                           ? () => Navigator.pop(context, DateTimeRange(start: _startDate!, end: _endDate!))
                           : null,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        disabledBackgroundColor: AppColors.muted,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                        disabledBackgroundColor: AppColors.muted.withValues(alpha: 0.3),
+                        foregroundColor: AppColors.primary.withValues(alpha: 0.95),
+                        disabledForegroundColor: AppColors.textMuted.withValues(alpha: 0.5),
+                        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(10),
+                          side: BorderSide(
+                            color: _startDate != null && _endDate != null
+                                ? AppColors.primary.withValues(alpha: 0.25)
+                                : AppColors.border.withValues(alpha: 0.15),
+                            width: 1,
+                          ),
                         ),
                         elevation: 0,
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(LucideIcons.check, size: 16),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Apply Filter',
-                            style: GoogleFonts.inter(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
+                      icon: const Icon(LucideIcons.check, size: 16),
+                      label: Text(
+                        l10n.applyFilter,
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.2,
+                        ),
                       ),
                     ),
                   ),
@@ -303,13 +313,15 @@ class _DateRangePickerModalState extends State<DateRangePickerModal> {
   }
 
   Widget _buildPresets(DateTime today) {
+    final l10n = AppLocalizations.of(context)!;
+    
     final presets = [
-      {'label': 'Today', 'key': 'today', 'start': today, 'end': today},
-      {'label': 'Yesterday', 'key': 'yesterday', 'start': today.subtract(const Duration(days: 1)), 'end': today.subtract(const Duration(days: 1))},
-      {'label': 'Last 7 Days', 'key': 'week', 'start': today.subtract(const Duration(days: 6)), 'end': today},
-      {'label': 'Last 30 Days', 'key': 'month', 'start': today.subtract(const Duration(days: 29)), 'end': today},
-      {'label': 'This Month', 'key': 'thisMonth', 'start': DateTime(today.year, today.month, 1), 'end': today},
-      {'label': 'Last Month', 'key': 'lastMonth', 'start': DateTime(today.year, today.month - 1, 1), 'end': DateTime(today.year, today.month, 0)},
+      {'label': l10n.today, 'key': 'today', 'start': today, 'end': today},
+      {'label': l10n.yesterday, 'key': 'yesterday', 'start': today.subtract(const Duration(days: 1)), 'end': today.subtract(const Duration(days: 1))},
+      {'label': l10n.last7Days, 'key': 'week', 'start': today.subtract(const Duration(days: 6)), 'end': today},
+      {'label': l10n.last30Days, 'key': 'month', 'start': today.subtract(const Duration(days: 29)), 'end': today},
+      {'label': l10n.thisMonth, 'key': 'thisMonth', 'start': DateTime(today.year, today.month, 1), 'end': today},
+      {'label': l10n.lastMonth, 'key': 'lastMonth', 'start': DateTime(today.year, today.month - 1, 1), 'end': DateTime(today.year, today.month, 0)},
     ];
 
     return Wrap(
@@ -389,7 +401,7 @@ class _DateRangePickerModalState extends State<DateRangePickerModal> {
                 ),
                 Expanded(
                   child: Text(
-                    DateFormat('MMMM yyyy').format(_focusedMonth),
+                    DateFormat('MMMM yyyy', Localizations.localeOf(context).languageCode).format(_focusedMonth).toUpperCase(),
                     textAlign: TextAlign.center,
                     style: GoogleFonts.inter(
                       color: AppColors.textPrimary,
