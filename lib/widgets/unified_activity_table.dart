@@ -60,7 +60,7 @@ class UnifiedActivityTable extends StatelessWidget {
         children: [
           // Member column
           SizedBox(
-            width: 200,
+            width: 220,
             child: _buildSortableHeader('MEMBER', 'member'),
           ),
           
@@ -78,7 +78,7 @@ class UnifiedActivityTable extends StatelessWidget {
           
           // Duration column
           SizedBox(
-            width: 140,
+            width: 160,
             child: _buildSortableHeader('DURATION', 'duration'),
           ),
         ],
@@ -146,7 +146,7 @@ class UnifiedActivityTable extends StatelessWidget {
         children: [
           // Member column (avatar + name)
           SizedBox(
-            width: 200,
+            width: 220,
             child: Row(
               children: [
                 // Avatar with status indicator
@@ -249,7 +249,7 @@ class UnifiedActivityTable extends StatelessWidget {
           
           // Duration column
           SizedBox(
-            width: 140,
+            width: 160,
             child: _buildDurationCell(activity),
           ),
         ],
