@@ -191,51 +191,56 @@ class _AnimatedTabSwitcherState extends State<AnimatedTabSwitcher>
     final isSelected = widget.selectedIndex == index;
     final hasIcon = tabItem.icon != null;
     
-    return GestureDetector(
-      onTap: () => widget.onTabSelected(index),
-      child: Container(
-        width: widget.tabWidth,
-        height: widget.height,
-        alignment: Alignment.center,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (hasIcon) ...[
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.all(7),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? AppColors.primary.withValues(alpha: 0.15)
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(8),
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () => widget.onTabSelected(index),
+        behavior: HitTestBehavior.opaque, // Makes entire container clickable
+        child: Container(
+          width: widget.tabWidth,
+          height: widget.height,
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (hasIcon) ...[
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? AppColors.primary.withValues(alpha: 0.15)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    tabItem.icon,
+                    size: 18,
+                    color: isSelected
+                        ? AppColors.primary.withValues(alpha: 0.95)
+                        : unselectedColor,
+                  ),
                 ),
-                child: Icon(
-                  tabItem.icon,
-                  size: 18,
-                  color: isSelected
-                      ? AppColors.primary.withValues(alpha: 0.95)
-                      : unselectedColor,
+                const SizedBox(width: 10),
+              ],
+              Flexible(
+                child: AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 200),
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                    color: isSelected ? selectedColor : unselectedColor,
+                    letterSpacing: 0.2,
+                  ),
+                  child: Text(
+                    tabItem.label,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
-              const SizedBox(width: 10),
             ],
-            Flexible(
-              child: AnimatedDefaultTextStyle(
-                duration: const Duration(milliseconds: 200),
-                style: GoogleFonts.inter(
-                  fontSize: 14,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                  color: isSelected ? selectedColor : unselectedColor,
-                  letterSpacing: 0.2,
-                ),
-                child: Text(
-                  tabItem.label,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
