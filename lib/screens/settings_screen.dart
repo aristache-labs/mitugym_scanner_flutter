@@ -1241,12 +1241,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        gradient: isHealthy 
-                            ? AppColors.successGradient 
-                            : isOffline
-                                ? AppColors.errorGradient
-                                : AppColors.warningGradient,
+                        color: (isHealthy 
+                            ? AppColors.success 
+                            : isOffline 
+                                ? AppColors.error 
+                                : AppColors.warning)
+                            .withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: (isHealthy 
+                              ? AppColors.success 
+                              : isOffline 
+                                  ? AppColors.error 
+                                  : AppColors.warning)
+                              .withValues(alpha: 0.3),
+                          width: 1.5,
+                        ),
                         boxShadow: [
                           BoxShadow(
                             color: (isHealthy 
@@ -1254,9 +1264,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                                 : isOffline 
                                     ? AppColors.error 
                                     : AppColors.warning)
-                                .withValues(alpha: 0.4),
-                            blurRadius: 16,
-                            offset: const Offset(0, 4),
+                                .withValues(alpha: 0.1),
+                            blurRadius: 12,
+                            offset: const Offset(0, 2),
                           ),
                         ],
                       ),
@@ -1266,7 +1276,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                             : isOffline 
                                 ? LucideIcons.wifiOff 
                                 : LucideIcons.alertCircle,
-                        color: Colors.white,
+                        color: isHealthy 
+                            ? AppColors.success 
+                            : isOffline 
+                                ? AppColors.error 
+                                : AppColors.warning,
                         size: 28,
                       ),
                     ),
@@ -2101,92 +2115,121 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   Widget _buildLanguageSelector() {
     final currentLocale = ref.watch(languageProvider);
     
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.surface.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.15),
-          width: 1,
+    return Row(
+      children: [
+        // Icon
+        Icon(
+          LucideIcons.languages,
+          color: AppColors.primary.withValues(alpha: 0.7),
+          size: 16,
         ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Icon(LucideIcons.languages, color: AppColors.primary, size: 14),
+        const SizedBox(width: 12),
+        // Labels
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                AppLocalizations.of(context)!.language,
+                style: GoogleFonts.inter(
+                  color: AppColors.textPrimary,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                AppLocalizations.of(context)!.selectPreferredLanguage,
+                style: GoogleFonts.inter(
+                  color: AppColors.textMuted.withValues(alpha: 0.8),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  AppLocalizations.of(context)!.language,
-                  style: GoogleFonts.inter(
-                    color: AppColors.textPrimary,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.2,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  AppLocalizations.of(context)!.selectPreferredLanguage,
-                  style: GoogleFonts.inter(
-                    color: AppColors.textSecondary.withValues(alpha: 0.7),
-                    fontSize: 11,
-                  ),
-                ),
+        ),
+        const SizedBox(width: 16),
+        // Dropdown
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppColors.primary.withValues(alpha: 0.08),
+                AppColors.primary.withValues(alpha: 0.05),
               ],
             ),
-          ),
-          const SizedBox(width: 12),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: AppColors.surface.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(
-                color: AppColors.border.withValues(alpha: 0.2),
-                width: 1,
-              ),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: AppColors.primary.withValues(alpha: 0.2),
+              width: 1,
             ),
-            child: DropdownButton<Locale>(
-              value: currentLocale,
-              isDense: true,
-              underline: const SizedBox(),
-              dropdownColor: AppColors.card,
-              style: GoogleFonts.inter(
-                color: AppColors.textPrimary,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.05),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
               ),
-              icon: Icon(
-                LucideIcons.chevronDown,
-                size: 14,
-                color: AppColors.textMuted,
-              ),
-              items: LanguageNotifier.supportedLocales.map((locale) {
-                return DropdownMenuItem<Locale>(
-                  value: locale,
-                  child: Text(LanguageNotifier.getLocaleName(locale)),
-                );
-              }).toList(),
-              onChanged: (Locale? newLocale) {
-                if (newLocale != null) {
-                  ref.read(languageProvider.notifier).changeLocale(newLocale);
-                }
-              },
-            ),
+            ],
           ),
-        ],
-      ),
+          child: DropdownButton<Locale>(
+            value: currentLocale,
+            isDense: true,
+            underline: const SizedBox(),
+            dropdownColor: AppColors.card,
+            borderRadius: BorderRadius.circular(12),
+            elevation: 8,
+            style: GoogleFonts.inter(
+              color: AppColors.textPrimary,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.3,
+            ),
+            icon: Icon(
+              LucideIcons.chevronDown,
+              size: 16,
+              color: AppColors.primary.withValues(alpha: 0.8),
+            ),
+            items: LanguageNotifier.supportedLocales.map((locale) {
+              return DropdownMenuItem<Locale>(
+                value: locale,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 6,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: locale == currentLocale 
+                              ? AppColors.primary 
+                              : Colors.transparent,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        LanguageNotifier.getLocaleName(locale),
+                        style: GoogleFonts.inter(
+                          fontWeight: locale == currentLocale 
+                              ? FontWeight.w600 
+                              : FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }).toList(),
+            onChanged: (Locale? newLocale) {
+              if (newLocale != null) {
+                ref.read(languageProvider.notifier).changeLocale(newLocale);
+              }
+            },
+          ),
+        ),
+      ],
     );
   }
 
@@ -2245,26 +2288,27 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
             ),
           ),
           Transform.scale(
-            scale: 0.95,
+            scale: 0.9,
             child: Switch(
               value: value,
               onChanged: onChanged,
-              activeTrackColor: AppColors.primary.withValues(alpha: 0.75),
-              inactiveTrackColor: AppColors.surface.withValues(alpha: 0.9),
-              inactiveThumbColor: AppColors.textSecondary,
+              activeTrackColor: AppColors.success.withValues(alpha: 0.3),
+              inactiveTrackColor: AppColors.surface.withValues(alpha: 0.7),
+              activeThumbColor: Colors.white,
+              inactiveThumbColor: AppColors.textMuted.withValues(alpha: 0.9),
               thumbColor: WidgetStateProperty.resolveWith((states) {
                 if (states.contains(WidgetState.selected)) {
-                  return AppColors.primary;
+                  return Colors.white;
                 }
-                return AppColors.textSecondary;
+                return AppColors.textMuted.withValues(alpha: 0.9);
               }),
               trackOutlineColor: WidgetStateProperty.resolveWith((states) {
                 if (states.contains(WidgetState.selected)) {
-                  return AppColors.primary.withValues(alpha: 0.6);
+                  return AppColors.success.withValues(alpha: 0.4);
                 }
-                return AppColors.border.withValues(alpha: 0.6);
+                return AppColors.border.withValues(alpha: 0.5);
               }),
-              trackOutlineWidth: WidgetStateProperty.all(2.5),
+              trackOutlineWidth: WidgetStateProperty.all(1.5),
               overlayColor: WidgetStateProperty.all(Colors.transparent),
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
