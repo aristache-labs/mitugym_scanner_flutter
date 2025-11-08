@@ -101,33 +101,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     ref.read(windowsScannerControllerProvider.notifier).updateFrameRate(_cameraFrameRate);
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: const Icon(LucideIcons.check, color: Colors.white, size: 16),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                'Settings saved successfully',
-                style: GoogleFonts.inter(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          backgroundColor: AppColors.success,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          duration: const Duration(seconds: 2),
-        ),
+      _showPremiumToast(
+        context: context,
+        message: 'Settings saved successfully',
+        icon: LucideIcons.checkCircle,
+        type: ToastType.success,
       );
     }
   }
@@ -885,11 +863,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     } catch (e) {
       if (mounted) {
         Navigator.of(context).pop(); // Close loading dialog
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Test failed: $e'),
-            backgroundColor: AppColors.error,
-          ),
+        _showPremiumToast(
+          context: context,
+          message: 'Test failed: $e',
+          icon: LucideIcons.xCircle,
+          type: ToastType.error,
         );
       }
     }
@@ -1388,11 +1366,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
       final deletedCount = await ref.read(historyProvider.notifier).cleanupOldHistory();
       
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Deleted $deletedCount old records'),
-            backgroundColor: AppColors.success,
-          ),
+        _showPremiumToast(
+          context: context,
+          message: 'Deleted $deletedCount old records',
+          icon: LucideIcons.trash2,
+          type: ToastType.success,
         );
       }
     }
@@ -1437,53 +1415,29 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
         
         final historyState = ref.read(historyProvider);
         if (historyState.error != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Sync error: ${historyState.error}'),
-              backgroundColor: AppColors.error,
-            ),
+          _showPremiumToast(
+            context: context,
+            message: 'Sync error: ${historyState.error}',
+            icon: LucideIcons.alertCircle,
+            type: ToastType.error,
           );
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: const Icon(LucideIcons.check, color: Colors.white, size: 16),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'All data synced successfully from server',
-                      style: GoogleFonts.inter(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: AppColors.success,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              duration: const Duration(seconds: 3),
-            ),
+          _showPremiumToast(
+            context: context,
+            message: 'All data synced successfully from server',
+            icon: LucideIcons.refreshCw,
+            type: ToastType.success,
           );
         }
       }
     } catch (e) {
       if (mounted) {
         Navigator.of(context).pop(); // Close loading dialog
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Sync failed: $e'),
-            backgroundColor: AppColors.error,
-          ),
+        _showPremiumToast(
+          context: context,
+          message: 'Sync failed: $e',
+          icon: LucideIcons.xCircle,
+          type: ToastType.error,
         );
       }
     }
@@ -1864,6 +1818,192 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     );
   }
 
+  /// Show premium toast notification
+  void _showPremiumToast({
+    required BuildContext context,
+    required String message,
+    required IconData icon,
+    required ToastType type,
+    Duration duration = const Duration(seconds: 3),
+  }) {
+    final overlay = Overlay.of(context);
+    late OverlayEntry overlayEntry;
+    
+    final colorMap = {
+      ToastType.success: AppColors.success,
+      ToastType.error: AppColors.error,
+      ToastType.info: AppColors.info,
+      ToastType.warning: AppColors.warning,
+    };
+    
+    final color = colorMap[type]!;
+    
+    overlayEntry = OverlayEntry(
+      builder: (context) => _PremiumToast(
+        message: message,
+        icon: icon,
+        color: color,
+        onDismiss: () => overlayEntry.remove(),
+        duration: duration,
+      ),
+    );
+    
+    overlay.insert(overlayEntry);
+  }
+}
 
+/// Toast type enum
+enum ToastType { success, error, info, warning }
+
+/// Premium toast widget
+class _PremiumToast extends StatefulWidget {
+  final String message;
+  final IconData icon;
+  final Color color;
+  final VoidCallback onDismiss;
+  final Duration duration;
+
+  const _PremiumToast({
+    required this.message,
+    required this.icon,
+    required this.color,
+    required this.onDismiss,
+    required this.duration,
+  });
+
+  @override
+  State<_PremiumToast> createState() => _PremiumToastState();
+}
+
+class _PremiumToastState extends State<_PremiumToast>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<Offset> _slideAnimation;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      reverseDuration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 2),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.elasticOut,
+      reverseCurve: Curves.easeInCubic,
+    ));
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
+      reverseCurve: Curves.easeOut,
+    ));
+
+    _controller.forward();
+
+    Future.delayed(widget.duration, () {
+      if (mounted) {
+        _controller.reverse().then((_) => widget.onDismiss());
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      bottom: 24,
+      left: 0,
+      right: 0,
+      child: Center(
+        child: SlideTransition(
+          position: _slideAnimation,
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: Material(
+              color: Colors.transparent,
+              child: Container(
+                constraints: const BoxConstraints(maxWidth: 400),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppColors.card.withValues(alpha: 0.95),
+                      AppColors.surface.withValues(alpha: 0.9),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: widget.color.withValues(alpha: 0.3),
+                    width: 1.5,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.25),
+                      blurRadius: 24,
+                      offset: const Offset(0, 12),
+                      spreadRadius: -4,
+                    ),
+                    BoxShadow(
+                      color: widget.color.withValues(alpha: 0.2),
+                      blurRadius: 16,
+                      spreadRadius: 0,
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: widget.color.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: widget.color.withValues(alpha: 0.25),
+                          width: 1,
+                        ),
+                      ),
+                      child: Icon(
+                        widget.icon,
+                        color: widget.color.withValues(alpha: 0.9),
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Flexible(
+                      child: Text(
+                        widget.message,
+                        style: GoogleFonts.inter(
+                          color: AppColors.textPrimary,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
