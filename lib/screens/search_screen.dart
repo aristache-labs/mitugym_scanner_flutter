@@ -6,6 +6,7 @@ import '../config/app_colors.dart';
 import '../models/member_data.dart';
 import '../services/search_service.dart';
 import '../services/offline_storage_service.dart';
+import '../services/export_service.dart';
 import '../widgets/member_avatar_modal.dart';
 import '../widgets/member_details_modal.dart';
 
@@ -19,6 +20,7 @@ class SearchScreen extends ConsumerStatefulWidget {
 
 class _SearchScreenState extends ConsumerState<SearchScreen> {
   late final SearchService _searchService;
+  final ExportService _exportService = ExportService();
   final TextEditingController _searchController = TextEditingController();
   
   @override
@@ -166,6 +168,223 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     MemberDetailsModal.show(context, member: member);
   }
 
+  /// Export members with format selection
+  Future<void> _exportMembers(String format) async {
+    final members = _getFilteredMembers();
+
+    if (members.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No members to export'),
+            backgroundColor: AppColors.warning,
+          ),
+        );
+      }
+      return;
+    }
+
+    try {
+      // Export using selected format
+      String? filePath;
+      switch (format.toLowerCase()) {
+        case 'csv':
+          filePath = await _exportService.exportMembersToCSV(members);
+          break;
+        case 'pdf':
+          filePath = await _exportService.exportMembersToPDF(members);
+          break;
+        case 'txt':
+        default:
+          filePath = await _exportService.exportMembersToText(members);
+      }
+      
+      if (filePath == null) {
+        throw Exception('Export failed: No file path returned');
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Exported ${format.toUpperCase()} to: $filePath'),
+            backgroundColor: AppColors.success,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Export failed: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
+  }
+
+  /// Show export format menu
+  void _showExportMenu(BuildContext context) {
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        MediaQuery.of(context).size.width - 200,
+        140,
+        20,
+        0,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: AppColors.border.withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
+      color: AppColors.card,
+      elevation: 8,
+      items: [
+        PopupMenuItem(
+          padding: EdgeInsets.zero,
+          enabled: false,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            child: Text(
+              'Export Format',
+              style: GoogleFonts.inter(
+                color: AppColors.textMuted,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.8,
+              ),
+            ),
+          ),
+        ),
+        _buildExportMenuItem(
+          icon: LucideIcons.fileSpreadsheet,
+          label: 'CSV',
+          description: 'Comma-separated values',
+          onTap: () => _exportMembers('csv'),
+        ),
+        _buildExportMenuItem(
+          icon: LucideIcons.fileText,
+          label: 'PDF',
+          description: 'Portable document format',
+          onTap: () => _exportMembers('pdf'),
+        ),
+        _buildExportMenuItem(
+          icon: LucideIcons.fileType,
+          label: 'TXT',
+          description: 'Plain text file',
+          onTap: () => _exportMembers('txt'),
+        ),
+      ],
+    );
+  }
+
+  /// Build a single export menu item
+  PopupMenuItem _buildExportMenuItem({
+    required IconData icon,
+    required String label,
+    required String description,
+    required VoidCallback onTap,
+  }) {
+    return PopupMenuItem(
+      padding: EdgeInsets.zero,
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                icon,
+                size: 18,
+                color: AppColors.primary,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: GoogleFonts.inter(
+                      color: AppColors.textPrimary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    description,
+                    style: GoogleFonts.inter(
+                      color: AppColors.textMuted,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              LucideIcons.chevronRight,
+              size: 16,
+              color: AppColors.textMuted,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Get filtered members based on current filters
+  List<MemberData> _getFilteredMembers() {
+    var filtered = _searchResults;
+
+    // Apply status filter
+    if (_selectedStatus != 'all') {
+      filtered = filtered.where((m) {
+        if (_selectedStatus == 'active') return m.isActive;
+        if (_selectedStatus == 'inactive') return !m.isActive;
+        return true;
+      }).toList();
+    }
+
+    // Apply sorting
+    if (_sortBy.isNotEmpty) {
+      filtered = List.from(filtered);
+      filtered.sort((a, b) {
+        int comparison = 0;
+        switch (_sortBy) {
+          case 'name':
+            comparison = a.memberName.compareTo(b.memberName);
+            break;
+          case 'plan':
+            comparison = a.planName.compareTo(b.planName);
+            break;
+          case 'expiry':
+            try {
+              final dateA = DateTime.parse(a.expiresAt);
+              final dateB = DateTime.parse(b.expiresAt);
+              comparison = dateA.compareTo(dateB);
+            } catch (e) {
+              comparison = 0;
+            }
+            break;
+        }
+        return _sortAscending ? comparison : -comparison;
+      });
+    }
+
+    return filtered;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -188,15 +407,17 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   }
 
   Widget _buildSearchHeader() {
+    final filteredMembers = _getFilteredMembers();
+    
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+          children: [
             if (_searchResults.isNotEmpty) ...[
               Text(
-                '${_searchResults.length} ${_searchResults.length == 1 ? 'member' : 'members'} found',
+                '${filteredMembers.length} ${filteredMembers.length == 1 ? 'member' : 'members'} found',
                 style: GoogleFonts.inter(
                   color: AppColors.textMuted,
                   fontSize: 14,
@@ -204,6 +425,63 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               ),
             ],
           ],
+        ),
+        // Export button
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.primary,
+                AppColors.primaryDark,
+              ],
+            ),
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => _showExportMenu(context),
+              borderRadius: BorderRadius.circular(12),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      LucideIcons.download,
+                      size: 18,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Export',
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Icon(
+                      LucideIcons.chevronDown,
+                      size: 16,
+                      color: Colors.white.withValues(alpha: 0.8),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ),
       ],
     );
@@ -432,6 +710,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     }
 
     // Members list with fixed table header
+    final filteredMembers = _getFilteredMembers();
+    
     return Stack(
       children: [
         // Members list with top padding for header
@@ -439,11 +719,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           padding: const EdgeInsets.only(top: 48),
           child: ListView.builder(
             padding: EdgeInsets.zero,
-      itemCount: _searchResults.length,
-      itemBuilder: (context, index) {
-        final member = _searchResults[index];
-        return _buildMemberCard(member);
-      },
+            itemCount: filteredMembers.length,
+            itemBuilder: (context, index) {
+              final member = filteredMembers[index];
+              return _buildMemberCard(member);
+            },
           ),
         ),
         
