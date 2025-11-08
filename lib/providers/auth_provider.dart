@@ -75,6 +75,7 @@ class AuthNotifier extends Notifier<AuthState> {
     required String password,
     String? deviceName,
     bool isOffline = false,
+    bool rememberMe = true,
   }) async {
     state = state.copyWith(isLoading: true, error: null);
 
@@ -90,6 +91,7 @@ class AuthNotifier extends Notifier<AuthState> {
               email: email,
               password: password,
               deviceName: deviceName,
+              rememberMe: rememberMe,
             );
 
       state = state.copyWith(

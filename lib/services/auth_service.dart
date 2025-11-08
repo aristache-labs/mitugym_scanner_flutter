@@ -31,6 +31,7 @@ class AuthService {
     required String email,
     required String password,
     String? deviceName,
+    bool rememberMe = true,
   }) async {
     try {
       _logger.i('Attempting login for: $email');
@@ -73,19 +74,30 @@ class AuthService {
           await session.save();
           _verboseLogger?.logDebug('Session saved successfully', source: 'AuthService');
 
-          // Save cached credentials for offline login
-          await AuthSession.saveCachedCredentials(email, password);
-          _verboseLogger?.logDebug('Cached credentials saved for offline login', source: 'AuthService');
+          // Save cached credentials for offline login (only if remember me is enabled)
+          if (rememberMe) {
+            await AuthSession.saveCachedCredentials(email, password);
+            _verboseLogger?.logDebug('Cached credentials saved for offline login', source: 'AuthService');
 
-          // Save session data for offline login restoration
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setString('last_user_name', session.userName);
-          await prefs.setString('last_location_name', session.locationName);
-          await prefs.setString('last_api_key', session.apiKey);
-          if (session.avatarUrl != null) {
-            await prefs.setString('last_avatar_url', session.avatarUrl!);
+            // Save session data for offline login restoration
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString('last_user_name', session.userName);
+            await prefs.setString('last_location_name', session.locationName);
+            await prefs.setString('last_api_key', session.apiKey);
+            if (session.avatarUrl != null) {
+              await prefs.setString('last_avatar_url', session.avatarUrl!);
+            }
+            _verboseLogger?.logDebug('Session data cached for offline login', source: 'AuthService');
+          } else {
+            // Clear any existing cached credentials if remember me is disabled
+            await AuthSession.clearCachedCredentials();
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.remove('last_user_name');
+            await prefs.remove('last_location_name');
+            await prefs.remove('last_api_key');
+            await prefs.remove('last_avatar_url');
+            _verboseLogger?.logDebug('Cached credentials cleared (remember me disabled)', source: 'AuthService');
           }
-          _verboseLogger?.logDebug('Session data cached for offline login', source: 'AuthService');
 
           return session;
         } else {

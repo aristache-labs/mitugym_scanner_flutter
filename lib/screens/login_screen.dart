@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../config/app_colors.dart';
 import '../providers/auth_provider.dart';
 import '../providers/offline_provider.dart';
@@ -22,12 +23,34 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _isLoading = false;
+  bool _rememberMe = true; // Default to true for better UX
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedEmail();
+  }
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  /// Load saved email if remember me was enabled
+  Future<void> _loadSavedEmail() async {
+    final hasCachedCredentials = await AuthSession.hasCachedCredentials();
+    if (hasCachedCredentials) {
+      final prefs = await SharedPreferences.getInstance();
+      final savedEmail = prefs.getString('cached_email');
+      if (savedEmail != null && mounted) {
+        setState(() {
+          _emailController.text = savedEmail;
+          _rememberMe = true;
+        });
+      }
+    }
   }
 
   Future<void> _handleLogin() async {
@@ -54,6 +77,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               password: _passwordController.text,
               deviceName: 'Scanner App',
               isOffline: true,
+              rememberMe: _rememberMe,
             );
 
         if (mounted) {
@@ -90,6 +114,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             password: _passwordController.text,
             deviceName: 'Scanner App',
             isOffline: false,
+            rememberMe: _rememberMe,
           );
 
       if (mounted) {
@@ -231,7 +256,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
               // Password field
               _buildPasswordField(),
-              const SizedBox(height: 32),
+              const SizedBox(height: 20),
+
+              // Remember me checkbox
+              _buildRememberMeCheckbox(),
+              const SizedBox(height: 24),
 
               // Login button
               _buildLoginButton(isOnline),
@@ -453,6 +482,46 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
         );
       },
+    );
+  }
+
+  Widget _buildRememberMeCheckbox() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(
+          height: 20,
+          width: 20,
+          child: Checkbox(
+            value: _rememberMe,
+            onChanged: (value) {
+              setState(() {
+                _rememberMe = value ?? true;
+              });
+            },
+            activeColor: AppColors.primary,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              _rememberMe = !_rememberMe;
+            });
+          },
+          child: Text(
+            'Remember me',
+            style: GoogleFonts.inter(
+              color: AppColors.textSecondary,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
