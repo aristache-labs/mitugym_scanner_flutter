@@ -192,8 +192,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           filePath = await _exportService.exportToCSV(activities);
           break;
         case 'pdf':
-          // TODO: Implement PDF export
-          throw Exception('PDF export not yet implemented');
+          filePath = await _exportService.exportToPDF(activities);
+          break;
         case 'txt':
         default:
           filePath = await _exportService.exportToText(activities);
@@ -245,6 +245,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
       items: [
         PopupMenuItem(
           padding: EdgeInsets.zero,
+          enabled: false,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Text(
@@ -257,7 +258,6 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
               ),
             ),
           ),
-          enabled: false,
         ),
         _buildExportMenuItem(
           icon: LucideIcons.fileSpreadsheet,
