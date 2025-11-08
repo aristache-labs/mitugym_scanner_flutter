@@ -9,6 +9,7 @@ import '../providers/gym_schedule_provider.dart';
 import '../providers/windows_scanner_provider.dart';
 import '../services/api_service.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../widgets/animated_tab_switcher.dart';
 
 /// Modern settings screen - Dashboard style
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -34,6 +35,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   late int _logRetentionDays;
   late bool _autoStartScanning;
   late bool _cameraVisible;
+  late bool _startWithWindows;
   late int _historyRetentionDays;
   late bool _verboseLogging;
 
@@ -41,6 +43,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
+    _tabController.addListener(() => setState(() {}));
     
     // Initialize from current config
     final config = ref.read(configProvider);
@@ -54,6 +57,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     _logRetentionDays = config.logRetentionDays;
     _autoStartScanning = config.autoStartScanning;
     _cameraVisible = config.cameraVisible;
+    _startWithWindows = config.startWithWindows;
     _historyRetentionDays = config.historyRetentionDays;
     _verboseLogging = config.verboseLogging;
   }
@@ -81,6 +85,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     await ref.read(configProvider.notifier).updateCameraVisible(_cameraVisible);
     await ref.read(configProvider.notifier).updateAutoStartScanning(_autoStartScanning);
     
+    // Save settings from General tab
+    await ref.read(configProvider.notifier).updateStartWithWindows(_startWithWindows);
+    
     // Save settings from Audio tab
     await ref.read(configProvider.notifier).updateSoundVolume(_soundVolume);
     
@@ -94,140 +101,112 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     ref.read(windowsScannerControllerProvider.notifier).updateFrameRate(_cameraFrameRate);
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: const Icon(LucideIcons.check, color: Colors.white, size: 16),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                'Settings saved successfully',
-                style: GoogleFonts.inter(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          backgroundColor: AppColors.success,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          duration: const Duration(seconds: 2),
-        ),
+      _showPremiumToast(
+        context: context,
+        message: 'Settings saved successfully',
+        icon: LucideIcons.checkCircle,
+        type: ToastType.success,
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
+      children: [
+        Column(
           children: [
-        // Modern header with tabs
-        _buildModernHeader(),
+            // Modern header with tabs
+            _buildModernHeader(),
             
-            // Content
+            // Content with bottom padding for the action bar
             Expanded(
-              child: Form(
-                key: _formKey,
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _buildGeneralTab(),
-                    _buildDisplayTab(),
-                    _buildAudioTab(),
-                    _buildAdvancedTab(),
-                  ],
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 80), // Space for bottom bar
+                child: Form(
+                  key: _formKey,
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      _buildGeneralTab(),
+                      _buildDisplayTab(),
+                      _buildAudioTab(),
+                      _buildAdvancedTab(),
+                    ],
+                  ),
                 ),
               ),
             ),
-            
-            // Modern bottom bar
-            _buildBottomActionBar(),
           ],
+        ),
+        
+        // Modern bottom bar - positioned at the bottom
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: _buildBottomActionBar(),
+        ),
+      ],
     );
   }
 
-  /// Build modern header with tabs
+  /// Build premium header with tabs - Ultra Professional with Sliding Animation
   Widget _buildModernHeader() {
     return Container(
-      padding: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
           colors: [
-            AppColors.card.withValues(alpha: 0.9),
-            AppColors.surface.withValues(alpha: 0.7),
+            AppColors.card.withValues(alpha: 0.6),
+            AppColors.card.withValues(alpha: 0.3),
           ],
         ),
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(24),
-          bottomRight: Radius.circular(24),
-        ),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.3),
+          color: AppColors.border.withValues(alpha: 0.15),
           width: 1,
         ),
-      ),
-                child: Column(
-                  children: [
-          // Tab bar
-          Container(
-            margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: AppColors.surface.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: TabBar(
-              controller: _tabController,
-              indicator: BoxDecoration(
-                gradient: AppColors.primaryGradient,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              indicatorSize: TabBarIndicatorSize.tab,
-              dividerColor: Colors.transparent,
-              labelColor: Colors.white,
-              unselectedLabelColor: AppColors.textMuted,
-              labelStyle: GoogleFonts.inter(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.5,
-              ),
-              unselectedLabelStyle: GoogleFonts.inter(
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-              ),
-              tabs: const [
-                Tab(text: 'GENERAL'),
-                Tab(text: 'DISPLAY'),
-                Tab(text: 'AUDIO'),
-                Tab(text: 'ADVANCED'),
-              ],
-            ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
+      child: Center(
+        child: AnimatedTabSwitcher(
+          tabs: const [
+            TabItem(label: 'General', icon: LucideIcons.home),
+            TabItem(label: 'Display', icon: LucideIcons.monitor),
+            TabItem(label: 'Audio', icon: LucideIcons.volume2),
+            TabItem(label: 'Advanced', icon: LucideIcons.settings2),
+          ],
+          selectedIndex: _tabController.index,
+          onTabSelected: (index) {
+            _tabController.animateTo(index);
+          },
+          height: 64,
+          tabWidth: 165,
+        ),
+      ),
     );
   }
+
 
   /// Build modern bottom action bar
   Widget _buildBottomActionBar() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.fromLTRB(
+        16,
+        16,
+        16,
+        16 + MediaQuery.of(context).padding.bottom,
+      ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
@@ -237,57 +216,54 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
             AppColors.surface.withValues(alpha: 0.7),
           ],
         ),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
-        ),
-        border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.3),
+        border: Border(
+          top: BorderSide(
+            color: AppColors.border.withValues(alpha: 0.3),
             width: 1,
+          ),
         ),
       ),
       child: Row(
         children: [
           Expanded(
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () {
-                  // Reset to original values
-                  final config = ref.read(configProvider);
-                  setState(() {
-                    _apiUrlController.text = config.apiUrl;
-                    _apiKeyController.text = config.apiKey;
-                    _cameraIndex = config.cameraIndex;
-                    _debounceDuration = config.debounceDuration;
-                    _audioEnabled = config.audioEnabled;
-                    _soundVolume = config.soundVolume;
-                    _cameraFrameRate = config.cameraFrameRate;
-                    _logRetentionDays = config.logRetentionDays;
-                    _autoStartScanning = config.autoStartScanning;
-                    _cameraVisible = config.cameraVisible;
-                    _historyRetentionDays = config.historyRetentionDays;
-                  });
-                },
-                borderRadius: BorderRadius.circular(12),
-            child: Container(
-              height: 48,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                      color: AppColors.border,
-                  width: 1.5,
+            child: ElevatedButton.icon(
+              onPressed: () {
+                // Reset to original values
+                final config = ref.read(configProvider);
+                setState(() {
+                  _apiUrlController.text = config.apiUrl;
+                  _apiKeyController.text = config.apiKey;
+                  _cameraIndex = config.cameraIndex;
+                  _debounceDuration = config.debounceDuration;
+                  _audioEnabled = config.audioEnabled;
+                  _soundVolume = config.soundVolume;
+                  _cameraFrameRate = config.cameraFrameRate;
+                  _logRetentionDays = config.logRetentionDays;
+                  _autoStartScanning = config.autoStartScanning;
+                  _cameraVisible = config.cameraVisible;
+                  _startWithWindows = config.startWithWindows;
+                  _historyRetentionDays = config.historyRetentionDays;
+                });
+              },
+              icon: const Icon(LucideIcons.rotateCcw, size: 16),
+              label: Text(
+                'Reset',
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.2,
                 ),
               ),
-                  child: Center(
-                child: Text(
-                      'Reset',
-                  style: GoogleFonts.inter(
-                        color: AppColors.textSecondary,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.3,
-                      ),
-                    ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.surface.withValues(alpha: 0.3),
+                foregroundColor: AppColors.textSecondary.withValues(alpha: 0.85),
+                minimumSize: const Size(double.infinity, 44),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  side: BorderSide(
+                    color: AppColors.border.withValues(alpha: 0.2),
+                    width: 1,
                   ),
                 ),
               ),
@@ -296,38 +272,27 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
           const SizedBox(width: 12),
           Expanded(
             flex: 2,
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: _saveSettings,
-                borderRadius: BorderRadius.circular(12),
-            child: Container(
-              height: 48,
-              decoration: BoxDecoration(
-                gradient: AppColors.primaryGradient,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.3),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
+            child: ElevatedButton.icon(
+              onPressed: _saveSettings,
+              icon: const Icon(LucideIcons.save, size: 16),
+              label: Text(
+                'Save Settings',
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.2,
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                      const Icon(LucideIcons.save, size: 18, color: Colors.white),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Save Settings',
-                      style: GoogleFonts.inter(
-                          color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                  ],
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                foregroundColor: AppColors.primary.withValues(alpha: 0.95),
+                minimumSize: const Size(double.infinity, 44),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  side: BorderSide(
+                    color: AppColors.primary.withValues(alpha: 0.25),
+                    width: 1,
                   ),
                 ),
               ),
@@ -339,179 +304,268 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   }
 
   Widget _buildGeneralTab() {
-    return ListView(
-      padding: const EdgeInsets.all(20),
-      children: [
-        _buildSection(
-          'API Configuration',
-          LucideIcons.cloud,
-          [
-            _buildTextField(
-              controller: _apiUrlController,
-              label: 'API URL',
-              hint: 'https://api.example.com',
-              icon: LucideIcons.link,
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Left column (equal width)
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                // API Configuration Card
+                _buildModernCard(
+                  icon: LucideIcons.cloud,
+                  title: 'API Configuration',
+                  subtitle: 'Manage your API connection',
+                  child: Column(
+                    children: [
+                      _buildInlineTextField(
+                        controller: _apiUrlController,
+                        label: 'API URL',
+                        hint: 'https://api.example.com',
+                        icon: LucideIcons.link,
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildInlineTextField(
+                              controller: _apiKeyController,
+                              label: 'API Key',
+                              hint: 'Enter your API key',
+                              icon: LucideIcons.key,
+                              obscure: true,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 20),
+                            child: _buildTestApiButton(),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                
+                // Application Preferences Card
+                _buildModernCard(
+                  icon: LucideIcons.settings,
+                  title: 'Application Preferences',
+                  subtitle: 'Startup and behavior settings',
+                  child: _buildInlineSwitch(
+                    label: 'Start with Windows',
+                    description: 'Launch automatically when Windows starts',
+                    icon: LucideIcons.power,
+                    value: _startWithWindows,
+                    onChanged: (v) => setState(() => _startWithWindows = v),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            _buildTextField(
-              controller: _apiKeyController,
-              label: 'API Key',
-              hint: 'Your API key',
-              icon: LucideIcons.key,
-              obscure: true,
+          ),
+          
+          const SizedBox(width: 16),
+          
+          // Right column (equal width)
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                // Camera Settings Card
+                _buildModernCard(
+                  icon: LucideIcons.video,
+                  title: 'Camera',
+                  subtitle: 'Device and capture settings',
+                  child: Column(
+                    children: [
+                      _buildCompactSlider(
+                        label: 'Device',
+                        icon: LucideIcons.camera,
+                        value: _cameraIndex.toDouble(),
+                        min: 0,
+                        max: 5,
+                        divisions: 5,
+                        displayValue: 'Camera $_cameraIndex',
+                        onChanged: (v) => setState(() => _cameraIndex = v.toInt()),
+                      ),
+                      const SizedBox(height: 12),
+                      _buildCompactSlider(
+                        label: 'Frame Rate',
+                        icon: LucideIcons.zap,
+                        value: _cameraFrameRate.toDouble(),
+                        min: 5,
+                        max: 30,
+                        divisions: 25,
+                        displayValue: '$_cameraFrameRate FPS',
+                        onChanged: (v) => setState(() => _cameraFrameRate = v.toInt()),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            _buildTestApiButton(),
-          ],
-        ),
-        const SizedBox(height: 24),
-        _buildSection(
-          'Camera',
-          LucideIcons.camera,
-          [
-            _buildSlider(
-              label: 'Camera Device',
-              value: _cameraIndex.toDouble(),
-              min: 0,
-              max: 5,
-              divisions: 5,
-              displayValue: 'Device $_cameraIndex',
-              onChanged: (v) => setState(() => _cameraIndex = v.toInt()),
-            ),
-            const SizedBox(height: 16),
-            _buildSlider(
-              label: 'Frame Rate',
-              value: _cameraFrameRate.toDouble(),
-              min: 5,
-              max: 30,
-              divisions: 25,
-              displayValue: '$_cameraFrameRate FPS',
-              onChanged: (v) => setState(() => _cameraFrameRate = v.toInt()),
-            ),
-          ],
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildDisplayTab() {
-    return ListView(
-      padding: const EdgeInsets.all(20),
-      children: [
-        _buildSection(
-          'Scanner',
-          LucideIcons.qrCode,
-          [
-            _buildSlider(
-              label: 'Scan Cooldown',
-              value: _debounceDuration.toDouble(),
-              min: 2,
-              max: 15,
-              divisions: 13,
-              displayValue: '$_debounceDuration sec',
-              onChanged: (v) => setState(() => _debounceDuration = v.toInt()),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Left column
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                // Scanner Settings Card
+                _buildModernCard(
+                  icon: LucideIcons.qrCode,
+                  title: 'Scanner',
+                  subtitle: 'QR code scanning behavior',
+                  child: Column(
+                    children: [
+                      _buildCompactSlider(
+                        label: 'Scan Cooldown',
+                        icon: LucideIcons.timer,
+                        value: _debounceDuration.toDouble(),
+                        min: 2,
+                        max: 15,
+                        divisions: 13,
+                        displayValue: '$_debounceDuration sec',
+                        onChanged: (v) => setState(() => _debounceDuration = v.toInt()),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            _buildSwitch(
-              label: 'Show Camera by Default',
-              value: _cameraVisible,
-              onChanged: (v) => setState(() => _cameraVisible = v),
+          ),
+          
+          const SizedBox(width: 16),
+          
+          // Right column
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                // Display Preferences Card
+                _buildModernCard(
+                  icon: LucideIcons.eye,
+                  title: 'Display Preferences',
+                  subtitle: 'Camera and UI settings',
+                  child: Column(
+                    children: [
+                      _buildInlineSwitch(
+                        label: 'Show Camera by Default',
+                        description: 'Display camera preview on scanner screen',
+                        icon: LucideIcons.video,
+                        value: _cameraVisible,
+                        onChanged: (v) => setState(() => _cameraVisible = v),
+                      ),
+                      const SizedBox(height: 12),
+                      _buildInlineSwitch(
+                        label: 'Auto-start Scanning',
+                        description: 'Begin scanning when app launches',
+                        icon: LucideIcons.playCircle,
+                        value: _autoStartScanning,
+                        onChanged: (v) => setState(() => _autoStartScanning = v),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            _buildSwitch(
-              label: 'Auto-start Scanning',
-              value: _autoStartScanning,
-              onChanged: (v) => setState(() => _autoStartScanning = v),
-            ),
-          ],
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildAudioTab() {
-    return ListView(
-      padding: const EdgeInsets.all(20),
-      children: [
-        _buildSection(
-          'Sound Settings',
-          LucideIcons.volume2,
-          [
-            _buildSwitch(
-              label: 'Enable Audio Feedback',
-              value: _audioEnabled,
-              onChanged: (v) => setState(() => _audioEnabled = v),
-            ),
-            if (_audioEnabled) ...[
-              const SizedBox(height: 16),
-              _buildSlider(
-                label: 'Volume',
-                value: _soundVolume,
-                min: 0,
-                max: 1,
-                divisions: 10,
-                displayValue: '${(_soundVolume * 100).toInt()}%',
-                onChanged: (v) => setState(() => _soundVolume = v),
-              ),
-            ],
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAdvancedTab() {
-    return ListView(
-      padding: const EdgeInsets.all(20),
-      children: [
-        _buildSection(
-          'Data Management',
-          LucideIcons.database,
-          [
-            _buildSlider(
-              label: 'Log Retention',
-              value: _logRetentionDays.toDouble(),
-              min: 7,
-              max: 90,
-              divisions: 83,
-              displayValue: '$_logRetentionDays days',
-              onChanged: (v) => setState(() => _logRetentionDays = v.toInt()),
-            ),
-          ],
-        ),
-        const SizedBox(height: 24),
-        _buildSection(
-          'Logging',
-          LucideIcons.fileText,
-          [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Left column
+          Expanded(
+            flex: 1,
+            child: Column(
               children: [
-                _buildSwitch(
-                  label: 'Verbose Logging',
-                  value: _verboseLogging,
-                  onChanged: (v) => setState(() => _verboseLogging = v),
+                // Sound Settings Card
+                _buildModernCard(
+                  icon: LucideIcons.volume2,
+                  title: 'Sound Settings',
+                  subtitle: 'Audio feedback configuration',
+                  child: Column(
+                    children: [
+                      _buildInlineSwitch(
+                        label: 'Enable Audio Feedback',
+                        description: 'Play sound when scanning QR codes',
+                        icon: LucideIcons.volumeX,
+                        value: _audioEnabled,
+                        onChanged: (v) => setState(() => _audioEnabled = v),
+                      ),
+                      if (_audioEnabled) ...[
+                        const SizedBox(height: 16),
+                        _buildCompactSlider(
+                          label: 'Volume',
+                          icon: LucideIcons.volume2,
+                          value: _soundVolume,
+                          min: 0,
+                          max: 1,
+                          divisions: 10,
+                          displayValue: '${(_soundVolume * 100).toInt()}%',
+                          onChanged: (v) => setState(() => _soundVolume = v),
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 12),
+              ],
+            ),
+          ),
+          
+          const SizedBox(width: 16),
+          
+          // Right column - Empty placeholder for future settings
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(32),
                   decoration: BoxDecoration(
-                    color: AppColors.info.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    color: AppColors.surface.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: AppColors.info.withValues(alpha: 0.3),
+                      color: AppColors.border.withValues(alpha: 0.15),
+                      width: 1,
                     ),
                   ),
-                  child: Row(
+                  child: Column(
                     children: [
-                      Icon(LucideIcons.info, color: AppColors.info, size: 16),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'When enabled, all app logs including debug, warning, and trace information will be saved to daily .log files. Helpful for troubleshooting issues.',
-                          style: GoogleFonts.inter(
-                            color: AppColors.textSecondary,
-                            fontSize: 12,
-                          ),
+                      Icon(
+                        LucideIcons.music,
+                        size: 32,
+                        color: AppColors.textMuted.withValues(alpha: 0.5),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'More audio settings\ncoming soon',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.inter(
+                          color: AppColors.textMuted.withValues(alpha: 0.7),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
@@ -519,31 +573,137 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                 ),
               ],
             ),
-          ],
-        ),
-        const SizedBox(height: 24),
-        _buildSection(
-          'History Management',
-          LucideIcons.history,
-          [
-            _buildSlider(
-              label: 'History Retention',
-              value: _historyRetentionDays.toDouble(),
-              min: 7,
-              max: 365,
-              divisions: 51,
-              displayValue: '$_historyRetentionDays days',
-              onChanged: (v) => setState(() => _historyRetentionDays = v.toInt()),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAdvancedTab() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Left column
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                // Data Management Card
+                _buildModernCard(
+                  icon: LucideIcons.database,
+                  title: 'Data Management',
+                  subtitle: 'Log and data retention settings',
+                  child: Column(
+                    children: [
+                      _buildCompactSlider(
+                        label: 'Log Retention',
+                        icon: LucideIcons.fileText,
+                        value: _logRetentionDays.toDouble(),
+                        min: 7,
+                        max: 90,
+                        divisions: 83,
+                        displayValue: '$_logRetentionDays days',
+                        onChanged: (v) => setState(() => _logRetentionDays = v.toInt()),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                
+                // Logging Card
+                _buildModernCard(
+                  icon: LucideIcons.terminal,
+                  title: 'Logging',
+                  subtitle: 'Application logging configuration',
+                  child: Column(
+                    children: [
+                      _buildInlineSwitch(
+                        label: 'Verbose Logging',
+                        description: 'Save debug, warning, and trace logs to files',
+                        icon: LucideIcons.bug,
+                        value: _verboseLogging,
+                        onChanged: (v) => setState(() => _verboseLogging = v),
+                      ),
+                      if (_verboseLogging) ...[
+                        const SizedBox(height: 12),
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppColors.info.withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: AppColors.info.withValues(alpha: 0.2),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                LucideIcons.info,
+                                color: AppColors.info.withValues(alpha: 0.8),
+                                size: 14,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  'Helpful for troubleshooting issues',
+                                  style: GoogleFonts.inter(
+                                    color: AppColors.textSecondary.withValues(alpha: 0.8),
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            _buildHistoryStatsRow(),
-            const SizedBox(height: 16),
-            _buildCleanupButton(),
-            const SizedBox(height: 12),
-            _buildSyncButton(),
-          ],
-        ),
-      ],
+          ),
+          
+          const SizedBox(width: 16),
+          
+          // Right column
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                // History Management Card
+                _buildModernCard(
+                  icon: LucideIcons.history,
+                  title: 'History Management',
+                  subtitle: 'Scan history and sync settings',
+                  child: Column(
+                    children: [
+                      _buildCompactSlider(
+                        label: 'History Retention',
+                        icon: LucideIcons.clock,
+                        value: _historyRetentionDays.toDouble(),
+                        min: 7,
+                        max: 365,
+                        divisions: 51,
+                        displayValue: '$_historyRetentionDays days',
+                        onChanged: (v) => setState(() => _historyRetentionDays = v.toInt()),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildHistoryStatsRow(),
+                      const SizedBox(height: 16),
+                      _buildCleanupButton(),
+                      const SizedBox(height: 12),
+                      _buildSyncButton(),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -627,18 +787,30 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   
   /// Build test API button
   Widget _buildTestApiButton() {
-    return ElevatedButton.icon(
-      onPressed: _testApiEndpoints,
-      icon: const Icon(LucideIcons.network),
-      label: const Text('Test API Connection'),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.info.withValues(alpha: 0.15),
-        foregroundColor: AppColors.info,
-        minimumSize: const Size(double.infinity, 48),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: BorderSide(
-            color: AppColors.info.withValues(alpha: 0.3),
+    return SizedBox(
+      height: 40,
+      child: ElevatedButton.icon(
+        onPressed: _testApiEndpoints,
+        icon: const Icon(LucideIcons.network, size: 16),
+        label: Text(
+          'Test API',
+          style: GoogleFonts.inter(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.2,
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primary.withValues(alpha: 0.08),
+          foregroundColor: AppColors.primary.withValues(alpha: 0.9),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            side: BorderSide(
+              color: AppColors.primary.withValues(alpha: 0.15),
+              width: 1,
+            ),
           ),
         ),
       ),
@@ -691,11 +863,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     } catch (e) {
       if (mounted) {
         Navigator.of(context).pop(); // Close loading dialog
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Test failed: $e'),
-            backgroundColor: AppColors.error,
-          ),
+        _showPremiumToast(
+          context: context,
+          message: 'Test failed: $e',
+          icon: LucideIcons.xCircle,
+          type: ToastType.error,
         );
       }
     }
@@ -1086,34 +1258,27 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                     ),
                   ),
                 ),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () => Navigator.of(context).pop(),
-                    borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      height: 48,
-                      decoration: BoxDecoration(
-                        gradient: AppColors.primaryGradient,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.primary.withValues(alpha: 0.3),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Close',
-                          style: GoogleFonts.inter(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
+                child: ElevatedButton.icon(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(LucideIcons.x, size: 16),
+                  label: Text(
+                    'Close',
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.2,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                    foregroundColor: AppColors.primary.withValues(alpha: 0.95),
+                    minimumSize: const Size(double.infinity, 44),
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      side: BorderSide(
+                        color: AppColors.primary.withValues(alpha: 0.25),
+                        width: 1,
                       ),
                     ),
                   ),
@@ -1161,44 +1326,223 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   Future<void> _performCleanup() async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.card,
-        title: Text(
-          'Cleanup Old History',
-          style: GoogleFonts.inter(color: AppColors.textPrimary),
-        ),
-        content: Text(
-          'This will delete all history records older than $_historyRetentionDays days. Continue?',
-          style: GoogleFonts.inter(color: AppColors.textSecondary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-                            child: Text(
-              'Cancel',
-              style: GoogleFonts.inter(color: AppColors.textMuted),
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 450),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.card.withValues(alpha: 0.95),
+                AppColors.surface.withValues(alpha: 0.9),
+              ],
             ),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: AppColors.border.withValues(alpha: 0.3),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.3),
+                blurRadius: 30,
+                offset: const Offset(0, 15),
+                spreadRadius: -5,
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-                            child: Text(
-              'Cleanup',
-              style: GoogleFonts.inter(color: AppColors.warning),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Header with icon
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: AppColors.border.withValues(alpha: 0.2),
+                      width: 1,
+                    ),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.warning.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppColors.warning.withValues(alpha: 0.25),
+                          width: 1,
                         ),
                       ),
-                    ],
+                      child: Icon(
+                        LucideIcons.trash2,
+                        color: AppColors.warning.withValues(alpha: 0.9),
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Cleanup Old History',
+                            style: GoogleFonts.inter(
+                              color: AppColors.textPrimary,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.3,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Confirm deletion',
+                            style: GoogleFonts.inter(
+                              color: AppColors.textMuted.withValues(alpha: 0.8),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              // Content
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.warning.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppColors.warning.withValues(alpha: 0.2),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            LucideIcons.alertTriangle,
+                            color: AppColors.warning.withValues(alpha: 0.8),
+                            size: 18,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'This will permanently delete all history records older than $_historyRetentionDays days. This action cannot be undone.',
+                              style: GoogleFonts.inter(
+                                color: AppColors.textSecondary,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                height: 1.5,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              // Actions
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  border: Border(
+                    top: BorderSide(
+                      color: AppColors.border.withValues(alpha: 0.2),
+                      width: 1,
+                    ),
                   ),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () => Navigator.of(context).pop(false),
+                        icon: const Icon(LucideIcons.x, size: 16),
+                        label: Text(
+                          'Cancel',
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.2,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.surface.withValues(alpha: 0.3),
+                          foregroundColor: AppColors.textSecondary.withValues(alpha: 0.85),
+                          minimumSize: const Size(double.infinity, 44),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: BorderSide(
+                              color: AppColors.border.withValues(alpha: 0.2),
+                              width: 1,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () => Navigator.of(context).pop(true),
+                        icon: const Icon(LucideIcons.trash2, size: 16),
+                        label: Text(
+                          'Cleanup',
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.2,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.warning.withValues(alpha: 0.12),
+                          foregroundColor: AppColors.warning.withValues(alpha: 0.95),
+                          minimumSize: const Size(double.infinity, 44),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: BorderSide(
+                              color: AppColors.warning.withValues(alpha: 0.3),
+                              width: 1,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
     
     if (confirmed == true) {
       final deletedCount = await ref.read(historyProvider.notifier).cleanupOldHistory();
       
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Deleted $deletedCount old records'),
-            backgroundColor: AppColors.success,
-          ),
+        _showPremiumToast(
+          context: context,
+          message: 'Deleted $deletedCount old records',
+          icon: LucideIcons.trash2,
+          type: ToastType.success,
         );
       }
     }
@@ -1243,217 +1587,298 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
         
         final historyState = ref.read(historyProvider);
         if (historyState.error != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Sync error: ${historyState.error}'),
-              backgroundColor: AppColors.error,
-            ),
+          _showPremiumToast(
+            context: context,
+            message: 'Sync error: ${historyState.error}',
+            icon: LucideIcons.alertCircle,
+            type: ToastType.error,
           );
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: const Icon(LucideIcons.check, color: Colors.white, size: 16),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'All data synced successfully from server',
-                      style: GoogleFonts.inter(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: AppColors.success,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              duration: const Duration(seconds: 3),
-            ),
+          _showPremiumToast(
+            context: context,
+            message: 'All data synced successfully from server',
+            icon: LucideIcons.refreshCw,
+            type: ToastType.success,
           );
         }
       }
     } catch (e) {
       if (mounted) {
         Navigator.of(context).pop(); // Close loading dialog
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Sync failed: $e'),
-            backgroundColor: AppColors.error,
-          ),
+        _showPremiumToast(
+          context: context,
+          message: 'Sync failed: $e',
+          icon: LucideIcons.xCircle,
+          type: ToastType.error,
         );
       }
     }
   }
 
 
-  Widget _buildSection(String title, IconData icon, List<Widget> children) {
+  /// Build modern card with icon, title, subtitle and content
+  Widget _buildModernCard({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Widget child,
+  }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.card.withValues(alpha: 0.9),
-            AppColors.surface.withValues(alpha: 0.7),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(16),
+        color: AppColors.card.withValues(alpha: 0.4),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.3),
+          color: AppColors.border.withValues(alpha: 0.2),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-            spreadRadius: -2,
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Section header
+          // Card header
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: AppColors.border.withValues(alpha: 0.15),
+                  width: 1,
+                ),
+              ),
+            ),
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(12),
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.primary.withValues(alpha: 0.15),
+                        AppColors.primary.withValues(alpha: 0.08),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: AppColors.primary.withValues(alpha: 0.25),
                       width: 1,
                     ),
                   ),
-                  child: Icon(icon, color: AppColors.primary, size: 20),
+                  child: Icon(icon, color: AppColors.primary, size: 18),
                 ),
                 const SizedBox(width: 12),
-                Text(
-                  title,
-                  style: GoogleFonts.inter(
-                    color: AppColors.textPrimary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.3,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: GoogleFonts.inter(
+                          color: AppColors.textPrimary,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        style: GoogleFonts.inter(
+                          color: AppColors.textSecondary.withValues(alpha: 0.7),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
           
-          // Section content
+          // Card content
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-            child: Column(children: children),
+            padding: const EdgeInsets.all(16),
+            child: child,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildTextField({
+  /// Build inline text field (label on top, compact)
+  Widget _buildInlineTextField({
     required TextEditingController controller,
     required String label,
     required String hint,
     required IconData icon,
     bool obscure = false,
   }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.inter(
+            color: AppColors.textSecondary,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.3,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          height: 40,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 4,
+                offset: const Offset(0, 1),
+              ),
+            ],
+          ),
+          child: TextFormField(
+            controller: controller,
+            obscureText: obscure,
             style: GoogleFonts.inter(
-              color: AppColors.textSecondary,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.2,
+              color: AppColors.textPrimary,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: GoogleFonts.inter(
+                color: AppColors.textMuted.withValues(alpha: 0.4),
+                fontSize: 13,
+              ),
+              prefixIcon: Container(
+                margin: const EdgeInsets.all(6),
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Icon(icon, color: AppColors.primary, size: 13),
+              ),
+              filled: true,
+              fillColor: AppColors.surface.withValues(alpha: 0.5),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(
+                  color: AppColors.border.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(
+                  color: AppColors.border.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(
+                  color: AppColors.primary.withValues(alpha: 0.8),
+                  width: 1.5,
+                ),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 10,
+              ),
             ),
           ),
-          const SizedBox(height: 8),
+        ),
+      ],
+    );
+  }
+
+  /// Build inline switch with description
+  Widget _buildInlineSwitch({
+    required String label,
+    required String description,
+    required IconData icon,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.surface.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: AppColors.border.withValues(alpha: 0.15),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
           Container(
+            padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
+              color: AppColors.primary.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Icon(icon, color: AppColors.primary, size: 14),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: GoogleFonts.inter(
+                    color: AppColors.textPrimary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  description,
+                  style: GoogleFonts.inter(
+                    color: AppColors.textSecondary.withValues(alpha: 0.7),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ],
             ),
-            child: TextFormField(
-              controller: controller,
-              obscureText: obscure,
-              style: GoogleFonts.inter(
-                color: AppColors.textPrimary,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
-              decoration: InputDecoration(
-                hintText: hint,
-                hintStyle: GoogleFonts.inter(
-                  color: AppColors.textMuted.withValues(alpha: 0.6),
-                  fontSize: 14,
-                ),
-                prefixIcon: Container(
-                  margin: const EdgeInsets.all(8),
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: AppColors.primary.withValues(alpha: 0.25),
-                      width: 1,
-                    ),
-                  ),
-                  child: Icon(icon, color: AppColors.primary, size: 16),
-                ),
-                filled: true,
-                fillColor: AppColors.surface.withValues(alpha: 0.8),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: AppColors.border.withValues(alpha: 0.5),
-                    width: 1.5,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: AppColors.border.withValues(alpha: 0.5),
-                    width: 1.5,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(
-                    color: AppColors.primary,
-                    width: 2,
-                  ),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 16,
-                ),
-              ),
+          ),
+          Transform.scale(
+            scale: 0.95,
+            child: Switch(
+              value: value,
+              onChanged: onChanged,
+              activeTrackColor: AppColors.primary.withValues(alpha: 0.75),
+              inactiveTrackColor: AppColors.surface.withValues(alpha: 0.9),
+              inactiveThumbColor: AppColors.textSecondary,
+              thumbColor: WidgetStateProperty.resolveWith((states) {
+                if (states.contains(WidgetState.selected)) {
+                  return AppColors.primary;
+                }
+                return AppColors.textSecondary;
+              }),
+              trackOutlineColor: WidgetStateProperty.resolveWith((states) {
+                if (states.contains(WidgetState.selected)) {
+                  return AppColors.primary.withValues(alpha: 0.6);
+                }
+                return AppColors.border.withValues(alpha: 0.6);
+              }),
+              trackOutlineWidth: WidgetStateProperty.all(2.5),
+              overlayColor: WidgetStateProperty.all(Colors.transparent),
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
           ),
         ],
@@ -1461,8 +1886,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     );
   }
 
-  Widget _buildSlider({
+
+  /// Build compact slider with smaller padding
+  Widget _buildCompactSlider({
     required String label,
+    required IconData icon,
     required double value,
     required double min,
     required double max,
@@ -1471,18 +1899,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     required ValueChanged<double> onChanged,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.surface.withValues(alpha: 0.8),
             AppColors.surface.withValues(alpha: 0.6),
+            AppColors.surface.withValues(alpha: 0.4),
           ],
         ),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.3),
+          color: AppColors.border.withValues(alpha: 0.2),
           width: 1,
         ),
       ),
@@ -1490,44 +1917,64 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                label,
-                style: GoogleFonts.inter(
-                  color: AppColors.textPrimary,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.2,
+              Container(
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Icon(icon, color: AppColors.primary, size: 12),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  label,
+                  style: GoogleFonts.inter(
+                    color: AppColors.textPrimary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.2,
+                  ),
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                  gradient: AppColors.primaryGradient,
-                  borderRadius: BorderRadius.circular(20),
+                  color: AppColors.primary.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.15),
+                    width: 1,
+                  ),
                 ),
                 child: Text(
                   displayValue,
                   style: GoogleFonts.inter(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary.withValues(alpha: 0.9),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.3,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 6),
           SliderTheme(
             data: SliderThemeData(
-              activeTrackColor: AppColors.primary,
-              inactiveTrackColor: AppColors.surface,
-              thumbColor: AppColors.primary,
-              overlayColor: AppColors.primary.withValues(alpha: 0.2),
-              trackHeight: 6,
-              thumbShape: const RoundSliderThumbShape(
-                enabledThumbRadius: 10,
+              activeTrackColor: AppColors.primary.withValues(alpha: 0.6),
+              inactiveTrackColor: AppColors.primary.withValues(alpha: 0.08),
+              thumbColor: AppColors.primary.withValues(alpha: 0.85),
+              overlayColor: AppColors.primary.withValues(alpha: 0.12),
+              trackHeight: 5,
+              thumbShape: RoundSliderThumbShape(
+                enabledThumbRadius: 8,
+                elevation: 2,
+                pressedElevation: 4,
+              ),
+              overlayShape: const RoundSliderOverlayShape(
+                overlayRadius: 16,
               ),
             ),
             child: Slider(
@@ -1543,66 +1990,197 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     );
   }
 
-  Widget _buildSwitch({
-    required String label,
-    required bool value,
-    required ValueChanged<bool> onChanged,
+  /// Show premium toast notification
+  void _showPremiumToast({
+    required BuildContext context,
+    required String message,
+    required IconData icon,
+    required ToastType type,
+    Duration duration = const Duration(seconds: 3),
   }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.surface.withValues(alpha: 0.8),
-            AppColors.surface.withValues(alpha: 0.6),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.3),
-          width: 1,
-        ),
+    final overlay = Overlay.of(context);
+    late OverlayEntry overlayEntry;
+    
+    final colorMap = {
+      ToastType.success: AppColors.success,
+      ToastType.error: AppColors.error,
+      ToastType.info: AppColors.info,
+      ToastType.warning: AppColors.warning,
+    };
+    
+    final color = colorMap[type]!;
+    
+    overlayEntry = OverlayEntry(
+      builder: (context) => _PremiumToast(
+        message: message,
+        icon: icon,
+        color: color,
+        onDismiss: () => overlayEntry.remove(),
+        duration: duration,
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.inter(
-              color: AppColors.textPrimary,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              letterSpacing: 0.2,
-            ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+    );
+    
+    overlay.insert(overlayEntry);
+  }
+}
+
+/// Toast type enum
+enum ToastType { success, error, info, warning }
+
+/// Premium toast widget
+class _PremiumToast extends StatefulWidget {
+  final String message;
+  final IconData icon;
+  final Color color;
+  final VoidCallback onDismiss;
+  final Duration duration;
+
+  const _PremiumToast({
+    required this.message,
+    required this.icon,
+    required this.color,
+    required this.onDismiss,
+    required this.duration,
+  });
+
+  @override
+  State<_PremiumToast> createState() => _PremiumToastState();
+}
+
+class _PremiumToastState extends State<_PremiumToast>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<Offset> _slideAnimation;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      reverseDuration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 2),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.elasticOut,
+      reverseCurve: Curves.easeInCubic,
+    ));
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
+      reverseCurve: Curves.easeOut,
+    ));
+
+    _controller.forward();
+
+    Future.delayed(widget.duration, () {
+      if (mounted) {
+        _controller.reverse().then((_) => widget.onDismiss());
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      bottom: 24,
+      left: 0,
+      right: 0,
+      child: Center(
+        child: SlideTransition(
+          position: _slideAnimation,
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: Material(
+              color: Colors.transparent,
+              child: Container(
+                constraints: const BoxConstraints(
+                  maxWidth: double.infinity,
+                  minWidth: 300,
                 ),
-              ],
-            ),
-            child: Switch(
-              value: value,
-              onChanged: onChanged,
-              activeTrackColor: AppColors.primary.withValues(alpha: 0.5),
-              thumbColor: WidgetStateProperty.resolveWith((states) {
-                if (states.contains(WidgetState.selected)) {
-                  return AppColors.primary;
-                }
-                return AppColors.textMuted;
-              }),
+                margin: const EdgeInsets.symmetric(horizontal: 40),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppColors.card.withValues(alpha: 0.95),
+                      AppColors.surface.withValues(alpha: 0.9),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: widget.color.withValues(alpha: 0.3),
+                    width: 1.5,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.25),
+                      blurRadius: 24,
+                      offset: const Offset(0, 12),
+                      spreadRadius: -4,
+                    ),
+                    BoxShadow(
+                      color: widget.color.withValues(alpha: 0.2),
+                      blurRadius: 16,
+                      spreadRadius: 0,
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: widget.color.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: widget.color.withValues(alpha: 0.25),
+                          width: 1,
+                        ),
+                      ),
+                      child: Icon(
+                        widget.icon,
+                        color: widget.color.withValues(alpha: 0.9),
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Flexible(
+                      fit: FlexFit.loose,
+                      child: Text(
+                        widget.message,
+                        style: GoogleFonts.inter(
+                          color: AppColors.textPrimary,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
-
 }
 

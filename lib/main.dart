@@ -1,11 +1,21 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:launch_at_startup/launch_at_startup.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'config/theme.dart';
 import 'screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize launch at startup
+  PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  launchAtStartup.setup(
+    appName: packageInfo.appName,
+    appPath: Platform.resolvedExecutable,
+  );
 
   // Initialize window manager for desktop
   await windowManager.ensureInitialized();
@@ -24,6 +34,13 @@ void main() async {
     await windowManager.focus();
     // Prevent default close behavior to allow tray service to handle it
     await windowManager.setPreventClose(true);
+    
+    // Set window icon (title bar and taskbar)
+    if (Platform.isWindows) {
+      await windowManager.setIcon('assets/images/logo.ico');
+    } else {
+      await windowManager.setIcon('assets/images/logo.png');
+    }
   });
 
   runApp(
