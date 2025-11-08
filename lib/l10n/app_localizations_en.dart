@@ -1104,4 +1104,115 @@ class AppLocalizationsEn extends AppLocalizations {
   String errorOpeningProfile(String error) {
     return 'Error opening profile: $error';
   }
+
+  @override
+  String get exportMemberName => 'Member Name';
+
+  @override
+  String get exportCheckedIn => 'Checked In';
+
+  @override
+  String get exportCheckedOut => 'Checked Out';
+
+  @override
+  String get exportDuration => 'Duration';
+
+  @override
+  String get exportPlanExpired => 'Plan Expired';
+
+  @override
+  String get exportAccessDenied => 'Access Denied';
+
+  @override
+  String get exportActiveSession => 'Active Session';
+
+  @override
+  String get exportDenied => 'Denied';
+
+  @override
+  String get exportInProgress => 'In Progress';
+
+  @override
+  String get exportActivityReport => 'Activity Report';
+
+  @override
+  String get exportGenerated => 'Generated';
+
+  @override
+  String get exportTime => 'Time';
+
+  @override
+  String get exportTotalActivities => 'Total Activities';
+
+  @override
+  String get exportStatistics => 'Statistics';
+
+  @override
+  String get exportSuccessful => 'Successful';
+
+  @override
+  String get exportFailedLabel => 'Failed';
+
+  @override
+  String get exportSuccessRate => 'Success Rate';
+
+  @override
+  String get exportActivityLog => 'Activity Log';
+
+  @override
+  String get exportPage => 'Page';
+
+  @override
+  String get exportOf => 'of';
+
+  @override
+  String get exportEndOfReport => 'End of Report';
+
+  @override
+  String get exportMembersList => 'Members List';
+
+  @override
+  String get exportTotalMembers => 'Total Members';
+
+  @override
+  String get exportActive => 'Active';
+
+  @override
+  String get exportInactive => 'Inactive';
+
+  @override
+  String get exportMembersDirectory => 'Members Directory';
+
+  @override
+  String get exportName => 'Name';
+
+  @override
+  String get exportPlan => 'Plan';
+
+  @override
+  String get exportStatus => 'Status';
+
+  @override
+  String get exportExpires => 'Expires';
+
+  @override
+  String get exportContact => 'Contact';
+
+  @override
+  String get exportEmail => 'Email';
+
+  @override
+  String get exportMemberId => 'Member ID';
+
+  @override
+  String get exportGender => 'Gender';
+
+  @override
+  String get exportDateOfBirth => 'Date of Birth';
+
+  @override
+  String get exportAddress => 'Address';
+
+  @override
+  String get exportPhone => 'Phone';
 }

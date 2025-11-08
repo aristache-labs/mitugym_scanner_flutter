@@ -196,14 +196,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       String? filePath;
       switch (format.toLowerCase()) {
         case 'csv':
-          filePath = await _exportService.exportMembersToCSV(members, customPath: customPath);
+          filePath = await _exportService.exportMembersToCSV(members, l10n, customPath: customPath);
           break;
         case 'pdf':
-          filePath = await _exportService.exportMembersToPDF(members, customPath: customPath);
+          filePath = await _exportService.exportMembersToPDF(members, l10n, customPath: customPath);
           break;
         case 'txt':
         default:
-          filePath = await _exportService.exportMembersToText(members, customPath: customPath);
+          filePath = await _exportService.exportMembersToText(members, l10n, customPath: customPath);
       }
       
       if (filePath == null) {

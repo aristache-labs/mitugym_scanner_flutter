@@ -173,6 +173,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
 
   Future<void> _exportHistory(String format) async {
     final activities = _getFilteredActivities();
+    final l10n = AppLocalizations.of(context)!;
     
     if (activities.isEmpty) {
       if (mounted) {
@@ -194,14 +195,14 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
       String? filePath;
       switch (format.toLowerCase()) {
         case 'csv':
-          filePath = await _exportService.exportToCSV(activities, customPath: customPath);
+          filePath = await _exportService.exportToCSV(activities, l10n, customPath: customPath);
           break;
         case 'pdf':
-          filePath = await _exportService.exportToPDF(activities, customPath: customPath);
+          filePath = await _exportService.exportToPDF(activities, l10n, customPath: customPath);
           break;
         case 'txt':
         default:
-          filePath = await _exportService.exportToText(activities, customPath: customPath);
+          filePath = await _exportService.exportToText(activities, l10n, customPath: customPath);
       }
       
       if (filePath == null) {

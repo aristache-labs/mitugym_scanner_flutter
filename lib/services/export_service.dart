@@ -7,6 +7,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import '../models/activity_log.dart';
 import '../models/member_data.dart';
+import '../l10n/app_localizations.dart';
 
 /// Export service for activity logs
 /// Supports CSV, PDF, and text file formats
@@ -48,7 +49,7 @@ class ExportService {
   }
 
   /// Export activity logs to CSV file
-  Future<String?> exportToCSV(List<ActivityLog> activities, {String? customPath}) async {
+  Future<String?> exportToCSV(List<ActivityLog> activities, AppLocalizations l10n, {String? customPath}) async {
     try {
       if (activities.isEmpty) {
         _logger.w('No activities to export');
@@ -77,7 +78,7 @@ class ExportService {
       final buffer = StringBuffer();
       
       // Header
-      buffer.writeln('Member Name,Checked In,Checked Out,Duration');
+      buffer.writeln('${l10n.exportMemberName},${l10n.exportCheckedIn},${l10n.exportCheckedOut},${l10n.exportDuration}');
       
       // Data rows
       for (final activity in activities) {
@@ -88,7 +89,7 @@ class ExportService {
         if (activity.checkInTime != null) {
           checkedIn = DateFormat('yyyy-MM-dd HH:mm:ss').format(activity.checkInTime!);
         } else if (!activity.success) {
-          checkedIn = 'Plan Expired';
+          checkedIn = l10n.exportPlanExpired;
         }
         
         // Format check-out time
@@ -96,19 +97,19 @@ class ExportService {
         if (activity.checkOutTime != null) {
           checkedOut = DateFormat('yyyy-MM-dd HH:mm:ss').format(activity.checkOutTime!);
         } else if (!activity.success) {
-          checkedOut = 'Access Denied';
+          checkedOut = l10n.exportAccessDenied;
         } else if (activity.checkInTime != null) {
-          checkedOut = 'Active Session';
+          checkedOut = l10n.exportActiveSession;
         }
         
         // Format duration
         String duration = '--';
         if (!activity.success) {
-          duration = 'Denied';
+          duration = l10n.exportDenied;
         } else if (activity.checkInTime != null && activity.checkOutTime != null) {
           duration = activity.formattedDuration;
         } else if (activity.checkInTime != null) {
-          duration = 'In Progress';
+          duration = l10n.exportInProgress;
         }
         
         buffer.writeln(
@@ -128,7 +129,7 @@ class ExportService {
   }
 
   /// Export activity logs to PDF file
-  Future<String?> exportToPDF(List<ActivityLog> activities, {String? customPath}) async {
+  Future<String?> exportToPDF(List<ActivityLog> activities, AppLocalizations l10n, {String? customPath}) async {
     try {
       if (activities.isEmpty) {
         _logger.w('No activities to export');
@@ -201,7 +202,7 @@ class ExportService {
                     ),
                     pw.SizedBox(height: 4),
                     pw.Text(
-                      'Activity Report',
+                      l10n.exportActivityReport,
                       style: pw.TextStyle(
                         fontSize: 18,
                         color: PdfColors.grey700,
@@ -223,11 +224,11 @@ class ExportService {
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
                       pw.Text(
-                        'Generated: ${DateFormat('MMMM dd, yyyy').format(DateTime.now())}',
+                        '${l10n.exportGenerated}: ${DateFormat('MMMM dd, yyyy').format(DateTime.now())}',
                         style: const pw.TextStyle(fontSize: 12, color: PdfColors.grey700),
                       ),
                       pw.Text(
-                        'Time: ${DateFormat('HH:mm:ss').format(DateTime.now())}',
+                        '${l10n.exportTime}: ${DateFormat('HH:mm:ss').format(DateTime.now())}',
                         style: const pw.TextStyle(fontSize: 12, color: PdfColors.grey700),
                       ),
                     ],
@@ -236,7 +237,7 @@ class ExportService {
                     crossAxisAlignment: pw.CrossAxisAlignment.end,
                     children: [
                       pw.Text(
-                        'Total Activities: ${activities.length}',
+                        '${l10n.exportTotalActivities}: ${activities.length}',
                         style: pw.TextStyle(
                           fontSize: 12,
                           fontWeight: pw.FontWeight.bold,
@@ -261,7 +262,7 @@ class ExportService {
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
                     pw.Text(
-                      'Statistics',
+                      l10n.exportStatistics,
                       style: pw.TextStyle(
                         fontSize: 16,
                         fontWeight: pw.FontWeight.bold,
@@ -272,9 +273,9 @@ class ExportService {
                     pw.Row(
                       mainAxisAlignment: pw.MainAxisAlignment.spaceAround,
                       children: [
-                        _buildStatItem('Successful', '$successful', PdfColors.green700),
-                        _buildStatItem('Failed', '$failed', PdfColors.red700),
-                        _buildStatItem('Success Rate', '$successRate%', PdfColors.blue700),
+                        _buildStatItem(l10n.exportSuccessful, '$successful', PdfColors.green700),
+                        _buildStatItem(l10n.exportFailedLabel, '$failed', PdfColors.red700),
+                        _buildStatItem(l10n.exportSuccessRate, '$successRate%', PdfColors.blue700),
                       ],
                     ),
                   ],
@@ -285,7 +286,7 @@ class ExportService {
 
               // Activity table header
               pw.Text(
-                'Activity Log',
+                l10n.exportActivityLog,
                 style: pw.TextStyle(
                   fontSize: 16,
                   fontWeight: pw.FontWeight.bold,
@@ -315,14 +316,14 @@ class ExportService {
                   2: pw.Alignment.center,
                   3: pw.Alignment.center,
                 },
-                headers: ['Member Name', 'Checked In', 'Checked Out', 'Duration'],
+                headers: [l10n.exportMemberName, l10n.exportCheckedIn, l10n.exportCheckedOut, l10n.exportDuration],
                 data: activities.map((activity) {
                   // Format check-in
                   String checkedIn = '--';
                   if (activity.checkInTime != null) {
                     checkedIn = DateFormat('yyyy-MM-dd HH:mm').format(activity.checkInTime!);
                   } else if (!activity.success) {
-                    checkedIn = 'Plan Expired';
+                    checkedIn = l10n.exportPlanExpired;
                   }
                   
                   // Format check-out
@@ -330,19 +331,19 @@ class ExportService {
                   if (activity.checkOutTime != null) {
                     checkedOut = DateFormat('yyyy-MM-dd HH:mm').format(activity.checkOutTime!);
                   } else if (!activity.success) {
-                    checkedOut = 'Access Denied';
+                    checkedOut = l10n.exportAccessDenied;
                   } else if (activity.checkInTime != null) {
-                    checkedOut = 'Active Session';
+                    checkedOut = l10n.exportActiveSession;
                   }
                   
                   // Format duration
                   String duration = '--';
                   if (!activity.success) {
-                    duration = 'Denied';
+                    duration = l10n.exportDenied;
                   } else if (activity.checkInTime != null && activity.checkOutTime != null) {
                     duration = activity.formattedDuration;
                   } else if (activity.checkInTime != null) {
-                    duration = 'In Progress';
+                    duration = l10n.exportInProgress;
                   }
                   
                   return [
@@ -360,7 +361,7 @@ class ExportService {
               alignment: pw.Alignment.centerRight,
               margin: const pw.EdgeInsets.only(top: 10),
               child: pw.Text(
-                'Page ${context.pageNumber} of ${context.pagesCount}',
+                '${l10n.exportPage} ${context.pageNumber} ${l10n.exportOf} ${context.pagesCount}',
                 style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey700),
               ),
             );
@@ -402,7 +403,7 @@ class ExportService {
   }
 
   /// Export activity logs to formatted text file
-  Future<String?> exportToText(List<ActivityLog> activities, {String? customPath}) async {
+  Future<String?> exportToText(List<ActivityLog> activities, AppLocalizations l10n, {String? customPath}) async{
     try {
       if (activities.isEmpty) {
         _logger.w('No activities to export');
@@ -431,9 +432,9 @@ class ExportService {
       final buffer = StringBuffer();
       
       buffer.writeln('='.padRight(60, '='));
-      buffer.writeln('MituGym Scanner - Activity Report');
-      buffer.writeln('Generated: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now())}');
-      buffer.writeln('Total Activities: ${activities.length}');
+      buffer.writeln('MituGym Scanner - ${l10n.exportActivityReport}');
+      buffer.writeln('${l10n.exportGenerated}: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now())}');
+      buffer.writeln('${l10n.exportTotalActivities}: ${activities.length}');
       buffer.writeln('='.padRight(60, '='));
       buffer.writeln();
 
@@ -441,17 +442,17 @@ class ExportService {
       final successful = activities.where((a) => a.success).length;
       final failed = activities.where((a) => a.success == false).length;
       
-      buffer.writeln('STATISTICS');
+      buffer.writeln(l10n.exportStatistics.toUpperCase());
       buffer.writeln('-'.padRight(60, '-'));
-      buffer.writeln('Successful: $successful');
-      buffer.writeln('Failed: $failed');
-      buffer.writeln('Success Rate: ${(successful / activities.length * 100).toStringAsFixed(1)}%');
+      buffer.writeln('${l10n.exportSuccessful}: $successful');
+      buffer.writeln('${l10n.exportFailedLabel}: $failed');
+      buffer.writeln('${l10n.exportSuccessRate}: ${(successful / activities.length * 100).toStringAsFixed(1)}%');
       buffer.writeln();
 
       // Activity list
-      buffer.writeln('ACTIVITY LOG');
+      buffer.writeln(l10n.exportActivityLog.toUpperCase());
       buffer.writeln('-'.padRight(80, '-'));
-      buffer.writeln('Member Name | Checked In | Checked Out | Duration');
+      buffer.writeln('${l10n.exportMemberName} | ${l10n.exportCheckedIn} | ${l10n.exportCheckedOut} | ${l10n.exportDuration}');
       buffer.writeln('-'.padRight(80, '-'));
       
       for (final activity in activities) {
@@ -460,7 +461,7 @@ class ExportService {
         if (activity.checkInTime != null) {
           checkedIn = DateFormat('yyyy-MM-dd HH:mm').format(activity.checkInTime!);
         } else if (!activity.success) {
-          checkedIn = 'Plan Expired';
+          checkedIn = l10n.exportPlanExpired;
         }
         
         // Format check-out
@@ -468,19 +469,19 @@ class ExportService {
         if (activity.checkOutTime != null) {
           checkedOut = DateFormat('yyyy-MM-dd HH:mm').format(activity.checkOutTime!);
         } else if (!activity.success) {
-          checkedOut = 'Access Denied';
+          checkedOut = l10n.exportAccessDenied;
         } else if (activity.checkInTime != null) {
-          checkedOut = 'Active Session';
+          checkedOut = l10n.exportActiveSession;
         }
         
         // Format duration
         String duration = '--';
         if (!activity.success) {
-          duration = 'Denied';
+          duration = l10n.exportDenied;
         } else if (activity.checkInTime != null && activity.checkOutTime != null) {
           duration = activity.formattedDuration;
         } else if (activity.checkInTime != null) {
-          duration = 'In Progress';
+          duration = l10n.exportInProgress;
         }
         
         buffer.writeln(
@@ -490,7 +491,7 @@ class ExportService {
 
       buffer.writeln();
       buffer.writeln('='.padRight(60, '='));
-      buffer.writeln('End of Report');
+      buffer.writeln(l10n.exportEndOfReport);
 
       // Write to file
       await file.writeAsString(buffer.toString());
@@ -567,7 +568,7 @@ class ExportService {
   // ============================================================================
 
   /// Export members list to CSV file
-  Future<String?> exportMembersToCSV(List<MemberData> members, {String? customPath}) async {
+  Future<String?> exportMembersToCSV(List<MemberData> members, AppLocalizations l10n, {String? customPath}) async {
     try {
       if (members.isEmpty) {
         _logger.w('No members to export');
@@ -596,7 +597,7 @@ class ExportService {
       final buffer = StringBuffer();
       
       // Header
-      buffer.writeln('Member ID,Member Name,Plan Name,Status,Expires At,Email,Phone,Gender,Date of Birth,Address');
+      buffer.writeln('${l10n.exportMemberId},${l10n.exportMemberName},${l10n.exportPlan},${l10n.exportStatus},${l10n.exportExpires},${l10n.exportEmail},${l10n.exportPhone},${l10n.exportGender},${l10n.exportDateOfBirth},${l10n.exportAddress}');
       
       // Data rows
       for (final member in members) {
@@ -626,7 +627,7 @@ class ExportService {
   }
 
   /// Export members list to PDF file
-  Future<String?> exportMembersToPDF(List<MemberData> members, {String? customPath}) async {
+  Future<String?> exportMembersToPDF(List<MemberData> members, AppLocalizations l10n, {String? customPath}) async {
     try {
       if (members.isEmpty) {
         _logger.w('No members to export');
@@ -698,7 +699,7 @@ class ExportService {
                     ),
                     pw.SizedBox(height: 4),
                     pw.Text(
-                      'Members List',
+                      l10n.exportMembersList,
                       style: pw.TextStyle(
                         fontSize: 18,
                         color: PdfColors.grey700,
@@ -733,7 +734,7 @@ class ExportService {
                     crossAxisAlignment: pw.CrossAxisAlignment.end,
                     children: [
                       pw.Text(
-                        'Total Members: ${members.length}',
+                        '${l10n.exportTotalMembers}: ${members.length}',
                         style: pw.TextStyle(
                           fontSize: 12,
                           fontWeight: pw.FontWeight.bold,
@@ -757,9 +758,9 @@ class ExportService {
                 child: pw.Row(
                   mainAxisAlignment: pw.MainAxisAlignment.spaceAround,
                   children: [
-                    _buildStatItem('Total Members', '${members.length}', PdfColors.blue700),
-                    _buildStatItem('Active', '$activeMembers', PdfColors.green700),
-                    _buildStatItem('Inactive', '$inactiveMembers', PdfColors.red700),
+                    _buildStatItem(l10n.exportTotalMembers, '${members.length}', PdfColors.blue700),
+                    _buildStatItem(l10n.exportActive, '$activeMembers', PdfColors.green700),
+                    _buildStatItem(l10n.exportInactive, '$inactiveMembers', PdfColors.red700),
                   ],
                 ),
               ),
@@ -768,7 +769,7 @@ class ExportService {
 
               // Members table header
               pw.Text(
-                'Members Directory',
+                l10n.exportMembersDirectory,
                 style: pw.TextStyle(
                   fontSize: 16,
                   fontWeight: pw.FontWeight.bold,
@@ -800,7 +801,7 @@ class ExportService {
                   4: pw.Alignment.center,
                   5: pw.Alignment.centerLeft,
                 },
-                headers: ['Name', 'Plan', 'Status', 'Expires', 'Contact', 'Email'],
+                headers: [l10n.exportName, l10n.exportPlan, l10n.exportStatus, l10n.exportExpires, l10n.exportContact, l10n.exportEmail],
                 data: members.map((member) {
                   return [
                     member.memberName,
@@ -819,7 +820,7 @@ class ExportService {
               alignment: pw.Alignment.centerRight,
               margin: const pw.EdgeInsets.only(top: 10),
               child: pw.Text(
-                'Page ${context.pageNumber} of ${context.pagesCount}',
+                '${l10n.exportPage} ${context.pageNumber} ${l10n.exportOf} ${context.pagesCount}',
                 style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey700),
               ),
             );
@@ -840,7 +841,7 @@ class ExportService {
   }
 
   /// Export members list to formatted text file
-  Future<String?> exportMembersToText(List<MemberData> members, {String? customPath}) async {
+  Future<String?> exportMembersToText(List<MemberData> members, AppLocalizations l10n, {String? customPath}) async {
     try {
       if (members.isEmpty) {
         _logger.w('No members to export');
@@ -869,9 +870,9 @@ class ExportService {
       final buffer = StringBuffer();
       
       buffer.writeln('='.padRight(80, '='));
-      buffer.writeln('MituGym Scanner - Members List');
-      buffer.writeln('Generated: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now())}');
-      buffer.writeln('Total Members: ${members.length}');
+      buffer.writeln('MituGym Scanner - ${l10n.exportMembersList}');
+      buffer.writeln('${l10n.exportGenerated}: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now())}');
+      buffer.writeln('${l10n.exportTotalMembers}: ${members.length}');
       buffer.writeln('='.padRight(80, '='));
       buffer.writeln();
 
@@ -879,17 +880,17 @@ class ExportService {
       final activeMembers = members.where((m) => m.isActive).length;
       final inactiveMembers = members.length - activeMembers;
       
-      buffer.writeln('STATISTICS');
+      buffer.writeln(l10n.exportStatistics.toUpperCase());
       buffer.writeln('-'.padRight(80, '-'));
-      buffer.writeln('Total Members: ${members.length}');
-      buffer.writeln('Active: $activeMembers');
-      buffer.writeln('Inactive: $inactiveMembers');
+      buffer.writeln('${l10n.exportTotalMembers}: ${members.length}');
+      buffer.writeln('${l10n.exportActive}: $activeMembers');
+      buffer.writeln('${l10n.exportInactive}: $inactiveMembers');
       buffer.writeln();
 
       // Members list
-      buffer.writeln('MEMBERS DIRECTORY');
+      buffer.writeln(l10n.exportMembersDirectory.toUpperCase());
       buffer.writeln('-'.padRight(100, '-'));
-      buffer.writeln('Name | Plan | Status | Expires | Contact');
+      buffer.writeln('${l10n.exportName} | ${l10n.exportPlan} | ${l10n.exportStatus} | ${l10n.exportExpires} | ${l10n.exportContact}');
       buffer.writeln('-'.padRight(100, '-'));
       
       for (final member in members) {

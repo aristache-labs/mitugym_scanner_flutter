@@ -2167,6 +2167,228 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error opening profile: {error}'**
   String errorOpeningProfile(String error);
+
+  /// No description provided for @exportMemberName.
+  ///
+  /// In en, this message translates to:
+  /// **'Member Name'**
+  String get exportMemberName;
+
+  /// No description provided for @exportCheckedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Checked In'**
+  String get exportCheckedIn;
+
+  /// No description provided for @exportCheckedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Checked Out'**
+  String get exportCheckedOut;
+
+  /// No description provided for @exportDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get exportDuration;
+
+  /// No description provided for @exportPlanExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan Expired'**
+  String get exportPlanExpired;
+
+  /// No description provided for @exportAccessDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Access Denied'**
+  String get exportAccessDenied;
+
+  /// No description provided for @exportActiveSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Session'**
+  String get exportActiveSession;
+
+  /// No description provided for @exportDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Denied'**
+  String get exportDenied;
+
+  /// No description provided for @exportInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In Progress'**
+  String get exportInProgress;
+
+  /// No description provided for @exportActivityReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity Report'**
+  String get exportActivityReport;
+
+  /// No description provided for @exportGenerated.
+  ///
+  /// In en, this message translates to:
+  /// **'Generated'**
+  String get exportGenerated;
+
+  /// No description provided for @exportTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get exportTime;
+
+  /// No description provided for @exportTotalActivities.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Activities'**
+  String get exportTotalActivities;
+
+  /// No description provided for @exportStatistics.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get exportStatistics;
+
+  /// No description provided for @exportSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Successful'**
+  String get exportSuccessful;
+
+  /// No description provided for @exportFailedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get exportFailedLabel;
+
+  /// No description provided for @exportSuccessRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Success Rate'**
+  String get exportSuccessRate;
+
+  /// No description provided for @exportActivityLog.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity Log'**
+  String get exportActivityLog;
+
+  /// No description provided for @exportPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Page'**
+  String get exportPage;
+
+  /// No description provided for @exportOf.
+  ///
+  /// In en, this message translates to:
+  /// **'of'**
+  String get exportOf;
+
+  /// No description provided for @exportEndOfReport.
+  ///
+  /// In en, this message translates to:
+  /// **'End of Report'**
+  String get exportEndOfReport;
+
+  /// No description provided for @exportMembersList.
+  ///
+  /// In en, this message translates to:
+  /// **'Members List'**
+  String get exportMembersList;
+
+  /// No description provided for @exportTotalMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Members'**
+  String get exportTotalMembers;
+
+  /// No description provided for @exportActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get exportActive;
+
+  /// No description provided for @exportInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get exportInactive;
+
+  /// No description provided for @exportMembersDirectory.
+  ///
+  /// In en, this message translates to:
+  /// **'Members Directory'**
+  String get exportMembersDirectory;
+
+  /// No description provided for @exportName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get exportName;
+
+  /// No description provided for @exportPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan'**
+  String get exportPlan;
+
+  /// No description provided for @exportStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get exportStatus;
+
+  /// No description provided for @exportExpires.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires'**
+  String get exportExpires;
+
+  /// No description provided for @exportContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get exportContact;
+
+  /// No description provided for @exportEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get exportEmail;
+
+  /// No description provided for @exportMemberId.
+  ///
+  /// In en, this message translates to:
+  /// **'Member ID'**
+  String get exportMemberId;
+
+  /// No description provided for @exportGender.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get exportGender;
+
+  /// No description provided for @exportDateOfBirth.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of Birth'**
+  String get exportDateOfBirth;
+
+  /// No description provided for @exportAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get exportAddress;
+
+  /// No description provided for @exportPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get exportPhone;
 }
 
 class _AppLocalizationsDelegate

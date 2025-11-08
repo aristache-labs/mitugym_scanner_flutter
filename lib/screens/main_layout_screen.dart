@@ -1028,6 +1028,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
   ) async {
     final activities = ref.read(scanProvider).recentActivity;
     final exportService = ExportService();
+    final l10n = AppLocalizations.of(context)!;
     
     // Show loading
     if (context.mounted) {
@@ -1055,9 +1056,9 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
 
     String? filePath;
     if (format == 'csv') {
-      filePath = await exportService.exportToCSV(activities);
+      filePath = await exportService.exportToCSV(activities, l10n);
     } else {
-      filePath = await exportService.exportToText(activities);
+      filePath = await exportService.exportToText(activities, l10n);
     }
 
     if (context.mounted) {

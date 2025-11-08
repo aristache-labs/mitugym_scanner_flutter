@@ -1116,4 +1116,115 @@ class AppLocalizationsRo extends AppLocalizations {
   String errorOpeningProfile(String error) {
     return 'Eroare la deschiderea profilului: $error';
   }
+
+  @override
+  String get exportMemberName => 'Nume Membru';
+
+  @override
+  String get exportCheckedIn => 'Ora Intrării';
+
+  @override
+  String get exportCheckedOut => 'Ora Ieșirii';
+
+  @override
+  String get exportDuration => 'Durată';
+
+  @override
+  String get exportPlanExpired => 'Abonament Expirat';
+
+  @override
+  String get exportAccessDenied => 'Acces Refuzat';
+
+  @override
+  String get exportActiveSession => 'Sesiune Activă';
+
+  @override
+  String get exportDenied => 'Refuzat';
+
+  @override
+  String get exportInProgress => 'În Curs';
+
+  @override
+  String get exportActivityReport => 'Raport Activitate';
+
+  @override
+  String get exportGenerated => 'Generat';
+
+  @override
+  String get exportTime => 'Ora';
+
+  @override
+  String get exportTotalActivities => 'Total Activități';
+
+  @override
+  String get exportStatistics => 'Statistici';
+
+  @override
+  String get exportSuccessful => 'Reușit';
+
+  @override
+  String get exportFailedLabel => 'Eșuat';
+
+  @override
+  String get exportSuccessRate => 'Rata de Succes';
+
+  @override
+  String get exportActivityLog => 'Jurnal Activitate';
+
+  @override
+  String get exportPage => 'Pagina';
+
+  @override
+  String get exportOf => 'din';
+
+  @override
+  String get exportEndOfReport => 'Sfârșit Raport';
+
+  @override
+  String get exportMembersList => 'Listă Membri';
+
+  @override
+  String get exportTotalMembers => 'Total Membri';
+
+  @override
+  String get exportActive => 'Activ';
+
+  @override
+  String get exportInactive => 'Inactiv';
+
+  @override
+  String get exportMembersDirectory => 'Director Membri';
+
+  @override
+  String get exportName => 'Nume';
+
+  @override
+  String get exportPlan => 'Abonament';
+
+  @override
+  String get exportStatus => 'Stare';
+
+  @override
+  String get exportExpires => 'Expiră';
+
+  @override
+  String get exportContact => 'Contact';
+
+  @override
+  String get exportEmail => 'Email';
+
+  @override
+  String get exportMemberId => 'ID Membru';
+
+  @override
+  String get exportGender => 'Gen';
+
+  @override
+  String get exportDateOfBirth => 'Data Nașterii';
+
+  @override
+  String get exportAddress => 'Adresă';
+
+  @override
+  String get exportPhone => 'Telefon';
 }
