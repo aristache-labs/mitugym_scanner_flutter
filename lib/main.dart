@@ -7,6 +7,9 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'config/theme.dart';
 import 'screens/splash_screen.dart';
 
+// Global navigator key for accessing navigator context from anywhere
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -56,6 +59,7 @@ class MituGymScannerApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey, // Add global navigator key
       title: 'MituGym Scanner',
       theme: appTheme,
       debugShowCheckedModeBanner: false,

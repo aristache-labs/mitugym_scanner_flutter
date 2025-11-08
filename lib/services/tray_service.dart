@@ -5,6 +5,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 import '../config/app_colors.dart';
+import '../main.dart' show navigatorKey;
 
 /// Service to manage system tray functionality
 class TrayService with TrayListener, WindowListener {
@@ -13,13 +14,10 @@ class TrayService with TrayListener, WindowListener {
   TrayService._internal();
 
   bool _isInitialized = false;
-  BuildContext? _context;
 
   /// Initialize the system tray
   Future<void> initialize(BuildContext context) async {
     if (_isInitialized) return;
-    
-    _context = context;
     
     // Set up tray icon
     // Windows: Use .ico for best results in system tray
@@ -113,9 +111,12 @@ class TrayService with TrayListener, WindowListener {
     await windowManager.show();
     await windowManager.focus();
     
-    if (_context != null && _context!.mounted) {
+    // Get the current navigator context from global key
+    final navigatorContext = navigatorKey.currentContext;
+    
+    if (navigatorContext != null && navigatorContext.mounted) {
       showAboutDialog(
-        context: _context!,
+        context: navigatorContext,
         applicationName: 'MituGym Scanner',
         applicationVersion: '1.0.0',
         applicationIcon: Image.asset(
@@ -155,10 +156,17 @@ class TrayService with TrayListener, WindowListener {
 
   /// Show dialog asking about close behavior
   void _showCloseDialog() {
-    if (_context == null || !_context!.mounted) return;
+    // Get the current navigator context from global key (works even after logout/navigation changes)
+    final navigatorContext = navigatorKey.currentContext;
+    
+    if (navigatorContext == null || !navigatorContext.mounted) {
+      // If no valid context, just exit the application
+      _exitApplication();
+      return;
+    }
 
     showDialog(
-      context: _context!,
+      context: navigatorContext,
       barrierDismissible: true,
       barrierColor: AppColors.overlay,
       builder: (context) => Dialog(
