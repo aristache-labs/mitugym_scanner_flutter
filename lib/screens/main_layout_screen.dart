@@ -441,64 +441,84 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
       child: PopupMenuButton<String>(
         key: _userMenuKey,
         tooltip: '', // Remove default "Show menu" tooltip
-        offset: const Offset(0, 50),
+        offset: const Offset(0, 56),
+        elevation: 16,
+        shadowColor: Colors.black.withValues(alpha: 0.25),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           side: BorderSide(
-            color: AppColors.border.withValues(alpha: 0.3),
+            color: AppColors.border.withValues(alpha: 0.15),
+            width: 1,
           ),
         ),
-        color: AppColors.surface,
-        child: Material(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-          child: InkWell(
-            onTap: () {
-              _userMenuKey.currentState?.showButtonMenu();
-            },
+        color: AppColors.card.withValues(alpha: 0.98),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppColors.surface.withValues(alpha: 0.85),
+                AppColors.surface.withValues(alpha: 0.7),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
             borderRadius: BorderRadius.circular(12),
-            hoverColor: AppColors.primary.withValues(alpha: 0.1),
-            splashColor: AppColors.primary.withValues(alpha: 0.2),
-            highlightColor: AppColors.primary.withValues(alpha: 0.15),
-            child: Ink(
-              decoration: BoxDecoration(
-                color: AppColors.surface.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: AppColors.border.withValues(alpha: 0.3),
-                  width: 1,
-                ),
+            border: Border.all(
+              color: AppColors.border.withValues(alpha: 0.25),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 10,
+                offset: const Offset(0, 3),
               ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+            child: InkWell(
+              onTap: () {
+                _userMenuKey.currentState?.showButtonMenu();
+              },
+              borderRadius: BorderRadius.circular(12),
+              hoverColor: AppColors.primary.withValues(alpha: 0.06),
+              splashColor: AppColors.primary.withValues(alpha: 0.12),
+              highlightColor: AppColors.primary.withValues(alpha: 0.08),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                constraints: const BoxConstraints(
-                  minHeight: 50,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Avatar
+                    // Avatar with enhanced styling
                     Container(
-                      width: 32,
-                      height: 32,
+                      width: 36,
+                      height: 36,
                       decoration: BoxDecoration(
                         gradient: avatarUrl == null || avatarUrl.isEmpty ? AppColors.primaryGradient : null,
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.2),
+                          color: AppColors.primary.withValues(alpha: 0.35),
                           width: 2,
                         ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.15),
+                            blurRadius: 10,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
                       child: avatarUrl != null && avatarUrl.isNotEmpty
                           ? ClipOval(
                               child: Image.network(
                                 avatarUrl,
-                                width: 32,
-                                height: 32,
+                                width: 36,
+                                height: 36,
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) {
-                                  // Fallback to initials if image fails to load
                                   return Container(
                                     decoration: BoxDecoration(
                                       gradient: AppColors.primaryGradient,
@@ -509,7 +529,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
                                         userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
                                         style: GoogleFonts.inter(
                                           color: Colors.white,
-                                          fontSize: 14,
+                                          fontSize: 16,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
@@ -520,8 +540,8 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
                                   if (loadingProgress == null) return child;
                                   return Center(
                                     child: SizedBox(
-                                      width: 16,
-                                      height: 16,
+                                      width: 18,
+                                      height: 18,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
                                         valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
@@ -536,39 +556,40 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
                                 userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
                                 style: GoogleFonts.inter(
                                   color: Colors.white,
-                                  fontSize: 14,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
                     ),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: 12),
                     
                     // Welcome text + User name
                     Flexible(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             AppLocalizations.of(context)!.welcomeBack,
                             style: GoogleFonts.inter(
-                              color: AppColors.textMuted,
+                              color: AppColors.textMuted.withValues(alpha: 0.75),
                               fontSize: 9,
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: 0.5,
-                              height: 1.2,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.8,
+                              height: 1.0,
                             ),
                           ),
-                          const SizedBox(height: 2),
+                          const SizedBox(height: 1),
                           Text(
                             userName,
                             style: GoogleFonts.inter(
                               color: AppColors.textPrimary,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 0.3,
-                              height: 1.2,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.2,
+                              height: 1.0,
                             ),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
@@ -576,13 +597,25 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 10),
                     
-                    // Dropdown icon
-                    Icon(
-                      LucideIcons.chevronDown,
-                      color: Colors.white.withValues(alpha: 0.7),
-                      size: 18,
+                    // Dropdown icon with refined styling
+                    Container(
+                      padding: const EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColors.primary.withValues(alpha: 0.12),
+                            AppColors.primary.withValues(alpha: 0.08),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Icon(
+                        LucideIcons.chevronDown,
+                        color: AppColors.primary.withValues(alpha: 0.85),
+                        size: 15,
+                      ),
                     ),
                   ],
                 ),
@@ -598,67 +631,139 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
           }
         },
       itemBuilder: (context) => [
-        // Settings option
+        // Settings option with refined styling
         PopupMenuItem<String>(
           value: 'settings',
-          height: 48,
-          child: Row(
-            children: [
-              Icon(
-                LucideIcons.settings,
-                size: 18,
-                color: AppColors.primary,
+          height: 52,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.primary.withValues(alpha: 0.06),
+                  AppColors.primary.withValues(alpha: 0.03),
+                ],
               ),
-              const SizedBox(width: 12),
-              Text(
-                AppLocalizations.of(context)!.navSettings,
-                style: GoogleFonts.inter(
-                  color: AppColors.textPrimary,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: AppColors.primary.withValues(alpha: 0.12),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.primary.withValues(alpha: 0.15),
+                        AppColors.primary.withValues(alpha: 0.1),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    LucideIcons.settings,
+                    size: 16,
+                    color: AppColors.primary,
+                  ),
                 ),
-              ),
-              const Spacer(),
-              Icon(
-                LucideIcons.externalLink,
-                size: 14,
-                color: AppColors.textMuted,
-              ),
-            ],
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    AppLocalizations.of(context)!.navSettings,
+                    style: GoogleFonts.inter(
+                      color: AppColors.textPrimary,
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.2,
+                    ),
+                  ),
+                ),
+                Icon(
+                  LucideIcons.externalLink,
+                  size: 14,
+                  color: AppColors.textMuted.withValues(alpha: 0.5),
+                ),
+              ],
+            ),
           ),
         ),
         
-        // Divider
+        // Elegant divider with gradient
         PopupMenuItem<String>(
           enabled: false,
-          height: 1,
-          child: Divider(
-            color: AppColors.border.withValues(alpha: 0.2),
+          height: 12,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Container(
             height: 1,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.transparent,
+                  AppColors.border.withValues(alpha: 0.3),
+                  Colors.transparent,
+                ],
+              ),
+            ),
           ),
         ),
         
-        // Logout option
+        // Logout option with refined styling
         PopupMenuItem<String>(
           value: 'logout',
-          height: 48,
-          child: Row(
-            children: [
-              Icon(
-                LucideIcons.logOut,
-                size: 18,
-                color: AppColors.error,
+          height: 52,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.error.withValues(alpha: 0.06),
+                  AppColors.error.withValues(alpha: 0.03),
+                ],
               ),
-              const SizedBox(width: 12),
-              Text(
-                AppLocalizations.of(context)!.logout,
-                style: GoogleFonts.inter(
-                  color: AppColors.error,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: AppColors.error.withValues(alpha: 0.15),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.error.withValues(alpha: 0.15),
+                        AppColors.error.withValues(alpha: 0.1),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    LucideIcons.logOut,
+                    size: 16,
+                    color: AppColors.error,
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    AppLocalizations.of(context)!.logout,
+                    style: GoogleFonts.inter(
+                      color: AppColors.error,
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.2,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],
