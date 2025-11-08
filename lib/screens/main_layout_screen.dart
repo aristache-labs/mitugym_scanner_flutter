@@ -674,7 +674,74 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
 
   /// Handle user logout
   Future<void> _handleLogout() async {
-    // Show confirmation dialog
+    // Check if online before allowing logout
+    final isOnline = ref.read(offlineProvider).isOnline;
+    
+    if (!isOnline) {
+      // Show offline warning dialog
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          backgroundColor: AppColors.surface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.warning.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  LucideIcons.wifiOff,
+                  color: AppColors.warning,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Logout Disabled',
+                style: GoogleFonts.inter(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            'You cannot logout while offline. Please connect to the internet before logging out.\n\nThis prevents you from being locked out of the app, as login requires an internet connection.',
+            style: GoogleFonts.inter(
+              color: AppColors.textSecondary,
+              fontSize: 14,
+              height: 1.5,
+            ),
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text(
+                'OK',
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+    
+    // Show confirmation dialog (online)
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
