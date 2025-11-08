@@ -32,7 +32,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   late double _soundVolume;
   late int _cameraFrameRate;
   late int _logRetentionDays;
-  late String _exportFormat;
   late bool _autoStartScanning;
   late bool _cameraVisible;
   late int _historyRetentionDays;
@@ -53,7 +52,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     _soundVolume = config.soundVolume;
     _cameraFrameRate = config.cameraFrameRate;
     _logRetentionDays = config.logRetentionDays;
-    _exportFormat = config.exportFormat;
     _autoStartScanning = config.autoStartScanning;
     _cameraVisible = config.cameraVisible;
     _historyRetentionDays = config.historyRetentionDays;
@@ -89,7 +87,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     // Save settings from Advanced tab
     await ref.read(configProvider.notifier).updateCameraFrameRate(_cameraFrameRate);
     await ref.read(configProvider.notifier).updateLogRetentionDays(_logRetentionDays);
-    await ref.read(configProvider.notifier).updateExportFormat(_exportFormat);
     await ref.read(configProvider.notifier).updateVerboseLogging(_verboseLogging);
     
     // Update scanner service with new settings
@@ -267,7 +264,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
                     _soundVolume = config.soundVolume;
                     _cameraFrameRate = config.cameraFrameRate;
                     _logRetentionDays = config.logRetentionDays;
-                    _exportFormat = config.exportFormat;
                     _autoStartScanning = config.autoStartScanning;
                     _cameraVisible = config.cameraVisible;
                     _historyRetentionDays = config.historyRetentionDays;
@@ -479,13 +475,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
               divisions: 83,
               displayValue: '$_logRetentionDays days',
               onChanged: (v) => setState(() => _logRetentionDays = v.toInt()),
-            ),
-            const SizedBox(height: 16),
-            _buildDropdown(
-              label: 'Export Format',
-              value: _exportFormat,
-              items: const ['csv', 'text'],
-              onChanged: (v) => setState(() => _exportFormat = v!),
             ),
           ],
         ),
@@ -1615,64 +1604,5 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     );
   }
 
-  Widget _buildDropdown({
-    required String label,
-    required String value,
-    required List<String> items,
-    required ValueChanged<String?> onChanged,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.inter(
-              color: AppColors.textSecondary,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.2,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppColors.surface.withValues(alpha: 0.8),
-                  AppColors.surface.withValues(alpha: 0.6),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: AppColors.border.withValues(alpha: 0.5),
-                width: 1.5,
-              ),
-            ),
-            child: DropdownButton<String>(
-              value: value,
-              isExpanded: true,
-              underline: const SizedBox(),
-              dropdownColor: AppColors.surface,
-              style: GoogleFonts.inter(
-                color: AppColors.textPrimary,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
-              items: items.map((item) {
-                return DropdownMenuItem(
-                  value: item,
-                  child: Text(item.toUpperCase()),
-                );
-              }).toList(),
-              onChanged: onChanged,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
