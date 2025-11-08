@@ -734,4 +734,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get updatesEveryHour => 'Updates every hour';
+
+  @override
+  String get successRate => 'Success Rate';
 }

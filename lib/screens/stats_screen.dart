@@ -208,7 +208,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
                   children: [
                     // Success rate chart
                     Expanded(
-                      child: _buildSuccessRateCard(successRate, checkIns, checkOuts, denied),
+                      child: _buildSuccessRateCard(context, successRate, checkIns, checkOuts, denied),
                     ),
                     const SizedBox(width: 16),
                     
@@ -672,7 +672,9 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
   }
 
   /// Build success rate card with animations
-  Widget _buildSuccessRateCard(double rate, int checkIns, int checkOuts, int denied) {
+  Widget _buildSuccessRateCard(BuildContext context, double rate, int checkIns, int checkOuts, int denied) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -697,7 +699,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Success Rate',
+                l10n.successRate,
                 style: GoogleFonts.inter(
                   color: AppColors.textPrimary,
                   fontSize: 16,
@@ -747,9 +749,9 @@ class _StatsScreenState extends ConsumerState<StatsScreen> with SingleTickerProv
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildStatItem('Check-ins', '$checkIns', AppColors.success),
-              _buildStatItem('Check-outs', '$checkOuts', AppColors.warning),
-              _buildStatItem('Denied', '$denied', AppColors.error),
+              _buildStatItem(l10n.checkIns, '$checkIns', AppColors.success),
+              _buildStatItem(l10n.checkOuts, '$checkOuts', AppColors.warning),
+              _buildStatItem(l10n.denied, '$denied', AppColors.error),
             ],
           ),
         ],

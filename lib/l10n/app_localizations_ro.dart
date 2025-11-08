@@ -738,4 +738,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get updatesEveryHour => 'Actualizare la fiecare oră';
+
+  @override
+  String get successRate => 'Rata de succes';
 }

@@ -1513,6 +1513,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Updates every hour'**
   String get updatesEveryHour;
+
+  /// No description provided for @successRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Success Rate'**
+  String get successRate;
 }
 
 class _AppLocalizationsDelegate

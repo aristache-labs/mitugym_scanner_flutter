@@ -303,5 +303,6 @@
   "person": "person",
   "todaysTraffic": "Today's Traffic",
   "peak": "Peak: ",
-  "updatesEveryHour": "Updates every hour"
+  "updatesEveryHour": "Updates every hour",
+  "successRate": "Success Rate"
 }

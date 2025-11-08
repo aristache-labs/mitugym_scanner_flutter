@@ -261,5 +261,6 @@
   "person": "persoană",
   "todaysTraffic": "Traficul de azi",
   "peak": "Vârf: ",
-  "updatesEveryHour": "Actualizare la fiecare oră"
+  "updatesEveryHour": "Actualizare la fiecare oră",
+  "successRate": "Rata de succes"
 }
