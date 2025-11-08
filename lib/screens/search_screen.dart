@@ -9,8 +9,7 @@ import '../providers/config_provider.dart';
 import '../services/search_service.dart';
 import '../services/offline_storage_service.dart';
 import '../services/export_service.dart';
-import '../widgets/member_avatar_modal.dart';
-import '../widgets/member_details_modal.dart';
+import '../widgets/unified_member_table.dart';
 
 /// Member search screen with modern design
 class SearchScreen extends ConsumerStatefulWidget {
@@ -167,9 +166,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     _performSearch();
   }
 
-  void _showMemberDetails(MemberData member) {
-    MemberDetailsModal.show(context, member: member);
-  }
 
   /// Export members with format selection
   Future<void> _exportMembers(String format) async {
@@ -700,289 +696,18 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       );
     }
 
-    // Members list with fixed table header
+    // Members list using unified table component
     final filteredMembers = _getFilteredMembers();
     
-    return Stack(
-      children: [
-        // Members list with top padding for header
-        Padding(
-          padding: const EdgeInsets.only(top: 48),
-          child: ListView.builder(
-            padding: EdgeInsets.zero,
-            itemCount: filteredMembers.length,
-            itemBuilder: (context, index) {
-              final member = filteredMembers[index];
-              return _buildMemberCard(member);
-            },
-          ),
-        ),
-        
-        // Fixed table header
-        Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          child: _buildTableHeader(),
-        ),
-      ],
+    return UnifiedMemberTable(
+      members: filteredMembers,
+      sortBy: _sortBy,
+      sortAscending: _sortAscending,
+      onSort: _toggleSort,
+      showHeader: true,
     );
   }
 
-  Widget _buildTableHeader() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: AppColors.surface.withValues(alpha: 0.5),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(12),
-          topRight: Radius.circular(12),
-        ),
-        border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.3),
-          width: 1,
-        ),
-      ),
-      child: Row(
-        children: [
-          // Member column (with avatar space)
-          SizedBox(
-            width: 200,
-            child: _buildSortableHeader('MEMBER', 'member'),
-          ),
-          
-          // Plan column
-          Expanded(
-            flex: 2,
-            child: _buildSortableHeader('PLAN', 'plan'),
-          ),
-          
-          // Expires column
-          Expanded(
-            flex: 2,
-            child: _buildSortableHeader('EXPIRES', 'expires'),
-          ),
-          
-          // Status column (with sorting)
-          SizedBox(
-            width: 100,
-            child: _buildSortableHeader('STATUS', 'status'),
-          ),
-        ],
-      ),
-    );
-  }
-  
-  Widget _buildSortableHeader(String label, String sortKey) {
-    final isActive = _sortBy == sortKey;
-    
-    return InkWell(
-      onTap: () => _toggleSort(sortKey),
-      borderRadius: BorderRadius.circular(6),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              label,
-              style: GoogleFonts.inter(
-                color: isActive ? AppColors.primary : AppColors.textMuted,
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.8,
-              ),
-            ),
-            const SizedBox(width: 4),
-            Icon(
-              isActive
-                  ? (_sortAscending ? LucideIcons.arrowUp : LucideIcons.arrowDown)
-                  : LucideIcons.arrowUpDown,
-              size: 14,
-              color: isActive ? AppColors.primary : AppColors.textMuted.withValues(alpha: 0.5),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMemberCard(MemberData member) {
-    final statusColor = _getStatusColor(member.membershipStatus);
-    final isActive = member.membershipStatus.toLowerCase() == 'active';
-    
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.card.withValues(alpha: 0.7),
-            AppColors.surface.withValues(alpha: 0.5),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.3),
-          width: 1,
-        ),
-      ),
-      child: Material(
-        color: Colors.transparent,
-      child: InkWell(
-        onTap: () => _showMemberDetails(member),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Row(
-            children: [
-                // Member column (with avatar) - matches header width: 200
-                SizedBox(
-                  width: 200,
-                  child: Row(
-                  children: [
-                      // Compact Avatar (clickable to expand)
-                      GestureDetector(
-                        onTap: () {
-                          MemberAvatarModal.show(
-                            context,
-                            avatarUrl: member.avatarUrl,
-                            memberName: member.memberName,
-                            memberId: member.memberId,
-                          );
-                        },
-                        child: Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: member.hasAvatar ? null : AppColors.primaryGradient,
-                            border: Border.all(
-                              color: statusColor.withValues(alpha: 0.3),
-                              width: 2,
-                            ),
-                            image: member.hasAvatar
-                                ? DecorationImage(
-                                    image: NetworkImage(member.avatarUrl!),
-                                    fit: BoxFit.cover,
-                                  )
-                                : null,
-                          ),
-                          child: member.hasAvatar
-                              ? null
-                              : Center(
-                                  child: Text(
-                                    member.initials,
-                                    style: GoogleFonts.inter(
-                                      color: Colors.white,
-                                      fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                                ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      // Member name
-                      Expanded(
-                        child: Text(
-                          member.memberName,
-                          style: GoogleFonts.inter(
-                            color: AppColors.textPrimary,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              
-                // Plan column - matches header flex: 2
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    member.planName,
-                    style: GoogleFonts.inter(
-                      color: AppColors.textMuted,
-                      fontSize: 12,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                
-                // Expires column - matches header flex: 2
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    member.formattedExpiryDate,
-                    style: GoogleFonts.inter(
-                      color: AppColors.textMuted,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-                
-                // Status column - matches header width: 100
-                SizedBox(
-                  width: 100,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                      color: statusColor.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(
-                        color: statusColor.withValues(alpha: 0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          isActive ? LucideIcons.checkCircle : LucideIcons.xCircle,
-                          size: 12,
-                          color: statusColor,
-                        ),
-                        const SizedBox(width: 4),
-                        Flexible(
-                child: Text(
-                  member.membershipStatus.toUpperCase(),
-                            style: GoogleFonts.inter(
-                    color: statusColor,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'active':
-        return AppColors.success;
-      case 'expired':
-        return AppColors.error;
-      case 'inactive':
-        return AppColors.warning;
-      default:
-        return AppColors.muted;
-    }
-  }
 
   // Premium Toast Helper
   void _showPremiumToast(String message, IconData icon, ToastType type, {String? filePath}) {

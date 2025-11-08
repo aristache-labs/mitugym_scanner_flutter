@@ -36,7 +36,15 @@ class UnifiedMemberTable extends StatelessWidget {
           _buildTableHeader(),
           const SizedBox(height: 8),
         ],
-        ...members.map((member) => _buildMemberRow(member, context)),
+        Expanded(
+          child: ListView.builder(
+            padding: EdgeInsets.zero,
+            itemCount: members.length,
+            itemBuilder: (context, index) {
+              return _buildMemberRow(members[index], context);
+            },
+          ),
+        ),
       ],
     );
   }
