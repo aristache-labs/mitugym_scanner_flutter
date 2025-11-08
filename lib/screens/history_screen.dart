@@ -897,8 +897,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           ),
         ),
       ),
-        child: Row(
-          children: [
+      child: Row(
+        children: [
           // Member column (with avatar space)
           SizedBox(
             width: 200,
@@ -913,67 +913,60 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
               ),
             ),
           ),
-          
+
           const SizedBox(width: 10),
-          
+
           // Checked In column
           Expanded(
             flex: 3,
             child: _buildSortableHeader(
               'CHECKED IN',
               'checkIn',
-              padding: const EdgeInsets.only(
-                left: 180,
-                right: 4,
-                top: 6,
-                bottom: 6,
-              ),
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
             ),
           ),
-          
+
           const SizedBox(width: 10),
-          
+
           // Checked Out column
           Expanded(
             flex: 2,
             child: _buildSortableHeader(
               'CHECKED OUT',
               'checkOut',
-              padding: const EdgeInsets.only(
-                left: 2,
-                right: 4,
-                top: 6,
-                bottom: 6,
-              ),
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
             ),
           ),
-          
+
           const SizedBox(width: 10),
-          
+
           // Duration column
           SizedBox(
             width: 120,
             child: _buildSortableHeader(
               'DURATION',
               'duration',
-              padding: const EdgeInsets.only(
-                left: 25,
-                right: 0,
-                top: 6,
-                bottom: 6,
-              ),
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
             ),
           ),
         ],
       ),
     );
   }
-  
-  Widget _buildSortableHeader(String label, String sortKey, {required EdgeInsets padding}) {
+
+  Widget _buildSortableHeader(
+    String label,
+    String sortKey, {
+    Alignment alignment = Alignment.centerLeft,
+    EdgeInsets padding = const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+  }) {
     final isActive = _sortBy == sortKey;
-    
+
     return Align(
-      alignment: Alignment.centerLeft,
+      alignment: alignment,
       child: InkWell(
         onTap: () => _toggleSort(sortKey),
         borderRadius: BorderRadius.circular(6),

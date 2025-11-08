@@ -449,7 +449,7 @@ class _ActivityTableHeaderDelegate extends SliverPersistentHeaderDelegate {
               children: [
                 // Member column
                 SizedBox(
-                  width: 220,
+                  width: 200,
                   child: _buildSortableHeader(
                     'MEMBER',
                     'member',
@@ -462,20 +462,20 @@ class _ActivityTableHeaderDelegate extends SliverPersistentHeaderDelegate {
                   ),
                 ),
                 
+                const SizedBox(width: 10),
+                
                 // Checked In column
                 Expanded(
-                  flex: 2,
+                  flex: 3,
                   child: _buildSortableHeader(
                     'CHECKED IN',
                     'checkIn',
-                    padding: const EdgeInsets.only(
-                      left: 30,
-                      right: 4,
-                      top: 6,
-                      bottom: 6,
-                    ),
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
                   ),
                 ),
+                
+                const SizedBox(width: 10),
                 
                 // Checked Out column
                 Expanded(
@@ -483,27 +483,21 @@ class _ActivityTableHeaderDelegate extends SliverPersistentHeaderDelegate {
                   child: _buildSortableHeader(
                     'CHECKED OUT',
                     'checkOut',
-                    padding: const EdgeInsets.only(
-                      left: 0,
-                      right: 4,
-                      top: 6,
-                      bottom: 6,
-                    ),
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
                   ),
                 ),
                 
+                const SizedBox(width: 10),
+                
                 // Duration column
                 SizedBox(
-                  width: 160,
+                  width: 120,
                   child: _buildSortableHeader(
                     'DURATION',
                     'duration',
-                    padding: const EdgeInsets.only(
-                      left: 25,
-                      right: 4,
-                      top: 6,
-                      bottom: 6,
-                    ),
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
                   ),
                 ),
               ],

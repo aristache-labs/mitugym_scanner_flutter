@@ -1013,7 +1013,7 @@ class _ActivityTableHeaderDelegate extends SliverPersistentHeaderDelegate {
               children: [
                 // Member column
                 SizedBox(
-                  width: 220,
+                  width: 200,
                   child: _buildSortableHeader(
                     'MEMBER',
                     'member',
@@ -1028,16 +1028,12 @@ class _ActivityTableHeaderDelegate extends SliverPersistentHeaderDelegate {
                 
                 // Checked In column
                 Expanded(
-                  flex: 2,
+                  flex: 3,
                   child: _buildSortableHeader(
                     'CHECKED IN',
                     'checkIn',
-                    padding: const EdgeInsets.only(
-                      left: 30,
-                      right: 4,
-                      top: 6,
-                      bottom: 6,
-                    ),
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
                   ),
                 ),
                 
@@ -1047,27 +1043,19 @@ class _ActivityTableHeaderDelegate extends SliverPersistentHeaderDelegate {
                   child: _buildSortableHeader(
                     'CHECKED OUT',
                     'checkOut',
-                    padding: const EdgeInsets.only(
-                      left: 0,
-                      right: 4,
-                      top: 6,
-                      bottom: 6,
-                    ),
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
                   ),
                 ),
                 
                 // Duration column
                 SizedBox(
-                  width: 160,
+                  width: 120,
                   child: _buildSortableHeader(
                     'DURATION',
                     'duration',
-                    padding: const EdgeInsets.only(
-                      left: 25,
-                      right: 4,
-                      top: 6,
-                      bottom: 6,
-                    ),
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
                   ),
                 ),
               ],
@@ -1078,11 +1066,16 @@ class _ActivityTableHeaderDelegate extends SliverPersistentHeaderDelegate {
     );
   }
 
-  Widget _buildSortableHeader(String label, String sortKey, {required EdgeInsets padding}) {
+  Widget _buildSortableHeader(
+    String label,
+    String sortKey, {
+    Alignment alignment = Alignment.centerLeft,
+    EdgeInsets padding = const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+  }) {
     final isActive = sortBy == sortKey;
     
     return Align(
-      alignment: Alignment.centerLeft,
+      alignment: alignment,
       child: InkWell(
         onTap: () => onSort(sortKey),
         borderRadius: BorderRadius.circular(6),

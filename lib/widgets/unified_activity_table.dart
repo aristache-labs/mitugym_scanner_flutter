@@ -261,10 +261,7 @@ class UnifiedActivityTable extends StatelessWidget {
           // Checked In column
           Expanded(
             flex: 3,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 150),
-              child: _buildCheckInCell(activity),
-            ),
+            child: _buildCheckInCell(activity),
           ),
           
           const SizedBox(width: 10),
@@ -300,7 +297,7 @@ class UnifiedActivityTable extends StatelessWidget {
   Widget _buildCheckInCell(ActivityLog activity) {
     if (activity.checkInTime != null) {
       return Align(
-        alignment: Alignment.centerLeft,
+        alignment: Alignment.center,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
@@ -347,7 +344,7 @@ class UnifiedActivityTable extends StatelessWidget {
     
     if (!activity.success) {
       return Align(
-        alignment: Alignment.centerLeft,
+        alignment: Alignment.center,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
@@ -393,7 +390,7 @@ class UnifiedActivityTable extends StatelessWidget {
   Widget _buildCheckOutCell(ActivityLog activity) {
     if (activity.checkOutTime != null) {
       return Align(
-        alignment: Alignment.centerLeft,
+        alignment: Alignment.center,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
@@ -440,7 +437,7 @@ class UnifiedActivityTable extends StatelessWidget {
     
     if (!activity.success) {
       return Align(
-        alignment: Alignment.centerLeft,
+        alignment: Alignment.center,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
@@ -476,7 +473,7 @@ class UnifiedActivityTable extends StatelessWidget {
     
     if (activity.checkInTime != null) {
       return Align(
-        alignment: Alignment.centerLeft,
+        alignment: Alignment.center,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
@@ -526,7 +523,7 @@ class UnifiedActivityTable extends StatelessWidget {
   Widget _buildDurationCell(ActivityLog activity) {
     if (activity.checkInTime != null && activity.checkOutTime != null) {
       return Align(
-        alignment: Alignment.centerLeft,
+        alignment: Alignment.center,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
@@ -551,7 +548,7 @@ class UnifiedActivityTable extends StatelessWidget {
     
     if (activity.checkInTime != null && activity.checkOutTime == null) {
       return Align(
-        alignment: Alignment.centerLeft,
+        alignment: Alignment.center,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
