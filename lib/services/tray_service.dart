@@ -304,38 +304,104 @@ class TrayService with TrayListener, WindowListener {
     required VoidCallback onTap,
     bool isCancel = false,
   }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          decoration: BoxDecoration(
-            color: isCancel 
-                ? AppColors.surface.withValues(alpha: 0.5)
-                : AppColors.surface,
+    return _ActionButton(
+      icon: icon,
+      label: label,
+      onTap: onTap,
+      isCancel: isCancel,
+    );
+  }
+}
+
+/// Stateful action button with hover and press animations
+class _ActionButton extends StatefulWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final bool isCancel;
+
+  const _ActionButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.isCancel = false,
+  });
+
+  @override
+  State<_ActionButton> createState() => _ActionButtonState();
+}
+
+class _ActionButtonState extends State<_ActionButton> {
+  bool _isHovered = false;
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTapDown: (_) => setState(() => _isPressed = true),
+        onTapUp: (_) => setState(() => _isPressed = false),
+        onTapCancel: () => setState(() => _isPressed = false),
+        onTap: widget.onTap,
+        child: Transform.scale(
+          scale: _isPressed ? 0.98 : 1.0,
+          child: Transform.translate(
+            offset: Offset(0.0, _isPressed ? 1.0 : 0.0),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeOutCubic,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+            color: _isHovered
+                ? (widget.isCancel 
+                    ? AppColors.surface.withValues(alpha: 0.7)
+                    : AppColors.cardHover)
+                : (widget.isCancel 
+                    ? AppColors.surface.withValues(alpha: 0.5)
+                    : AppColors.surface),
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: isCancel
-                  ? AppColors.border.withValues(alpha: 0.3)
-                  : AppColors.border.withValues(alpha: 0.5),
+              color: _isHovered
+                  ? (widget.isCancel
+                      ? AppColors.border.withValues(alpha: 0.5)
+                      : AppColors.primary.withValues(alpha: 0.4))
+                  : (widget.isCancel
+                      ? AppColors.border.withValues(alpha: 0.3)
+                      : AppColors.border.withValues(alpha: 0.5)),
               width: 1,
             ),
+            boxShadow: _isHovered && !widget.isCancel
+                ? [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : null,
           ),
           child: Row(
             children: [
-              Container(
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeOutCubic,
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: isCancel
-                      ? AppColors.textMuted.withValues(alpha: 0.1)
-                      : AppColors.primary.withValues(alpha: 0.15),
+                  color: _isHovered
+                      ? (widget.isCancel
+                          ? AppColors.textMuted.withValues(alpha: 0.15)
+                          : AppColors.primary.withValues(alpha: 0.2))
+                      : (widget.isCancel
+                          ? AppColors.textMuted.withValues(alpha: 0.1)
+                          : AppColors.primary.withValues(alpha: 0.15)),
                   borderRadius: BorderRadius.circular(7),
                 ),
                 child: Icon(
-                  icon,
-                  color: isCancel 
+                  widget.icon,
+                  color: widget.isCancel 
                       ? AppColors.textMuted
                       : AppColors.primary.withValues(alpha: 0.9),
                   size: 16,
@@ -343,32 +409,58 @@ class TrayService with TrayListener, WindowListener {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: Text(
-                  label,
+                child: AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeOutCubic,
                   style: GoogleFonts.inter(
-                    color: isCancel 
-                        ? AppColors.textMuted
-                        : AppColors.textPrimary,
+                    color: _isHovered
+                        ? (widget.isCancel 
+                            ? AppColors.textSecondary
+                            : AppColors.textWhite)
+                        : (widget.isCancel 
+                            ? AppColors.textMuted
+                            : AppColors.textPrimary),
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                     letterSpacing: 0.1,
                   ),
+                  child: Text(widget.label),
                 ),
               ),
-              Icon(
-                LucideIcons.chevronRight,
-                color: isCancel
-                    ? AppColors.textMuted.withValues(alpha: 0.3)
-                    : AppColors.textMuted.withValues(alpha: 0.5),
-                size: 16,
+              Transform.translate(
+                offset: Offset(_isHovered ? 2.0 : 0.0, 0.0),
+                child: AnimatedOpacity(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeOutCubic,
+                  opacity: 1.0,
+                  child: Icon(
+                    LucideIcons.chevronRight,
+                    color: widget.isCancel
+                        ? AppColors.textMuted.withValues(alpha: _isHovered ? 0.5 : 0.3)
+                        : AppColors.textMuted.withValues(alpha: _isHovered ? 0.7 : 0.5),
+                    size: 16,
+                  ),
+                ),
               ),
             ],
+          ),
+            ),
           ),
         ),
       ),
     );
   }
+}
 
+class TrayServiceExtension {
+  /// Dispose and clean up the tray service
+  static Future<void> disposeTrayService(TrayService service) async {
+    await service.dispose();
+  }
+}
+
+// Extension on TrayService to add dispose method
+extension TrayServiceDispose on TrayService {
   /// Dispose and clean up
   Future<void> dispose() async {
     if (_isInitialized) {
