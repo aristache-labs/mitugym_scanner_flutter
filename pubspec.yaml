@@ -62,8 +62,8 @@ dependencies:
   pdf: ^3.11.1
   
   # Database & Connectivity
-  sqflite: ^2.4.1
   sqflite_common_ffi: ^2.3.4
+  path: ^1.9.0
   connectivity_plus: ^7.0.0
   
   # External Integration

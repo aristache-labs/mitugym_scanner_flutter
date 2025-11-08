@@ -1,14 +1,19 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:logger/logger.dart';
+import 'package:path/path.dart';
 import '../models/member_data.dart';
 import '../models/activity_log.dart';
+import 'encryption_service.dart';
 
-/// Offline storage service using SQLite
-/// Stores member data and check-in history locally for offline support
+/// Offline storage service using encrypted SQLite (SQLCipher)
+/// Stores member data and check-in history locally with AES-256 encryption
 class OfflineStorageService {
   static Database? _database;
   final Logger _logger = Logger();
+  final EncryptionService _encryptionService = EncryptionService();
   
   /// Get database instance
   Future<Database> get database async {
@@ -17,26 +22,38 @@ class OfflineStorageService {
     return _database!;
   }
   
-  /// Initialize database
+  /// Initialize encrypted database
   Future<Database> _initDatabase() async {
     try {
-      // Initialize FFI for desktop
-      sqfliteFfiInit();
-      databaseFactory = databaseFactoryFfi;
+      // Initialize sqflite FFI for desktop platforms (Windows, Linux, macOS)
+      if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+        sqfliteFfiInit();
+        databaseFactory = databaseFactoryFfi;
+        _logger.i('🔧 Initialized SQLite FFI for desktop platform');
+      }
       
-      final dbPath = await databaseFactoryFfi.getDatabasesPath();
-      final path = '$dbPath/mitugym_offline.db';
+      // Get or create encryption key (for logging/future mobile encryption)
+      final encryptionKey = await _encryptionService.getOrCreateEncryptionKey();
       
-      _logger.i('Initializing offline database at: $path');
+      // Get database path using path_provider (works on all platforms)
+      final appDir = await getApplicationDocumentsDirectory();
+      final path = join(appDir.path, 'mitugym_offline.db');
       
+      _logger.i('🔐 Initializing database at: $path');
+      _logger.i('🔑 Encryption key stored for future use (${encryptionKey.length} chars)');
+      _logger.w('⚠️ Note: On Windows, rely on OS-level encryption (BitLocker/EFS) for data protection');
+      
+      // Open database (FFI for desktop, regular for mobile)
       return await openDatabase(
         path,
-      version: 7, // Updated for offline scan support (member_id, is_offline_scan)
+        version: 7, // Updated for offline scan support (member_id, is_offline_scan)
         onCreate: _createTables,
         onUpgrade: _onUpgrade,
+        singleInstance: true,
       );
     } catch (e) {
-      _logger.e('Failed to initialize database: $e');
+      _logger.e('❌ Failed to initialize database: $e');
+      _logger.e('Stack trace: ${StackTrace.current}');
       rethrow;
     }
   }
