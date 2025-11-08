@@ -327,47 +327,52 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
-        _buildSection(
+        _buildCompactSection(
           'API Configuration',
           LucideIcons.cloud,
           [
-            _buildTextField(
+            _buildCompactTextField(
               controller: _apiUrlController,
               label: 'API URL',
               hint: 'https://api.example.com',
               icon: LucideIcons.link,
             ),
-            const SizedBox(height: 16),
-            _buildTextField(
+            const SizedBox(height: 12),
+            _buildCompactTextField(
               controller: _apiKeyController,
               label: 'API Key',
               hint: 'Your API key',
               icon: LucideIcons.key,
               obscure: true,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             _buildTestApiButton(),
           ],
         ),
-        const SizedBox(height: 24),
-        _buildSection(
-          'Startup',
-          LucideIcons.power,
+        const SizedBox(height: 16),
+        
+        // Compact grid for settings
+        _buildCompactSection(
+          'Application Settings',
+          LucideIcons.settings,
           [
-            _buildSwitch(
+            _buildCompactSwitch(
               label: 'Start with Windows',
+              icon: LucideIcons.power,
               value: _startWithWindows,
               onChanged: (v) => setState(() => _startWithWindows = v),
             ),
           ],
         ),
-        const SizedBox(height: 24),
-        _buildSection(
-          'Camera',
+        const SizedBox(height: 16),
+        
+        _buildCompactSection(
+          'Camera Settings',
           LucideIcons.camera,
           [
-            _buildSlider(
+            _buildCompactSlider(
               label: 'Camera Device',
+              icon: LucideIcons.video,
               value: _cameraIndex.toDouble(),
               min: 0,
               max: 5,
@@ -375,9 +380,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
               displayValue: 'Device $_cameraIndex',
               onChanged: (v) => setState(() => _cameraIndex = v.toInt()),
             ),
-            const SizedBox(height: 16),
-            _buildSlider(
+            const SizedBox(height: 12),
+            _buildCompactSlider(
               label: 'Frame Rate',
+              icon: LucideIcons.zap,
               value: _cameraFrameRate.toDouble(),
               min: 5,
               max: 30,
@@ -1293,6 +1299,322 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   }
 
 
+  /// Build compact section with smaller padding and tighter spacing
+  Widget _buildCompactSection(String title, IconData icon, List<Widget> children) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.card.withValues(alpha: 0.7),
+            AppColors.surface.withValues(alpha: 0.5),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppColors.border.withValues(alpha: 0.25),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Compact section header
+          Container(
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: AppColors.primary.withValues(alpha: 0.2),
+                      width: 1,
+                    ),
+                  ),
+                  child: Icon(icon, color: AppColors.primary, size: 16),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  title,
+                  style: GoogleFonts.inter(
+                    color: AppColors.textPrimary,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // Section content
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+            child: Column(children: children),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Build compact text field with smaller padding
+  Widget _buildCompactTextField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required IconData icon,
+    bool obscure = false,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.inter(
+            color: AppColors.textSecondary,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.2,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Container(
+          height: 42,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: TextFormField(
+            controller: controller,
+            obscureText: obscure,
+            style: GoogleFonts.inter(
+              color: AppColors.textPrimary,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: GoogleFonts.inter(
+                color: AppColors.textMuted.withValues(alpha: 0.5),
+                fontSize: 13,
+              ),
+              prefixIcon: Container(
+                margin: const EdgeInsets.all(6),
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(7),
+                ),
+                child: Icon(icon, color: AppColors.primary, size: 14),
+              ),
+              filled: true,
+              fillColor: AppColors.surface.withValues(alpha: 0.6),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: AppColors.border.withValues(alpha: 0.4),
+                  width: 1,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: AppColors.border.withValues(alpha: 0.4),
+                  width: 1,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(
+                  color: AppColors.primary,
+                  width: 1.5,
+                ),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 10,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Build compact slider with smaller padding
+  Widget _buildCompactSlider({
+    required String label,
+    required IconData icon,
+    required double value,
+    required double min,
+    required double max,
+    required int divisions,
+    required String displayValue,
+    required ValueChanged<double> onChanged,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.surface.withValues(alpha: 0.6),
+            AppColors.surface.withValues(alpha: 0.4),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: AppColors.border.withValues(alpha: 0.2),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Icon(icon, color: AppColors.primary, size: 12),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  label,
+                  style: GoogleFonts.inter(
+                    color: AppColors.textPrimary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  gradient: AppColors.primaryGradient,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  displayValue,
+                  style: GoogleFonts.inter(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          SliderTheme(
+            data: SliderThemeData(
+              activeTrackColor: AppColors.primary,
+              inactiveTrackColor: AppColors.surface,
+              thumbColor: AppColors.primary,
+              overlayColor: AppColors.primary.withValues(alpha: 0.2),
+              trackHeight: 4,
+              thumbShape: const RoundSliderThumbShape(
+                enabledThumbRadius: 7,
+              ),
+            ),
+            child: Slider(
+              value: value,
+              min: min,
+              max: max,
+              divisions: divisions,
+              onChanged: onChanged,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Build compact switch with smaller padding
+  Widget _buildCompactSwitch({
+    required String label,
+    required IconData icon,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.surface.withValues(alpha: 0.6),
+            AppColors.surface.withValues(alpha: 0.4),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: AppColors.border.withValues(alpha: 0.2),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Icon(icon, color: AppColors.primary, size: 12),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              label,
+              style: GoogleFonts.inter(
+                color: AppColors.textPrimary,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                letterSpacing: 0.2,
+              ),
+            ),
+          ),
+          Transform.scale(
+            scale: 0.85,
+            child: Switch(
+              value: value,
+              onChanged: onChanged,
+              activeTrackColor: AppColors.primary.withValues(alpha: 0.5),
+              thumbColor: WidgetStateProperty.resolveWith((states) {
+                if (states.contains(WidgetState.selected)) {
+                  return AppColors.primary;
+                }
+                return AppColors.textMuted;
+              }),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildSection(String title, IconData icon, List<Widget> children) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -1363,100 +1685,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     );
   }
 
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required String hint,
-    required IconData icon,
-    bool obscure = false,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.inter(
-              color: AppColors.textSecondary,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.2,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: TextFormField(
-              controller: controller,
-              obscureText: obscure,
-              style: GoogleFonts.inter(
-                color: AppColors.textPrimary,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
-              decoration: InputDecoration(
-                hintText: hint,
-                hintStyle: GoogleFonts.inter(
-                  color: AppColors.textMuted.withValues(alpha: 0.6),
-                  fontSize: 14,
-                ),
-                prefixIcon: Container(
-                  margin: const EdgeInsets.all(8),
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: AppColors.primary.withValues(alpha: 0.25),
-                      width: 1,
-                    ),
-                  ),
-                  child: Icon(icon, color: AppColors.primary, size: 16),
-                ),
-                filled: true,
-                fillColor: AppColors.surface.withValues(alpha: 0.8),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: AppColors.border.withValues(alpha: 0.5),
-                    width: 1.5,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: AppColors.border.withValues(alpha: 0.5),
-                    width: 1.5,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(
-                    color: AppColors.primary,
-                    width: 2,
-                  ),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 16,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildSlider({
     required String label,
