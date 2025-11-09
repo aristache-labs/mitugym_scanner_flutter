@@ -270,7 +270,44 @@
   
   "welcomeBack": "WELCOME BACK",
   "logout": "Logout",
+  "logoutTitle": "Logout",
+  "logoutConfirmMessage": "Are you sure you want to logout? You will need to login again to use the app.",
+  "logoutDisabledTitle": "Logout Disabled",
+  "logoutDisabledMessage": "You cannot logout while offline. Please connect to the internet before logging out.\n\nThis prevents you from being locked out of the app, as login requires an internet connection.",
+  "cancel": "Cancel",
+  "ok": "OK",
   "apiUrlNotConfigured": "API URL not configured",
+  
+  "staffPortal": "Staff Portal",
+  "emailLabel": "EMAIL",
+  "passwordLabel": "PASSWORD",
+  "pleaseEnterEmail": "Please enter your email",
+  "pleaseEnterValidEmail": "Please enter a valid email",
+  "pleaseEnterPassword": "Please enter your password",
+  "passwordMinLength": "Password must be at least 6 characters",
+  "rememberMe": "Remember me",
+  "signIn": "Sign In",
+  "needAccessContact": "Need access? Contact",
+  "offlineLoginAvailable": "You're offline. Offline login available for previous users.",
+  "offlineFirstLoginRequired": "You're offline. Please connect to the internet for your first login.",
+  "firstLoginOnlineRequired": "You must be online for your first login. Once you've logged in successfully, you can login offline.",
+  "loginFailed": "Login failed",
+  "offlineLoginFailed": "Offline login failed: {error}",
+  "@offlineLoginFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "loginFailedError": "Login failed: {error}",
+  "@loginFailedError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   
   "cameraPreview": "Camera Preview",
   "readyToScan": "Ready to scan",

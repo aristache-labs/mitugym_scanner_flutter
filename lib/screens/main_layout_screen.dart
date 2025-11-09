@@ -815,6 +815,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
     
     if (!isOnline) {
       // Show offline warning dialog
+      final l10n = AppLocalizations.of(context)!;
       await showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -838,7 +839,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
               ),
               const SizedBox(width: 12),
               Text(
-                'Logout Disabled',
+                l10n.logoutDisabledTitle,
                 style: GoogleFonts.inter(
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.bold,
@@ -847,7 +848,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
             ],
           ),
           content: Text(
-            'You cannot logout while offline. Please connect to the internet before logging out.\n\nThis prevents you from being locked out of the app, as login requires an internet connection.',
+            l10n.logoutDisabledMessage,
             style: GoogleFonts.inter(
               color: AppColors.textSecondary,
               fontSize: 14,
@@ -865,7 +866,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
                 ),
               ),
               child: Text(
-                'OK',
+                l10n.ok,
                 style: GoogleFonts.inter(
                   fontWeight: FontWeight.w600,
                 ),
@@ -878,6 +879,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
     }
     
     // Show confirmation dialog (online)
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -886,14 +888,14 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
           borderRadius: BorderRadius.circular(16),
         ),
         title: Text(
-          'Logout',
+          l10n.logoutTitle,
           style: GoogleFonts.inter(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.bold,
           ),
         ),
         content: Text(
-          'Are you sure you want to logout? You will need to login again to use the app.',
+          l10n.logoutConfirmMessage,
           style: GoogleFonts.inter(
             color: AppColors.textSecondary,
             fontSize: 14,
@@ -903,7 +905,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
             child: Text(
-              'Cancel',
+              l10n.cancel,
               style: GoogleFonts.inter(
                 color: AppColors.textMuted,
                 fontWeight: FontWeight.w600,
@@ -920,7 +922,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
               ),
             ),
             child: Text(
-              'Logout',
+              l10n.logout,
               style: GoogleFonts.inter(
                 fontWeight: FontWeight.w600,
               ),

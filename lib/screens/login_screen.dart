@@ -7,6 +7,7 @@ import '../config/app_colors.dart';
 import '../providers/auth_provider.dart';
 import '../providers/offline_provider.dart';
 import '../models/auth_session.dart';
+import '../l10n/app_localizations.dart';
 import 'main_layout_screen.dart';
 
 /// Login screen for authentication
@@ -56,6 +57,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final l10n = AppLocalizations.of(context)!;
+    
     // Check if online
     final isOnline = ref.read(offlineProvider).isOnline;
     
@@ -64,7 +67,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       final hasCachedCredentials = await AuthSession.hasCachedCredentials();
       
       if (!hasCachedCredentials) {
-        _showError('You must be online for your first login. Once you\'ve logged in successfully, you can login offline.');
+        _showError(l10n.firstLoginOnlineRequired);
         return;
       }
       
@@ -90,12 +93,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             );
           } else {
             final authState = ref.read(authProvider);
-            _showError(authState.error ?? 'Login failed');
+            _showError(authState.error ?? l10n.loginFailed);
           }
         }
       } catch (e) {
         if (mounted) {
-          _showError('Offline login failed: $e');
+          _showError(l10n.offlineLoginFailed(e.toString()));
         }
       } finally {
         if (mounted) {
@@ -127,12 +130,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           );
         } else {
           final authState = ref.read(authProvider);
-          _showError(authState.error ?? 'Login failed');
+          _showError(authState.error ?? l10n.loginFailed);
         }
       }
     } catch (e) {
       if (mounted) {
-        _showError('Login failed: $e');
+        _showError(l10n.loginFailedError(e.toString()));
       }
     } finally {
       if (mounted) {
@@ -216,6 +219,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _buildLoginCard(bool isOnline) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Container(
       constraints: const BoxConstraints(maxWidth: 400),
       decoration: BoxDecoration(
@@ -239,7 +244,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               // Title - "Staff Portal" inside card, matching web panel
               Center(
                 child: Text(
-                  'Staff Portal',
+                  l10n.staffPortal,
                   style: GoogleFonts.inter(
                     fontSize: 24,
                     fontWeight: FontWeight.w600,
@@ -270,7 +275,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               Center(
                 child: Text.rich(
                   TextSpan(
-                    text: 'Need access? Contact ',
+                    text: '${l10n.needAccessContact} ',
                     style: GoogleFonts.inter(
                       fontSize: 13,
                       color: AppColors.textSecondary,
@@ -296,11 +301,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _buildEmailField() {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'EMAIL',
+          l10n.emailLabel,
           style: GoogleFonts.inter(
             fontSize: 11,
             fontWeight: FontWeight.w600,
@@ -349,10 +356,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Please enter your email';
+              return l10n.pleaseEnterEmail;
             }
             if (!value.contains('@')) {
-              return 'Please enter a valid email';
+              return l10n.pleaseEnterValidEmail;
             }
             return null;
           },
@@ -362,11 +369,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _buildPasswordField() {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'PASSWORD',
+          l10n.passwordLabel,
           style: GoogleFonts.inter(
             fontSize: 11,
             fontWeight: FontWeight.w600,
@@ -427,10 +436,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Please enter your password';
+              return l10n.pleaseEnterPassword;
             }
             if (value.length < 6) {
-              return 'Password must be at least 6 characters';
+              return l10n.passwordMinLength;
             }
             return null;
           },
@@ -441,6 +450,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _buildLoginButton(bool isOnline) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return FutureBuilder<bool>(
       future: AuthSession.hasCachedCredentials(),
       builder: (context, snapshot) {
@@ -473,7 +484,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 )
               : Text(
-                  'Sign In',
+                  l10n.signIn,
                   style: GoogleFonts.inter(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -486,6 +497,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _buildRememberMeCheckbox() {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -513,7 +526,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             });
           },
           child: Text(
-            'Remember me',
+            l10n.rememberMe,
             style: GoogleFonts.inter(
               color: AppColors.textSecondary,
               fontSize: 14,
@@ -526,6 +539,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _buildOfflineIndicator() {
+    final l10n = AppLocalizations.of(context)!;
+    
     return FutureBuilder<bool>(
       future: AuthSession.hasCachedCredentials(),
       builder: (context, snapshot) {
@@ -556,8 +571,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               Flexible(
                 child: Text(
                   hasCachedCredentials
-                      ? 'You\'re offline. Offline login available for previous users.'
-                      : 'You\'re offline. Please connect to the internet for your first login.',
+                      ? l10n.offlineLoginAvailable
+                      : l10n.offlineFirstLoginRequired,
                   style: GoogleFonts.inter(
                     color: hasCachedCredentials ? AppColors.info : AppColors.warning,
                     fontSize: 13,

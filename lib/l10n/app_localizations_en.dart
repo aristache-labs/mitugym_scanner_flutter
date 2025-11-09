@@ -650,7 +650,73 @@ class AppLocalizationsEn extends AppLocalizations {
   String get logout => 'Logout';
 
   @override
+  String get logoutTitle => 'Logout';
+
+  @override
+  String get logoutConfirmMessage =>
+      'Are you sure you want to logout? You will need to login again to use the app.';
+
+  @override
+  String get logoutDisabledTitle => 'Logout Disabled';
+
+  @override
+  String get logoutDisabledMessage =>
+      'You cannot logout while offline. Please connect to the internet before logging out.\n\nThis prevents you from being locked out of the app, as login requires an internet connection.';
+
+  @override
   String get apiUrlNotConfigured => 'API URL not configured';
+
+  @override
+  String get staffPortal => 'Staff Portal';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get passwordLabel => 'PASSWORD';
+
+  @override
+  String get pleaseEnterEmail => 'Please enter your email';
+
+  @override
+  String get pleaseEnterValidEmail => 'Please enter a valid email';
+
+  @override
+  String get pleaseEnterPassword => 'Please enter your password';
+
+  @override
+  String get passwordMinLength => 'Password must be at least 6 characters';
+
+  @override
+  String get rememberMe => 'Remember me';
+
+  @override
+  String get signIn => 'Sign In';
+
+  @override
+  String get needAccessContact => 'Need access? Contact';
+
+  @override
+  String get offlineLoginAvailable =>
+      'You\'re offline. Offline login available for previous users.';
+
+  @override
+  String get offlineFirstLoginRequired =>
+      'You\'re offline. Please connect to the internet for your first login.';
+
+  @override
+  String get firstLoginOnlineRequired =>
+      'You must be online for your first login. Once you\'ve logged in successfully, you can login offline.';
+
+  @override
+  String offlineLoginFailed(String error) {
+    return 'Offline login failed: $error';
+  }
+
+  @override
+  String loginFailedError(String error) {
+    return 'Login failed: $error';
+  }
 
   @override
   String get cameraPreview => 'Camera Preview';
@@ -1076,9 +1142,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get birthDateLabel => 'Birth Date';
-
-  @override
-  String get emailLabel => 'Email';
 
   @override
   String get phoneLabel => 'Phone';

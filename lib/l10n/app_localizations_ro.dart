@@ -651,7 +651,74 @@ class AppLocalizationsRo extends AppLocalizations {
   String get logout => 'Deconectare';
 
   @override
+  String get logoutTitle => 'Deconectare';
+
+  @override
+  String get logoutConfirmMessage =>
+      'Sigur doriți să vă deconectați? Va trebui să vă autentificați din nou pentru a utiliza aplicația.';
+
+  @override
+  String get logoutDisabledTitle => 'Deconectare Dezactivată';
+
+  @override
+  String get logoutDisabledMessage =>
+      'Nu puteți să vă deconectați când sunteți offline. Vă rugăm să vă conectați la internet înainte de a vă deconecta.\n\nAceasta vă împiedică să fiți blocat din aplicație, deoarece autentificarea necesită o conexiune la internet.';
+
+  @override
   String get apiUrlNotConfigured => 'URL-ul API nu este configurat';
+
+  @override
+  String get staffPortal => 'Portal Personal';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get passwordLabel => 'PAROLĂ';
+
+  @override
+  String get pleaseEnterEmail => 'Vă rugăm să introduceți email-ul';
+
+  @override
+  String get pleaseEnterValidEmail => 'Vă rugăm să introduceți un email valid';
+
+  @override
+  String get pleaseEnterPassword => 'Vă rugăm să introduceți parola';
+
+  @override
+  String get passwordMinLength =>
+      'Parola trebuie să aibă cel puțin 6 caractere';
+
+  @override
+  String get rememberMe => 'Ține-mă minte';
+
+  @override
+  String get signIn => 'Autentificare';
+
+  @override
+  String get needAccessContact => 'Aveți nevoie de acces? Contactați';
+
+  @override
+  String get offlineLoginAvailable =>
+      'Sunteți offline. Autentificare offline disponibilă pentru utilizatori anteriori.';
+
+  @override
+  String get offlineFirstLoginRequired =>
+      'Sunteți offline. Vă rugăm să vă conectați la internet pentru prima autentificare.';
+
+  @override
+  String get firstLoginOnlineRequired =>
+      'Trebuie să fiți online pentru prima autentificare. După ce v-ați autentificat cu succes, puteți să vă autentificați offline.';
+
+  @override
+  String offlineLoginFailed(String error) {
+    return 'Autentificare offline eșuată: $error';
+  }
+
+  @override
+  String loginFailedError(String error) {
+    return 'Autentificare eșuată: $error';
+  }
 
   @override
   String get cameraPreview => 'Previzualizare cameră';
@@ -1088,9 +1155,6 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get birthDateLabel => 'Data nașterii';
-
-  @override
-  String get emailLabel => 'Email';
 
   @override
   String get phoneLabel => 'Telefon';

@@ -1334,11 +1334,125 @@ abstract class AppLocalizations {
   /// **'Logout'**
   String get logout;
 
+  /// No description provided for @logoutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logoutTitle;
+
+  /// No description provided for @logoutConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to logout? You will need to login again to use the app.'**
+  String get logoutConfirmMessage;
+
+  /// No description provided for @logoutDisabledTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout Disabled'**
+  String get logoutDisabledTitle;
+
+  /// No description provided for @logoutDisabledMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You cannot logout while offline. Please connect to the internet before logging out.\n\nThis prevents you from being locked out of the app, as login requires an internet connection.'**
+  String get logoutDisabledMessage;
+
   /// No description provided for @apiUrlNotConfigured.
   ///
   /// In en, this message translates to:
   /// **'API URL not configured'**
   String get apiUrlNotConfigured;
+
+  /// No description provided for @staffPortal.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff Portal'**
+  String get staffPortal;
+
+  /// No description provided for @emailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get emailLabel;
+
+  /// No description provided for @passwordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'PASSWORD'**
+  String get passwordLabel;
+
+  /// No description provided for @pleaseEnterEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your email'**
+  String get pleaseEnterEmail;
+
+  /// No description provided for @pleaseEnterValidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email'**
+  String get pleaseEnterValidEmail;
+
+  /// No description provided for @pleaseEnterPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your password'**
+  String get pleaseEnterPassword;
+
+  /// No description provided for @passwordMinLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters'**
+  String get passwordMinLength;
+
+  /// No description provided for @rememberMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Remember me'**
+  String get rememberMe;
+
+  /// No description provided for @signIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get signIn;
+
+  /// No description provided for @needAccessContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Need access? Contact'**
+  String get needAccessContact;
+
+  /// No description provided for @offlineLoginAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re offline. Offline login available for previous users.'**
+  String get offlineLoginAvailable;
+
+  /// No description provided for @offlineFirstLoginRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re offline. Please connect to the internet for your first login.'**
+  String get offlineFirstLoginRequired;
+
+  /// No description provided for @firstLoginOnlineRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'You must be online for your first login. Once you\'ve logged in successfully, you can login offline.'**
+  String get firstLoginOnlineRequired;
+
+  /// No description provided for @offlineLoginFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline login failed: {error}'**
+  String offlineLoginFailed(String error);
+
+  /// No description provided for @loginFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Login failed: {error}'**
+  String loginFailedError(String error);
 
   /// No description provided for @cameraPreview.
   ///
@@ -2119,12 +2233,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Birth Date'**
   String get birthDateLabel;
-
-  /// No description provided for @emailLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Email'**
-  String get emailLabel;
 
   /// No description provided for @phoneLabel.
   ///
