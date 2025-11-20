@@ -5,9 +5,9 @@ import '../models/activity_log.dart';
 import '../services/api_service.dart';
 import '../services/audio_service.dart';
 import '../services/logger_service.dart';
+import '../services/data_sync_service.dart';
 import 'config_provider.dart';
 import 'offline_provider.dart';
-import 'history_provider.dart';
 import 'offline_queue_provider.dart';
 import 'logger_provider.dart' as logger_provider;
 
@@ -162,10 +162,10 @@ class ScanNotifier extends Notifier<ScanState> {
         );
         _addActivityLog(activityLog);
         
-        // Wait a moment for server to process, then sync history
+        // Wait a moment for server to process, then sync all data
         // This ensures dashboard/history show correct session data
         Future.delayed(const Duration(milliseconds: 500), () {
-          ref.read(historyProvider.notifier).clearAndSyncFromServer();
+          _syncAllData();
         });
         
         state = state.copyWith(statusMessage: result.message);
@@ -190,9 +190,9 @@ class ScanNotifier extends Notifier<ScanState> {
         );
         _addActivityLog(activityLog);
         
-        // Wait a moment for server to process, then sync history (includes this denied scan)
+        // Wait a moment for server to process, then sync all data (includes this denied scan)
         Future.delayed(const Duration(milliseconds: 500), () {
-          ref.read(historyProvider.notifier).clearAndSyncFromServer();
+          _syncAllData();
         });
         
         state = state.copyWith(statusMessage: result.error ?? result.message);
@@ -344,6 +344,34 @@ class ScanNotifier extends Notifier<ScanState> {
       }
     } catch (e) {
       _loggerService.logError('Failed to fetch member details after sync', e.toString());
+    }
+  }
+
+  /// Sync all data across the app using the data sync service
+  Future<void> _syncAllData() async {
+    try {
+      final syncService = ref.read(dataSyncServiceProvider);
+      final result = await syncService.quickSync();
+      
+      if (result.success) {
+        _loggerService.logDebug('Data sync completed successfully', source: 'ScanProvider');
+      } else {
+        // Log detailed error information
+        final errorDetails = result.errors.isNotEmpty 
+            ? result.errors.join(", ") 
+            : 'Unknown error';
+        final failedItems = result.syncedItems.entries
+            .where((e) => e.value == false)
+            .map((e) => e.key)
+            .join(', ');
+        
+        _loggerService.logWarning(
+          'Data sync completed with errors. Failed: $failedItems. Details: $errorDetails', 
+          source: 'ScanProvider'
+        );
+      }
+    } catch (e) {
+      _loggerService.logError('Failed to sync data after scan', e.toString());
     }
   }
 

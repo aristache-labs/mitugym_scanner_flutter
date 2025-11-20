@@ -3,8 +3,8 @@ import '../services/offline_storage_service.dart';
 import '../services/connectivity_service.dart';
 import '../services/api_service.dart';
 import '../services/logger_service.dart';
+import '../services/data_sync_service.dart';
 import 'config_provider.dart';
-import 'offline_queue_provider.dart';
 
 /// Provider for offline storage service
 final offlineStorageServiceProvider = Provider<OfflineStorageService>((ref) {
@@ -86,9 +86,16 @@ class OfflineNotifier extends Notifier<OfflineState> {
   /// Trigger auto-sync when connection is restored
   Future<void> _triggerAutoSync() async {
     try {
-      // Trigger sync via offline queue provider
-      await ref.read(offlineQueueProvider.notifier).syncPendingActions();
-      await _logger.logInfo('✅ Auto-sync completed successfully');
+      // Use comprehensive data sync service
+      final syncService = ref.read(dataSyncServiceProvider);
+      final result = await syncService.syncAfterReconnect();
+      
+      if (result.success) {
+        await _logger.logInfo('✅ Auto-sync completed successfully');
+      } else {
+        await _logger.logWarning('⚠️ Auto-sync completed with errors: ${result.errors.join(", ")}');
+        state = state.copyWith(syncError: result.errors.join("; "));
+      }
     } catch (e) {
       await _logger.logError('Auto-sync failed', e.toString());
       state = state.copyWith(syncError: 'Auto-sync failed: $e');
