@@ -947,8 +947,8 @@ abstract class AppLocalizations {
   /// No description provided for @loginSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Sign in to access MituGym Scanner'**
-  String get loginSubtitle;
+  /// **'Sign in to access {appName}'**
+  String loginSubtitle(String appName);
 
   /// No description provided for @username.
   ///
@@ -2540,24 +2540,6 @@ abstract class AppLocalizations {
   /// **'Loading cached data...'**
   String get splashLoadingCached;
 
-  /// No description provided for @splashAppName.
-  ///
-  /// In en, this message translates to:
-  /// **'MITUGYM'**
-  String get splashAppName;
-
-  /// No description provided for @splashAppSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'SCANNER SYSTEM'**
-  String get splashAppSubtitle;
-
-  /// No description provided for @aboutAppName.
-  ///
-  /// In en, this message translates to:
-  /// **'MituGym Scanner'**
-  String get aboutAppName;
-
   /// No description provided for @aboutDescription.
   ///
   /// In en, this message translates to:
@@ -2579,8 +2561,8 @@ abstract class AppLocalizations {
   /// No description provided for @aboutCopyright.
   ///
   /// In en, this message translates to:
-  /// **'© 2025 MituGym. All rights reserved.'**
-  String get aboutCopyright;
+  /// **'© {year} {companyName}. All rights reserved.'**
+  String aboutCopyright(String year, String companyName);
 
   /// No description provided for @sidebarVersion.
   ///
@@ -2591,8 +2573,8 @@ abstract class AppLocalizations {
   /// No description provided for @sidebarCopyright.
   ///
   /// In en, this message translates to:
-  /// **'© 2025 MituGym. All rights reserved.'**
-  String get sidebarCopyright;
+  /// **'© {year} {companyName}. All rights reserved.'**
+  String sidebarCopyright(String year, String companyName);
 
   /// No description provided for @aboutLicenses.
   ///

@@ -444,7 +444,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get loginTitle => 'Autentificare';
 
   @override
-  String get loginSubtitle => 'Conectează-te pentru a accesa MituGym Scanner';
+  String loginSubtitle(String appName) {
+    return 'Conectează-te pentru a accesa $appName';
+  }
 
   @override
   String get username => 'Nume utilizator';
@@ -1314,15 +1316,6 @@ class AppLocalizationsRo extends AppLocalizations {
   String get splashLoadingCached => 'Se încarcă datele din cache...';
 
   @override
-  String get splashAppName => 'MITUGYM';
-
-  @override
-  String get splashAppSubtitle => 'SISTEM SCANNER';
-
-  @override
-  String get aboutAppName => 'MituGym Scanner';
-
-  @override
   String get aboutDescription =>
       'Scanner QR desktop de înaltă performanță pentru intrări și ieșiri membri sala de sport';
 
@@ -1333,13 +1326,17 @@ class AppLocalizationsRo extends AppLocalizations {
   String get aboutVersion => 'Versiune';
 
   @override
-  String get aboutCopyright => '© 2025 MituGym. Toate drepturile rezervate.';
+  String aboutCopyright(String year, String companyName) {
+    return '© $year $companyName. Toate drepturile rezervate.';
+  }
 
   @override
   String get sidebarVersion => 'Versiune';
 
   @override
-  String get sidebarCopyright => '© 2025 MituGym. Toate drepturile rezervate.';
+  String sidebarCopyright(String year, String companyName) {
+    return '© $year $companyName. Toate drepturile rezervate.';
+  }
 
   @override
   String get aboutLicenses => 'Vezi Licențe';

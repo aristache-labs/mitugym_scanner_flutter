@@ -443,7 +443,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginTitle => 'Login';
 
   @override
-  String get loginSubtitle => 'Sign in to access MituGym Scanner';
+  String loginSubtitle(String appName) {
+    return 'Sign in to access $appName';
+  }
 
   @override
   String get username => 'Username';
@@ -1301,15 +1303,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get splashLoadingCached => 'Loading cached data...';
 
   @override
-  String get splashAppName => 'MITUGYM';
-
-  @override
-  String get splashAppSubtitle => 'SCANNER SYSTEM';
-
-  @override
-  String get aboutAppName => 'MituGym Scanner';
-
-  @override
   String get aboutDescription =>
       'High-performance desktop QR scanner for gym member check-ins and check-outs';
 
@@ -1320,13 +1313,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutVersion => 'Version';
 
   @override
-  String get aboutCopyright => '© 2025 MituGym. All rights reserved.';
+  String aboutCopyright(String year, String companyName) {
+    return '© $year $companyName. All rights reserved.';
+  }
 
   @override
   String get sidebarVersion => 'Version';
 
   @override
-  String get sidebarCopyright => '© 2025 MituGym. All rights reserved.';
+  String sidebarCopyright(String year, String companyName) {
+    return '© $year $companyName. All rights reserved.';
+  }
 
   @override
   String get aboutLicenses => 'View Licenses';

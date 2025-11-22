@@ -156,7 +156,14 @@
   "noResults": "Nu s-au găsit rezultate",
   
   "loginTitle": "Autentificare",
-  "loginSubtitle": "Conectează-te pentru a accesa MituGym Scanner",
+  "loginSubtitle": "Conectează-te pentru a accesa {appName}",
+  "@loginSubtitle": {
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
   "username": "Nume utilizator",
   "password": "Parolă",
   "login": "Autentificare",
@@ -436,16 +443,32 @@
   "splashLoadingHistory": "Se încarcă istoricul de pe server...",
   "splashLoadingSchedule": "Se încarcă programul sălii...",
   "splashLoadingCached": "Se încarcă datele din cache...",
-  "splashAppName": "MITUGYM",
-  "splashAppSubtitle": "SISTEM SCANNER",
-  
-  "aboutAppName": "MituGym Scanner",
   "aboutDescription": "Scanner QR desktop de înaltă performanță pentru intrări și ieșiri membri sala de sport",
   "aboutBuiltWith": "Construit cu Flutter",
   "aboutVersion": "Versiune",
-  "aboutCopyright": "© 2025 MituGym. Toate drepturile rezervate.",
+  "aboutCopyright": "© {year} {companyName}. Toate drepturile rezervate.",
+  "@aboutCopyright": {
+    "placeholders": {
+      "year": {
+        "type": "String"
+      },
+      "companyName": {
+        "type": "String"
+      }
+    }
+  },
   "sidebarVersion": "Versiune",
-  "sidebarCopyright": "© 2025 MituGym. Toate drepturile rezervate.",
+  "sidebarCopyright": "© {year} {companyName}. Toate drepturile rezervate.",
+  "@sidebarCopyright": {
+    "placeholders": {
+      "year": {
+        "type": "String"
+      },
+      "companyName": {
+        "type": "String"
+      }
+    }
+  },
   "aboutLicenses": "Vezi Licențe",
   "aboutClose": "Închide",
   "licensesPackages": "Pachete",

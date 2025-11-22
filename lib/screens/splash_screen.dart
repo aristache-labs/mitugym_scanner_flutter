@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_colors.dart';
 import '../config/app_config.dart';
+import '../constants/app_constants.dart';
 import '../services/audio_service.dart';
 import '../providers/auth_provider.dart';
 import '../providers/offline_provider.dart';
@@ -312,7 +313,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                       ],
                     ).createShader(bounds),
                     child: Text(
-                      AppLocalizations.of(context)!.splashAppName,
+                      AppConstants.appNameShort,
                       style: const TextStyle(
                         fontSize: 48,
                         fontWeight: FontWeight.w900,
@@ -335,7 +336,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
                   // Subtitle with typing effect
                   Text(
-                    AppLocalizations.of(context)!.splashAppSubtitle,
+                    AppConstants.appSubtitle,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,

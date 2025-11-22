@@ -397,7 +397,7 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
           
           // Copyright
           Text(
-            l10n.sidebarCopyright,
+            l10n.sidebarCopyright(AppConstants.copyrightYear, AppConstants.companyName),
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(
               color: AppColors.textSecondary.withValues(alpha: 0.6),

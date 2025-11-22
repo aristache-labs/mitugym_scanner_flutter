@@ -1,7 +1,7 @@
 /// App-wide constants
 class AppConstants {
   /// App version
-  static const String appVersion = '1.0.1';
+  static const String appVersion = '1.0.0';
   
   /// App name
   static const String appName = 'Title Scannner App';

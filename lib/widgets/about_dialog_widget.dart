@@ -111,7 +111,7 @@ class PremiumAboutDialog extends StatelessWidget {
                       ],
                     ).createShader(bounds),
                     child: Text(
-                      l10n.aboutAppName,
+                      AppConstants.appName,
                       style: GoogleFonts.inter(
                         fontSize: 32,
                         fontWeight: FontWeight.w900,
@@ -254,7 +254,7 @@ class PremiumAboutDialog extends StatelessWidget {
                   
                   // Copyright
                   Text(
-                    l10n.aboutCopyright,
+                    l10n.aboutCopyright(AppConstants.copyrightYear, AppConstants.companyName),
                     style: GoogleFonts.inter(
                       fontSize: 12,
                       color: AppColors.muted,

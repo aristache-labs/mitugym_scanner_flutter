@@ -177,7 +177,14 @@
   "noResults": "No results found",
   
   "loginTitle": "Login",
-  "loginSubtitle": "Sign in to access MituGym Scanner",
+  "loginSubtitle": "Sign in to access {appName}",
+  "@loginSubtitle": {
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
   "username": "Username",
   "password": "Password",
   "login": "Login",
@@ -678,16 +685,32 @@
   "splashLoadingHistory": "Loading history from server...",
   "splashLoadingSchedule": "Loading gym schedule...",
   "splashLoadingCached": "Loading cached data...",
-  "splashAppName": "MITUGYM",
-  "splashAppSubtitle": "SCANNER SYSTEM",
-  
-  "aboutAppName": "MituGym Scanner",
   "aboutDescription": "High-performance desktop QR scanner for gym member check-ins and check-outs",
   "aboutBuiltWith": "Built with Flutter",
   "aboutVersion": "Version",
-  "aboutCopyright": "© 2025 MituGym. All rights reserved.",
+  "aboutCopyright": "© {year} {companyName}. All rights reserved.",
+  "@aboutCopyright": {
+    "placeholders": {
+      "year": {
+        "type": "String"
+      },
+      "companyName": {
+        "type": "String"
+      }
+    }
+  },
   "sidebarVersion": "Version",
-  "sidebarCopyright": "© 2025 MituGym. All rights reserved.",
+  "sidebarCopyright": "© {year} {companyName}. All rights reserved.",
+  "@sidebarCopyright": {
+    "placeholders": {
+      "year": {
+        "type": "String"
+      },
+      "companyName": {
+        "type": "String"
+      }
+    }
+  },
   "aboutLicenses": "View Licenses",
   "aboutClose": "Close",
   "licensesPackages": "Packages",
