@@ -2497,6 +2497,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Phone'**
   String get exportPhone;
+
+  /// No description provided for @splashInitializing.
+  ///
+  /// In en, this message translates to:
+  /// **'Initializing scanner...'**
+  String get splashInitializing;
+
+  /// No description provided for @splashLoadingConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading configuration...'**
+  String get splashLoadingConfig;
+
+  /// No description provided for @splashPreparingServices.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing services...'**
+  String get splashPreparingServices;
+
+  /// No description provided for @splashCheckingAuth.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking authentication...'**
+  String get splashCheckingAuth;
+
+  /// No description provided for @splashLoadingHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading history from server...'**
+  String get splashLoadingHistory;
+
+  /// No description provided for @splashLoadingSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading gym schedule...'**
+  String get splashLoadingSchedule;
+
+  /// No description provided for @splashLoadingCached.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading cached data...'**
+  String get splashLoadingCached;
+
+  /// No description provided for @splashAppName.
+  ///
+  /// In en, this message translates to:
+  /// **'MITUGYM'**
+  String get splashAppName;
+
+  /// No description provided for @splashAppSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'SCANNER SYSTEM'**
+  String get splashAppSubtitle;
 }
 
 class _AppLocalizationsDelegate

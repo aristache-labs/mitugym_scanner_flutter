@@ -1291,4 +1291,31 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get exportPhone => 'Telefon';
+
+  @override
+  String get splashInitializing => 'Inițializare scanner...';
+
+  @override
+  String get splashLoadingConfig => 'Se încarcă configurația...';
+
+  @override
+  String get splashPreparingServices => 'Pregătire servicii...';
+
+  @override
+  String get splashCheckingAuth => 'Se verifică autentificarea...';
+
+  @override
+  String get splashLoadingHistory => 'Se încarcă istoricul de pe server...';
+
+  @override
+  String get splashLoadingSchedule => 'Se încarcă programul sălii...';
+
+  @override
+  String get splashLoadingCached => 'Se încarcă datele din cache...';
+
+  @override
+  String get splashAppName => 'MITUGYM';
+
+  @override
+  String get splashAppSubtitle => 'SISTEM SCANNER';
 }

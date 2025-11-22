@@ -670,5 +670,15 @@
   "exportGender": "Gender",
   "exportDateOfBirth": "Date of Birth",
   "exportAddress": "Address",
-  "exportPhone": "Phone"
+  "exportPhone": "Phone",
+  
+  "splashInitializing": "Initializing scanner...",
+  "splashLoadingConfig": "Loading configuration...",
+  "splashPreparingServices": "Preparing services...",
+  "splashCheckingAuth": "Checking authentication...",
+  "splashLoadingHistory": "Loading history from server...",
+  "splashLoadingSchedule": "Loading gym schedule...",
+  "splashLoadingCached": "Loading cached data...",
+  "splashAppName": "MITUGYM",
+  "splashAppSubtitle": "SCANNER SYSTEM"
 }

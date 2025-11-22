@@ -476,5 +476,15 @@
   "exportGender": "Gen",
   "exportDateOfBirth": "Data Nașterii",
   "exportAddress": "Adresă",
-  "exportPhone": "Telefon"
+  "exportPhone": "Telefon",
+  
+  "splashInitializing": "Inițializare scanner...",
+  "splashLoadingConfig": "Se încarcă configurația...",
+  "splashPreparingServices": "Pregătire servicii...",
+  "splashCheckingAuth": "Se verifică autentificarea...",
+  "splashLoadingHistory": "Se încarcă istoricul de pe server...",
+  "splashLoadingSchedule": "Se încarcă programul sălii...",
+  "splashLoadingCached": "Se încarcă datele din cache...",
+  "splashAppName": "MITUGYM",
+  "splashAppSubtitle": "SISTEM SCANNER"
 }

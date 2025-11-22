@@ -10,6 +10,7 @@ import '../providers/history_provider.dart';
 import '../providers/gym_schedule_provider.dart';
 import '../providers/config_provider.dart';
 import '../providers/logger_provider.dart' as logger_provider;
+import '../l10n/app_localizations.dart';
 import 'main_layout_screen.dart';
 import 'login_screen.dart';
 
@@ -23,12 +24,20 @@ class SplashScreen extends ConsumerStatefulWidget {
 }
 
 class _SplashScreenState extends ConsumerState<SplashScreen> {
-  String _loadingText = 'Initializing scanner...';
+  String _loadingText = '';
+  bool _isInitialized = false;
   
   @override
-  void initState() {
-    super.initState();
-    _initializeAndNavigate();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      _isInitialized = true;
+      // Set initial loading text now that context is available
+      setState(() {
+        _loadingText = AppLocalizations.of(context)!.splashInitializing;
+      });
+      _initializeAndNavigate();
+    }
   }
 
   Future<void> _initializeAndNavigate() async {
@@ -93,7 +102,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   Future<void> _preloadConfiguration() async {
     if (mounted) {
-      setState(() => _loadingText = 'Loading configuration...');
+      setState(() => _loadingText = AppLocalizations.of(context)!.splashLoadingConfig);
     }
     
     // Load configuration from SharedPreferences
@@ -107,7 +116,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   Future<void> _initializeServices() async {
     if (mounted) {
-      setState(() => _loadingText = 'Preparing services...');
+      setState(() => _loadingText = AppLocalizations.of(context)!.splashPreparingServices);
     }
     
     // Initialize services
@@ -149,7 +158,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   Future<void> _checkAuthentication() async {
     if (mounted) {
-      setState(() => _loadingText = 'Checking authentication...');
+      setState(() => _loadingText = AppLocalizations.of(context)!.splashCheckingAuth);
     }
     
     try {
@@ -169,7 +178,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       
       if (isOnline) {
         if (mounted) {
-          setState(() => _loadingText = 'Loading history from server...');
+          setState(() => _loadingText = AppLocalizations.of(context)!.splashLoadingHistory);
         }
         
         // Sync history from server (last 90 days)
@@ -177,7 +186,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         debugPrint('✅ History synced from server during splash');
         
         if (mounted) {
-          setState(() => _loadingText = 'Loading gym schedule...');
+          setState(() => _loadingText = AppLocalizations.of(context)!.splashLoadingSchedule);
         }
         
         // Load gym schedule for today
@@ -186,7 +195,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       } else {
         // Offline - load from local database
         if (mounted) {
-          setState(() => _loadingText = 'Loading cached data...');
+          setState(() => _loadingText = AppLocalizations.of(context)!.splashLoadingCached);
         }
         
         await ref.read(historyProvider.notifier).loadInitialHistory();
@@ -301,9 +310,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                         AppColors.primary,
                       ],
                     ).createShader(bounds),
-                    child: const Text(
-                      'MITUGYM',
-                      style: TextStyle(
+                    child: Text(
+                      AppLocalizations.of(context)!.splashAppName,
+                      style: const TextStyle(
                         fontSize: 48,
                         fontWeight: FontWeight.w900,
                         color: Colors.white,
@@ -325,7 +334,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
                   // Subtitle with typing effect
                   Text(
-                    'SCANNER SYSTEM',
+                    AppLocalizations.of(context)!.splashAppSubtitle,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,

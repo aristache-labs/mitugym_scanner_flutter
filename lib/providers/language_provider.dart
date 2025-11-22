@@ -17,7 +17,9 @@ class LanguageNotifier extends Notifier<Locale> {
 
   @override
   Locale build() {
+    // Load saved locale asynchronously
     _loadSavedLocale();
+    // Return default while loading
     return englishLocale;
   }
 
@@ -37,6 +39,26 @@ class LanguageNotifier extends Notifier<Locale> {
       // If loading fails, keep default English locale
       debugPrint('Failed to load saved locale: $e');
     }
+  }
+  
+  /// Get saved locale synchronously (for initial load)
+  static Future<Locale> getSavedLocale() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedLocaleCode = prefs.getString(_localeKey);
+      
+      if (savedLocaleCode != null) {
+        switch (savedLocaleCode) {
+          case 'en':
+            return englishLocale;
+          case 'ro':
+            return romanianLocale;
+        }
+      }
+    } catch (e) {
+      debugPrint('Failed to load saved locale: $e');
+    }
+    return englishLocale;
   }
 
   /// Change the application locale
@@ -80,6 +102,18 @@ class LanguageNotifier extends Notifier<Locale> {
       default:
         return locale.languageCode;
     }
+  }
+}
+
+/// Language notifier with initial locale (for overriding default)
+class LanguageNotifierWithInitial extends LanguageNotifier {
+  final Locale _initialLocale;
+  
+  LanguageNotifierWithInitial(this._initialLocale);
+  
+  @override
+  Locale build() {
+    return _initialLocale;
   }
 }
 

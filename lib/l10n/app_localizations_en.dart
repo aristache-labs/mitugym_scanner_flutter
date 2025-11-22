@@ -1278,4 +1278,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exportPhone => 'Phone';
+
+  @override
+  String get splashInitializing => 'Initializing scanner...';
+
+  @override
+  String get splashLoadingConfig => 'Loading configuration...';
+
+  @override
+  String get splashPreparingServices => 'Preparing services...';
+
+  @override
+  String get splashCheckingAuth => 'Checking authentication...';
+
+  @override
+  String get splashLoadingHistory => 'Loading history from server...';
+
+  @override
+  String get splashLoadingSchedule => 'Loading gym schedule...';
+
+  @override
+  String get splashLoadingCached => 'Loading cached data...';
+
+  @override
+  String get splashAppName => 'MITUGYM';
+
+  @override
+  String get splashAppSubtitle => 'SCANNER SYSTEM';
 }

@@ -19,6 +19,9 @@ void main() async {
 
   // Initialize date formatting for all locales
   await initializeDateFormatting();
+  
+  // Load saved locale before starting the app
+  final initialLocale = await LanguageNotifier.getSavedLocale();
 
   // Initialize launch at startup
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -54,8 +57,11 @@ void main() async {
   });
 
   runApp(
-    const ProviderScope(
-      child: MituGymScannerApp(),
+    ProviderScope(
+      overrides: [
+        languageProvider.overrideWith(() => LanguageNotifierWithInitial(initialLocale)),
+      ],
+      child: const MituGymScannerApp(),
     ),
   );
 }
