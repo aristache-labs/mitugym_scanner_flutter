@@ -14,6 +14,7 @@ import '../providers/windows_scanner_provider.dart';
 import '../providers/offline_provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/language_provider.dart';
+import '../providers/history_provider.dart';
 import '../widgets/modern_sidebar_widget.dart';
 import '../widgets/offline_banner_widget.dart';
 import '../services/export_service.dart';
@@ -59,7 +60,10 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
       // Initialize system tray
       _initializeSystemTray();
       
-      // Start periodic sync service (history already loaded in splash screen)
+      // Load history if not already loaded (e.g., when coming from login)
+      _initializeHistoryData();
+      
+      // Start periodic sync service
       _initializeHistorySyncService();
     });
     
@@ -77,8 +81,6 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
     super.dispose();
   }
   
-  /// Initialize periodic history sync service
-  /// Note: Initial history load is done in splash screen for faster startup
   /// Initialize system tray
   void _initializeSystemTray() {
     final trayService = TrayService();
@@ -86,6 +88,36 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
     debugPrint('✅ System tray initialized');
   }
 
+  /// Initialize history data (load from cache or sync from server)
+  Future<void> _initializeHistoryData() async {
+    try {
+      final historyState = ref.read(historyProvider);
+      
+      // If history is already loaded (e.g., from splash screen), skip
+      if (historyState.items.isNotEmpty) {
+        debugPrint('History already loaded (${historyState.items.length} items), skipping initialization');
+        return;
+      }
+      
+      // Check if online
+      final isOnline = ref.read(offlineProvider).isOnline;
+      
+      if (isOnline) {
+        // Always do full sync to match Settings behavior and ensure deletions are reflected
+        debugPrint('Loading history from server on main layout initialization...');
+        await ref.read(historyProvider.notifier).clearAndSyncFromServer();
+        debugPrint('✅ History synced from server on main layout (full sync)');
+      } else {
+        debugPrint('Loading cached history on main layout initialization...');
+        await ref.read(historyProvider.notifier).loadInitialHistory();
+        debugPrint('✅ History loaded from cache on main layout');
+      }
+    } catch (e) {
+      debugPrint('Failed to initialize history data: $e');
+    }
+  }
+
+  /// Initialize periodic history sync service
   void _initializeHistorySyncService() {
     // Start periodic sync service for incremental updates every 30 minutes
     final syncService = ref.read(historySyncServiceProvider);

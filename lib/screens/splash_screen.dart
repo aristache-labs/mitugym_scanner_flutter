@@ -181,9 +181,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           setState(() => _loadingText = AppLocalizations.of(context)!.splashLoadingHistory);
         }
         
-        // Sync history from server (last 90 days)
-        await ref.read(historyProvider.notifier).syncFromServer();
-        debugPrint('✅ History synced from server during splash');
+        // Always do full sync on startup to ensure deletions are reflected
+        // This matches the "Sync All Data from Server" behavior in Settings
+        await ref.read(historyProvider.notifier).clearAndSyncFromServer();
+        debugPrint('✅ History synced from server during splash (full sync)');
         
         if (mounted) {
           setState(() => _loadingText = AppLocalizations.of(context)!.splashLoadingSchedule);
