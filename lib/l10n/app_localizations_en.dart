@@ -1327,4 +1327,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aboutClose => 'Close';
+
+  @override
+  String get licensesPackages => 'Packages';
+
+  @override
+  String get licensesSelectPackage => 'Select a package';
+
+  @override
+  String get licensesChoosePackage =>
+      'Choose a package from the list to view its licenses';
+
+  @override
+  String get licensesLoading => 'Loading...';
+
+  @override
+  String get licensesLoadingPackages => 'Loading packages...';
+
+  @override
+  String get licensesLicense => 'License';
+
+  @override
+  String licensesCount(int count) {
+    return '$count licenses';
+  }
 }

@@ -2593,6 +2593,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close'**
   String get aboutClose;
+
+  /// No description provided for @licensesPackages.
+  ///
+  /// In en, this message translates to:
+  /// **'Packages'**
+  String get licensesPackages;
+
+  /// No description provided for @licensesSelectPackage.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a package'**
+  String get licensesSelectPackage;
+
+  /// No description provided for @licensesChoosePackage.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a package from the list to view its licenses'**
+  String get licensesChoosePackage;
+
+  /// No description provided for @licensesLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get licensesLoading;
+
+  /// No description provided for @licensesLoadingPackages.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading packages...'**
+  String get licensesLoadingPackages;
+
+  /// No description provided for @licensesLicense.
+  ///
+  /// In en, this message translates to:
+  /// **'License'**
+  String get licensesLicense;
+
+  /// No description provided for @licensesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} licenses'**
+  String licensesCount(int count);
 }
 
 class _AppLocalizationsDelegate

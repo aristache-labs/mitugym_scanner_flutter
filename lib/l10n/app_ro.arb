@@ -494,5 +494,19 @@
   "aboutVersion": "Versiune",
   "aboutCopyright": "© 2025 MituGym. Toate drepturile rezervate.",
   "aboutLicenses": "Vezi Licențe",
-  "aboutClose": "Închide"
+  "aboutClose": "Închide",
+  "licensesPackages": "Pachete",
+  "licensesSelectPackage": "Selectează un pachet",
+  "licensesChoosePackage": "Alege un pachet din listă pentru a vedea licențele sale",
+  "licensesLoading": "Se încarcă...",
+  "licensesLoadingPackages": "Se încarcă pachetele...",
+  "licensesLicense": "Licență",
+  "licensesCount": "{count} licențe",
+  "@licensesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

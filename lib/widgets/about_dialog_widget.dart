@@ -4,6 +4,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../config/app_colors.dart';
 import '../l10n/app_localizations.dart';
+import 'premium_license_page.dart';
 
 /// Premium About Dialog for MituGym Scanner
 class PremiumAboutDialog extends StatelessWidget {
@@ -276,14 +277,18 @@ class PremiumAboutDialog extends StatelessWidget {
                         label: l10n.aboutLicenses,
                         icon: LucideIcons.scroll,
                         onPressed: () {
-                          showLicensePage(
-                            context: context,
-                            applicationName: l10n.aboutAppName,
-                            applicationVersion: version,
-                            applicationIcon: Image.asset(
-                              'assets/images/logo.png',
-                              width: 48,
-                              height: 48,
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => PremiumLicensePage(
+                                applicationName: l10n.aboutAppName,
+                                applicationVersion: version,
+                                applicationIcon: Image.asset(
+                                  'assets/images/logo.png',
+                                  width: 48,
+                                  height: 48,
+                                ),
+                                applicationLegalese: l10n.aboutCopyright,
+                              ),
                             ),
                           );
                         },

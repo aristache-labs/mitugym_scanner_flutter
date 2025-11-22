@@ -1340,4 +1340,28 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get aboutClose => 'Închide';
+
+  @override
+  String get licensesPackages => 'Pachete';
+
+  @override
+  String get licensesSelectPackage => 'Selectează un pachet';
+
+  @override
+  String get licensesChoosePackage =>
+      'Alege un pachet din listă pentru a vedea licențele sale';
+
+  @override
+  String get licensesLoading => 'Se încarcă...';
+
+  @override
+  String get licensesLoadingPackages => 'Se încarcă pachetele...';
+
+  @override
+  String get licensesLicense => 'Licență';
+
+  @override
+  String licensesCount(int count) {
+    return '$count licențe';
+  }
 }

@@ -688,5 +688,19 @@
   "aboutVersion": "Version",
   "aboutCopyright": "© 2025 MituGym. All rights reserved.",
   "aboutLicenses": "View Licenses",
-  "aboutClose": "Close"
+  "aboutClose": "Close",
+  "licensesPackages": "Packages",
+  "licensesSelectPackage": "Select a package",
+  "licensesChoosePackage": "Choose a package from the list to view its licenses",
+  "licensesLoading": "Loading...",
+  "licensesLoadingPackages": "Loading packages...",
+  "licensesLicense": "License",
+  "licensesCount": "{count} licenses",
+  "@licensesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }
