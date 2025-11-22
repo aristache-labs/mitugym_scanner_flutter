@@ -5,7 +5,6 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../config/app_themes.dart';
 import '../config/app_colors.dart';
 import '../providers/history_provider.dart';
-import '../models/activity_log.dart';
 import '../l10n/app_localizations.dart';
 
 /// Modern dashboard-style sidebar widget
@@ -96,8 +95,8 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
                   _buildCompactStatsCard(historyState),
                   const SizedBox(height: 24),
                   
-                  // Recent Activity (compact)
-                  _buildCompactActivityCard(historyState),
+                  // App Info (Version & Copyright)
+                  _buildAppInfoCard(),
                 ],
               ),
             ),
@@ -366,90 +365,43 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
     );
   }
 
-  /// Build compact activity card
-  Widget _buildCompactActivityCard(HistoryState historyState) {
+  /// Build app info card (version & copyright)
+  Widget _buildAppInfoCard() {
     final l10n = AppLocalizations.of(context)!;
-    final recentActivities = historyState.items.take(4).toList();
-
-    if (recentActivities.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
+    
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.card.withValues(alpha: 0.6),
-            AppColors.surface.withValues(alpha: 0.4),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(16),
+        color: AppColors.surface.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.2),
+          color: AppColors.border.withValues(alpha: 0.15),
           width: 1,
         ),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(
-                Icons.history_rounded,
-                color: AppColors.textSecondary,
-                size: 16,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                l10n.recent,
-                style: GoogleFonts.inter(
-                  color: AppColors.textPrimary,
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          ...recentActivities.map((activity) => _buildCompactActivityItem(activity)),
-        ],
-      ),
-    );
-  }
-
-  /// Build compact activity item
-  Widget _buildCompactActivityItem(ActivityLog activity) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: AppColors.surface.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 6,
-            height: 6,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: activity.success ? AppColors.success : AppColors.error,
+          // Version
+          Text(
+            '${l10n.sidebarVersion} 1.0.0',
+            style: GoogleFonts.jetBrainsMono(
+              color: AppColors.textSecondary,
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 0.3,
             ),
           ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              activity.memberName,
-              style: GoogleFonts.inter(
-                color: AppColors.textPrimary,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+          
+          const SizedBox(height: 8),
+          
+          // Copyright
+          Text(
+            l10n.sidebarCopyright,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.inter(
+              color: AppColors.textSecondary.withValues(alpha: 0.6),
+              fontSize: 10,
+              fontWeight: FontWeight.w400,
             ),
           ),
         ],

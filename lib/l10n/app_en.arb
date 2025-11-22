@@ -687,6 +687,8 @@
   "aboutBuiltWith": "Built with Flutter",
   "aboutVersion": "Version",
   "aboutCopyright": "© 2025 MituGym. All rights reserved.",
+  "sidebarVersion": "Version",
+  "sidebarCopyright": "© 2025 MituGym. All rights reserved.",
   "aboutLicenses": "View Licenses",
   "aboutClose": "Close",
   "licensesPackages": "Packages",

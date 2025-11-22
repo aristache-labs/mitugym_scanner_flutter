@@ -2582,6 +2582,18 @@ abstract class AppLocalizations {
   /// **'© 2025 MituGym. All rights reserved.'**
   String get aboutCopyright;
 
+  /// No description provided for @sidebarVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get sidebarVersion;
+
+  /// No description provided for @sidebarCopyright.
+  ///
+  /// In en, this message translates to:
+  /// **'© 2025 MituGym. All rights reserved.'**
+  String get sidebarCopyright;
+
   /// No description provided for @aboutLicenses.
   ///
   /// In en, this message translates to:

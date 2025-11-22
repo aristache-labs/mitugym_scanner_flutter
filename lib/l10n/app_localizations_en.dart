@@ -1323,6 +1323,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutCopyright => '© 2025 MituGym. All rights reserved.';
 
   @override
+  String get sidebarVersion => 'Version';
+
+  @override
+  String get sidebarCopyright => '© 2025 MituGym. All rights reserved.';
+
+  @override
   String get aboutLicenses => 'View Licenses';
 
   @override

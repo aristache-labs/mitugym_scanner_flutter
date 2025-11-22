@@ -1336,6 +1336,12 @@ class AppLocalizationsRo extends AppLocalizations {
   String get aboutCopyright => '© 2025 MituGym. Toate drepturile rezervate.';
 
   @override
+  String get sidebarVersion => 'Versiune';
+
+  @override
+  String get sidebarCopyright => '© 2025 MituGym. Toate drepturile rezervate.';
+
+  @override
   String get aboutLicenses => 'Vezi Licențe';
 
   @override

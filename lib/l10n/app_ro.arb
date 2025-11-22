@@ -493,6 +493,8 @@
   "aboutBuiltWith": "Construit cu Flutter",
   "aboutVersion": "Versiune",
   "aboutCopyright": "© 2025 MituGym. Toate drepturile rezervate.",
+  "sidebarVersion": "Versiune",
+  "sidebarCopyright": "© 2025 MituGym. Toate drepturile rezervate.",
   "aboutLicenses": "Vezi Licențe",
   "aboutClose": "Închide",
   "licensesPackages": "Pachete",
