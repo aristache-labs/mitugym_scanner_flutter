@@ -116,7 +116,7 @@ class TrayService with TrayListener, WindowListener {
     final navigatorContext = navigatorKey.currentContext;
     
     if (navigatorContext != null && navigatorContext.mounted) {
-      showPremiumAboutDialog(navigatorContext, '1.0.0');
+      showPremiumAboutDialog(navigatorContext);
     }
   }
 

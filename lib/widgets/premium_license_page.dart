@@ -4,21 +4,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../config/app_colors.dart';
+import '../constants/app_constants.dart';
 import '../l10n/app_localizations.dart';
 
 /// Premium License Page with custom styling
 class PremiumLicensePage extends StatefulWidget {
-  final String applicationName;
-  final String applicationVersion;
-  final Widget? applicationIcon;
-  final String? applicationLegalese;
-
   const PremiumLicensePage({
     super.key,
-    required this.applicationName,
-    required this.applicationVersion,
-    this.applicationIcon,
-    this.applicationLegalese,
   });
 
   @override
@@ -154,28 +146,27 @@ class _PremiumLicensePageState extends State<PremiumLicensePage> {
               const SizedBox(width: 20),
               
               // App icon
-              if (widget.applicationIcon != null)
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: AppColors.primary.withValues(alpha: 0.2),
-                      width: 1,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.1),
-                        blurRadius: 12,
-                        spreadRadius: 2,
-                      ),
-                    ],
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.2),
+                    width: 1,
                   ),
-                  padding: const EdgeInsets.all(8),
-                  child: widget.applicationIcon,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      blurRadius: 12,
+                      spreadRadius: 2,
+                    ),
+                  ],
                 ),
+                padding: const EdgeInsets.all(8),
+                child: Image.asset('assets/images/logo.png', fit: BoxFit.contain),
+              ),
               
               const SizedBox(width: 16),
               
@@ -223,7 +214,7 @@ class _PremiumLicensePageState extends State<PremiumLicensePage> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${widget.applicationName} ${widget.applicationVersion}',
+                      '${AppConstants.appName} ${AppConstants.appVersion}',
                       style: GoogleFonts.inter(
                         fontSize: 13,
                         color: AppColors.textSecondary,

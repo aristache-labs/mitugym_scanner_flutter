@@ -1,0 +1,27 @@
+/// App-wide constants
+class AppConstants {
+  /// App version
+  static const String appVersion = '1.0.1';
+  
+  /// App name
+  static const String appName = 'MituGym Scanner';
+  
+  /// App name (short)
+  static const String appNameShort = 'MITUGYM';
+  
+  /// App subtitle
+  static const String appSubtitle = 'SCANNER SYSTEM';
+  
+  /// Copyright year
+  static const String copyrightYear = '2025';
+  
+  /// Company name
+  static const String companyName = 'MituGym';
+  
+  /// Full copyright text
+  static String get copyright => '© $copyrightYear $companyName';
+  
+  /// Private constructor to prevent instantiation
+  AppConstants._();
+}
+

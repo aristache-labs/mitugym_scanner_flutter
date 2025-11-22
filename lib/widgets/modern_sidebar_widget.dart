@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../config/app_themes.dart';
 import '../config/app_colors.dart';
+import '../constants/app_constants.dart';
 import '../providers/history_provider.dart';
 import '../l10n/app_localizations.dart';
 
@@ -383,7 +384,7 @@ class _ModernSidebarWidgetState extends ConsumerState<ModernSidebarWidget>
         children: [
           // Version
           Text(
-            '${l10n.sidebarVersion} 1.0.0',
+            '${l10n.sidebarVersion} ${AppConstants.appVersion}',
             style: GoogleFonts.jetBrainsMono(
               color: AppColors.textSecondary,
               fontSize: 11,

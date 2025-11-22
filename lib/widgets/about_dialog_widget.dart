@@ -3,16 +3,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../config/app_colors.dart';
+import '../constants/app_constants.dart';
 import '../l10n/app_localizations.dart';
 import 'premium_license_page.dart';
 
 /// Premium About Dialog for MituGym Scanner
 class PremiumAboutDialog extends StatelessWidget {
-  final String version;
-  
   const PremiumAboutDialog({
     super.key,
-    required this.version,
   });
 
   @override
@@ -143,7 +141,7 @@ class PremiumAboutDialog extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      '${l10n.aboutVersion} $version',
+                      '${l10n.aboutVersion} ${AppConstants.appVersion}',
                       style: GoogleFonts.jetBrainsMono(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
@@ -279,16 +277,7 @@ class PremiumAboutDialog extends StatelessWidget {
                         onPressed: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => PremiumLicensePage(
-                                applicationName: l10n.aboutAppName,
-                                applicationVersion: version,
-                                applicationIcon: Image.asset(
-                                  'assets/images/logo.png',
-                                  width: 48,
-                                  height: 48,
-                                ),
-                                applicationLegalese: l10n.aboutCopyright,
-                              ),
+                              builder: (context) => const PremiumLicensePage(),
                             ),
                           );
                         },
@@ -445,10 +434,10 @@ class _ActionButtonState extends State<_ActionButton> {
 }
 
 /// Show the premium about dialog
-void showPremiumAboutDialog(BuildContext context, String version) {
+void showPremiumAboutDialog(BuildContext context) {
   showDialog(
     context: context,
-    builder: (context) => PremiumAboutDialog(version: version),
+    builder: (context) => const PremiumAboutDialog(),
   );
 }
 
