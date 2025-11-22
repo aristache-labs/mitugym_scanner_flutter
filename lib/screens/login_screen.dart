@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/app_colors.dart';
+import '../constants/app_constants.dart';
 import '../providers/auth_provider.dart';
 import '../providers/offline_provider.dart';
 import '../models/auth_session.dart';
@@ -190,6 +191,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                     // Offline indicator
                     if (!isOnline) _buildOfflineIndicator(),
+                    
+                    const SizedBox(height: 32),
+                    
+                    // Version and copyright
+                    _buildVersionInfo(),
                   ],
                 ),
               ),
@@ -459,38 +465,63 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         // Enable button if online OR if offline with cached credentials
         final isEnabled = !_isLoading && (isOnline || hasCachedCredentials);
         
-        return ElevatedButton(
-          onPressed: isEnabled ? _handleLogin : null,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
-            disabledBackgroundColor: AppColors.border,
-            disabledForegroundColor: AppColors.textMuted,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            elevation: 0,
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            gradient: isEnabled
+                ? LinearGradient(
+                    colors: [
+                      AppColors.primary.withValues(alpha: 0.9),
+                      AppColors.accent.withValues(alpha: 0.8),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  )
+                : null,
+            boxShadow: isEnabled
+                ? [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.3),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ]
+                : null,
           ),
-          child: _isLoading
-              ? SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      Colors.white.withValues(alpha: 0.7),
+          child: ElevatedButton(
+            onPressed: isEnabled ? _handleLogin : null,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              foregroundColor: Colors.white,
+              disabledBackgroundColor: AppColors.border,
+              disabledForegroundColor: AppColors.textMuted,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 0,
+              shadowColor: Colors.transparent,
+            ),
+            child: _isLoading
+                ? SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Colors.white.withValues(alpha: 0.9),
+                      ),
+                    ),
+                  )
+                : Text(
+                    l10n.signIn,
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
                     ),
                   ),
-                )
-              : Text(
-                  l10n.signIn,
-                  style: GoogleFonts.inter(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.5,
-                  ),
-                ),
+          ),
         );
       },
     );
@@ -512,7 +543,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 _rememberMe = value ?? true;
               });
             },
-            activeColor: AppColors.primary,
+            activeColor: AppColors.primary.withValues(alpha: 0.9),
+            checkColor: AppColors.surface,
+            side: BorderSide(
+              color: AppColors.primary.withValues(alpha: 0.5),
+              width: 1.5,
+            ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(4),
             ),
@@ -585,6 +621,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildVersionInfo() {
+    return Column(
+      children: [
+        Text(
+          'v${AppConstants.appVersion}',
+          style: GoogleFonts.inter(
+            fontSize: 12,
+            color: AppColors.textSecondary.withValues(alpha: 0.6),
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          AppConstants.copyright,
+          style: GoogleFonts.inter(
+            fontSize: 11,
+            color: AppColors.textSecondary.withValues(alpha: 0.5),
+            letterSpacing: 0.3,
+          ),
+        ),
+      ],
     );
   }
 }

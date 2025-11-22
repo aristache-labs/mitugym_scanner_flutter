@@ -404,6 +404,36 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 ],
               ),
             ),
+            
+            // Version and copyright at bottom - Positioned absolutely
+            Positioned(
+              bottom: 40,
+              left: 0,
+              right: 0,
+              child: Column(
+                children: [
+                  Text(
+                    'v${AppConstants.appVersion}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary.withValues(alpha: 0.5),
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    AppConstants.copyright,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: AppColors.textSecondary.withValues(alpha: 0.4),
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                ],
+              )
+                  .animate()
+                  .fadeIn(duration: 800.ms, delay: 1000.ms),
+            ),
           ],
         ),
       ),

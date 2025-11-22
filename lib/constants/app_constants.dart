@@ -4,10 +4,10 @@ class AppConstants {
   static const String appVersion = '1.0.0';
   
   /// App name
-  static const String appName = 'Title Scannner App';
+  static const String appName = 'MituGym Scanner';
   
   /// App name (short)
-  static const String appNameShort = 'AppName';
+  static const String appNameShort = 'MITUGYM';
   
   /// App subtitle
   static const String appSubtitle = 'SCANNER SYSTEM';
@@ -16,7 +16,7 @@ class AppConstants {
   static const String copyrightYear = '2025';
   
   /// Company name
-  static const String companyName = 'CompanyName';
+  static const String companyName = 'MituGym';
   
   /// Full copyright text
   static String get copyright => '© $copyrightYear $companyName';
