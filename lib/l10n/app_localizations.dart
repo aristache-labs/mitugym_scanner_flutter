@@ -1373,7 +1373,7 @@ abstract class AppLocalizations {
   /// No description provided for @emailLabel.
   ///
   /// In en, this message translates to:
-  /// **'Email'**
+  /// **'EMAIL'**
   String get emailLabel;
 
   /// No description provided for @passwordLabel.

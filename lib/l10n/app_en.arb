@@ -612,7 +612,6 @@
   "planLabel": "Plan",
   "expiresLabel": "Expires",
   "birthDateLabel": "Birth Date",
-  "emailLabel": "Email",
   "phoneLabel": "Phone",
   "addressLabel": "Address",
   "noContactInformation": "No contact information",

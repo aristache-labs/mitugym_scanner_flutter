@@ -99,13 +99,13 @@ class AppLocalizationsRo extends AppLocalizations {
   String get duration => 'Durată';
 
   @override
-  String get plan => 'ABONAMENT';
+  String get plan => 'Abonament';
 
   @override
-  String get expires => 'EXPIRĂ';
+  String get expires => 'Expiră';
 
   @override
-  String get status => 'STARE';
+  String get status => 'Status';
 
   @override
   String get activeSession => 'Sesiune activă';
@@ -168,10 +168,10 @@ class AppLocalizationsRo extends AppLocalizations {
   String get searchMembers => 'Caută membri...';
 
   @override
-  String get searchByName => 'Caută după nume...';
+  String get searchByName => 'Caută după nume, telefon sau email';
 
   @override
-  String get noMembersFound => 'Niciun Membru Găsit';
+  String get noMembersFound => 'Nu s-au găsit membri';
 
   @override
   String get tryDifferentSearch => 'Încearcă o altă interogare de căutare';
@@ -187,7 +187,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get general => 'General';
 
   @override
-  String get scanner => 'Scaner';
+  String get scanner => 'Scanner';
 
   @override
   String get data => 'Date';
@@ -244,7 +244,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get selectCamera => 'Selectează camera';
 
   @override
-  String get frameRate => 'Rata de cadre';
+  String get frameRate => 'Rată cadre';
 
   @override
   String get fps => 'FPS';
@@ -259,7 +259,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get scannerBehavior => 'Comportament scanner';
 
   @override
-  String get autoStartScanning => 'Pornește scanarea automat';
+  String get autoStartScanning => 'Pornire automată scanare';
 
   @override
   String get autoStartDesc =>
@@ -285,7 +285,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get soundVolume => 'Volum sunet';
 
   @override
-  String get dataManagement => 'Gestionare Date';
+  String get dataManagement => 'Gestionare date';
 
   @override
   String get historyRetention => 'Păstrare istoric';
@@ -294,7 +294,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get days => 'zile';
 
   @override
-  String get exportSettings => 'Setări Export';
+  String get exportSettings => 'Setări export';
 
   @override
   String get exportPath => 'Cale export';
@@ -306,10 +306,10 @@ class AppLocalizationsRo extends AppLocalizations {
   String get logSettings => 'Setări log-uri';
 
   @override
-  String get logRetention => 'Păstrare jurnale';
+  String get logRetention => 'Păstrare log-uri';
 
   @override
-  String get verboseLogging => 'Jurnalizare detaliată';
+  String get verboseLogging => 'Log-uri detaliate';
 
   @override
   String get verboseLoggingDesc => 'Include informații detaliate de debug';
@@ -381,7 +381,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get sort => 'Sortează';
 
   @override
-  String get clear => 'Șterge';
+  String get clear => 'Curăță';
 
   @override
   String get apply => 'Aplică';
@@ -426,7 +426,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get info => 'Informație';
 
   @override
-  String get success => 'SUCCES';
+  String get success => 'Succes';
 
   @override
   String get loading => 'Se încarcă...';
@@ -548,7 +548,7 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get offline => 'OFFLINE';
+  String get offline => 'Offline';
 
   @override
   String get online => 'Online';
@@ -578,20 +578,20 @@ class AppLocalizationsRo extends AppLocalizations {
   String get thisWeek => 'Această săptămână';
 
   @override
-  String get thisMonth => 'Luna Asta';
+  String get thisMonth => 'Luna aceasta';
 
   @override
-  String get lastMonth => 'Luna Trecută';
+  String get lastMonth => 'Luna trecută';
 
   @override
   String get customRange => 'Interval personalizat';
 
   @override
-  String get selectDateRange => 'Selectează Interval';
+  String get selectDateRange => 'Selectează interval';
 
   @override
   String from(String date) {
-    return 'De la $date...';
+    return 'De la';
   }
 
   @override
@@ -623,7 +623,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String exportFailed(String error) {
-    return 'Export eșuat: $error';
+    return 'Export eșuat';
   }
 
   @override
@@ -636,7 +636,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get selectFolderPath =>
-      'Selectează sau introdu calea folderului unde vor fi salvate fișierele de export:';
+      'Selectează sau introdu calea către folderul unde vor fi salvate fișierele exportate:';
 
   @override
   String get enterPath => 'Introdu calea manual';
@@ -671,7 +671,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get staffPortal => 'Portal Personal';
 
   @override
-  String get emailLabel => 'Email';
+  String get emailLabel => 'EMAIL';
 
   @override
   String get passwordLabel => 'PAROLĂ';

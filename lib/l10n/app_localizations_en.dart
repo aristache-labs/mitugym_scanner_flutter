@@ -670,7 +670,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get staffPortal => 'Staff Portal';
 
   @override
-  String get emailLabel => 'Email';
+  String get emailLabel => 'EMAIL';
 
   @override
   String get passwordLabel => 'PASSWORD';
