@@ -7,6 +7,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import '../models/activity_log.dart';
 import '../models/member_data.dart';
+import '../constants/app_constants.dart';
 import '../l10n/app_localizations.dart';
 
 /// Export service for activity logs
@@ -193,7 +194,7 @@ class ExportService {
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
                     pw.Text(
-                      'MituGym Scanner',
+                      AppConstants.appName,
                       style: pw.TextStyle(
                         fontSize: 28,
                         fontWeight: pw.FontWeight.bold,
@@ -432,7 +433,7 @@ class ExportService {
       final buffer = StringBuffer();
       
       buffer.writeln('='.padRight(60, '='));
-      buffer.writeln('MituGym Scanner - ${l10n.exportActivityReport}');
+      buffer.writeln('${AppConstants.appName} - ${l10n.exportActivityReport}');
       buffer.writeln('${l10n.exportGenerated}: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now())}');
       buffer.writeln('${l10n.exportTotalActivities}: ${activities.length}');
       buffer.writeln('='.padRight(60, '='));
@@ -690,7 +691,7 @@ class ExportService {
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
                     pw.Text(
-                      'MituGym Scanner',
+                      AppConstants.appName,
                       style: pw.TextStyle(
                         fontSize: 28,
                         fontWeight: pw.FontWeight.bold,
@@ -870,7 +871,7 @@ class ExportService {
       final buffer = StringBuffer();
       
       buffer.writeln('='.padRight(80, '='));
-      buffer.writeln('MituGym Scanner - ${l10n.exportMembersList}');
+      buffer.writeln('${AppConstants.appName} - ${l10n.exportMembersList}');
       buffer.writeln('${l10n.exportGenerated}: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now())}');
       buffer.writeln('${l10n.exportTotalMembers}: ${members.length}');
       buffer.writeln('='.padRight(80, '='));

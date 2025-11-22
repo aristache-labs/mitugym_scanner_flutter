@@ -5,6 +5,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 import '../config/app_colors.dart';
+import '../constants/app_constants.dart';
 import '../main.dart' show navigatorKey;
 import '../widgets/about_dialog_widget.dart';
 
@@ -52,7 +53,7 @@ class TrayService with TrayListener, WindowListener {
         MenuItem.separator(),
         MenuItem(
           key: 'about',
-          label: 'About MituGym Scanner',
+          label: 'About ${AppConstants.appName}',
         ),
         MenuItem.separator(),
         MenuItem(

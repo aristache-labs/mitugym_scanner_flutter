@@ -8,6 +8,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'l10n/app_localizations.dart';
 import 'config/theme.dart';
+import 'constants/app_constants.dart';
 import 'screens/splash_screen.dart';
 import 'providers/language_provider.dart';
 
@@ -37,7 +38,7 @@ void main() async {
     size: Size(1400, 900),
     minimumSize: Size(1200, 700),
     center: true,
-    title: 'MituGym Scanner',
+    title: AppConstants.appName,
     titleBarStyle: TitleBarStyle.normal,
     backgroundColor: Colors.transparent,
   );
@@ -75,7 +76,7 @@ class MituGymScannerApp extends ConsumerWidget {
     
     return MaterialApp(
       navigatorKey: navigatorKey,
-      title: 'MituGym Scanner',
+      title: AppConstants.appName,
       theme: appTheme,
       debugShowCheckedModeBanner: false,
       

@@ -8,6 +8,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../config/app_themes.dart';
 import '../config/app_colors.dart';
+import '../constants/app_constants.dart';
 import '../providers/config_provider.dart';
 import '../providers/scan_provider.dart';
 import '../providers/windows_scanner_provider.dart';
@@ -420,7 +421,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
               end: Alignment.bottomRight,
             ).createShader(bounds),
             child: Text(
-              'MITUGYM',
+              AppConstants.appNameShort,
               style: GoogleFonts.rajdhani(
                 color: Colors.white,
                 fontWeight: FontWeight.w800,
