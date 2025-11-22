@@ -680,5 +680,13 @@
   "splashLoadingSchedule": "Loading gym schedule...",
   "splashLoadingCached": "Loading cached data...",
   "splashAppName": "MITUGYM",
-  "splashAppSubtitle": "SCANNER SYSTEM"
+  "splashAppSubtitle": "SCANNER SYSTEM",
+  
+  "aboutAppName": "MituGym Scanner",
+  "aboutDescription": "High-performance desktop QR scanner for gym member check-ins and check-outs",
+  "aboutBuiltWith": "Built with Flutter",
+  "aboutVersion": "Version",
+  "aboutCopyright": "© 2025 MituGym. All rights reserved.",
+  "aboutLicenses": "View Licenses",
+  "aboutClose": "Close"
 }

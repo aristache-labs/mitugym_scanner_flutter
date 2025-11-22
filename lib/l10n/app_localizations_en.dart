@@ -1305,4 +1305,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get splashAppSubtitle => 'SCANNER SYSTEM';
+
+  @override
+  String get aboutAppName => 'MituGym Scanner';
+
+  @override
+  String get aboutDescription =>
+      'High-performance desktop QR scanner for gym member check-ins and check-outs';
+
+  @override
+  String get aboutBuiltWith => 'Built with Flutter';
+
+  @override
+  String get aboutVersion => 'Version';
+
+  @override
+  String get aboutCopyright => '© 2025 MituGym. All rights reserved.';
+
+  @override
+  String get aboutLicenses => 'View Licenses';
+
+  @override
+  String get aboutClose => 'Close';
 }

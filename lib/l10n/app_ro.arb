@@ -486,5 +486,13 @@
   "splashLoadingSchedule": "Se încarcă programul sălii...",
   "splashLoadingCached": "Se încarcă datele din cache...",
   "splashAppName": "MITUGYM",
-  "splashAppSubtitle": "SISTEM SCANNER"
+  "splashAppSubtitle": "SISTEM SCANNER",
+  
+  "aboutAppName": "MituGym Scanner",
+  "aboutDescription": "Scanner QR desktop de înaltă performanță pentru intrări și ieșiri membri sala de sport",
+  "aboutBuiltWith": "Construit cu Flutter",
+  "aboutVersion": "Versiune",
+  "aboutCopyright": "© 2025 MituGym. Toate drepturile rezervate.",
+  "aboutLicenses": "Vezi Licențe",
+  "aboutClose": "Închide"
 }

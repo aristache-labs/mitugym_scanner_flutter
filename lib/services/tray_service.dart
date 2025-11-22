@@ -6,6 +6,7 @@ import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 import '../config/app_colors.dart';
 import '../main.dart' show navigatorKey;
+import '../widgets/about_dialog_widget.dart';
 
 /// Service to manage system tray functionality
 class TrayService with TrayListener, WindowListener {
@@ -115,21 +116,7 @@ class TrayService with TrayListener, WindowListener {
     final navigatorContext = navigatorKey.currentContext;
     
     if (navigatorContext != null && navigatorContext.mounted) {
-      showAboutDialog(
-        context: navigatorContext,
-        applicationName: 'MituGym Scanner',
-        applicationVersion: '1.0.0',
-        applicationIcon: Image.asset(
-          'assets/images/logo.png',
-          width: 64,
-          height: 64,
-        ),
-        children: [
-          const Text('High-performance desktop QR scanner'),
-          const SizedBox(height: 8),
-          const Text('Built with Flutter'),
-        ],
-      );
+      showPremiumAboutDialog(navigatorContext, '1.0.0');
     }
   }
 

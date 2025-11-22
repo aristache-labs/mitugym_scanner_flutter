@@ -2551,6 +2551,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'SCANNER SYSTEM'**
   String get splashAppSubtitle;
+
+  /// No description provided for @aboutAppName.
+  ///
+  /// In en, this message translates to:
+  /// **'MituGym Scanner'**
+  String get aboutAppName;
+
+  /// No description provided for @aboutDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'High-performance desktop QR scanner for gym member check-ins and check-outs'**
+  String get aboutDescription;
+
+  /// No description provided for @aboutBuiltWith.
+  ///
+  /// In en, this message translates to:
+  /// **'Built with Flutter'**
+  String get aboutBuiltWith;
+
+  /// No description provided for @aboutVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get aboutVersion;
+
+  /// No description provided for @aboutCopyright.
+  ///
+  /// In en, this message translates to:
+  /// **'© 2025 MituGym. All rights reserved.'**
+  String get aboutCopyright;
+
+  /// No description provided for @aboutLicenses.
+  ///
+  /// In en, this message translates to:
+  /// **'View Licenses'**
+  String get aboutLicenses;
+
+  /// No description provided for @aboutClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get aboutClose;
 }
 
 class _AppLocalizationsDelegate
