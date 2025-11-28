@@ -121,3 +121,18 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+# MSIX Configuration (for Windows installer)
+# To create MSIX: flutter pub add msix --dev && flutter pub run msix:create
+msix_config:
+  display_name: MituGym Scanner
+  publisher_display_name: MituGym
+  identity_name: com.mitugym.scanner
+  msix_version: 1.0.0.0
+  logo_path: assets\images\logo.png
+  capabilities: internetClient
+  store: false
+  # Uncomment and configure for Microsoft Store submission:
+  # certificate_path: YOUR_CERTIFICATE.pfx
+  # certificate_password: YOUR_PASSWORD
+  # publisher: CN=YOUR_PUBLISHER_NAME
