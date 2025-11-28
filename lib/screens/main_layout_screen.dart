@@ -601,7 +601,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
                     Flexible(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
@@ -614,7 +614,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
                               height: 1.0,
                             ),
                           ),
-                          const SizedBox(height: 1),
+                          const SizedBox(height: 6),
                           Text(
                             userName,
                             style: GoogleFonts.inter(
