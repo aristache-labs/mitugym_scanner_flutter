@@ -152,14 +152,35 @@ end;
 
 // Cleanup on uninstall
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+var
+  DocumentsPath: String;
+  AppDataPath: String;
 begin
   if CurUninstallStep = usPostUninstall then
   begin
-    // Delete user data folder if user confirms
-    if MsgBox('Do you want to remove all user data and settings?', mbConfirmation, MB_YESNO) = IDYES then
+    // Ask user if they want to remove all user data and settings
+    if MsgBox('Do you want to remove all application data and settings?' + #13#10#13#10 +
+              'This will delete:' + #13#10 +
+              '- Documents\MituGym Scanner' + #13#10 +
+              '- Documents\mitugym_logs' + #13#10 +
+              '- Documents\mitugym_offline.db' + #13#10 +
+              '- AppData\Roaming\com.mitugym', 
+              mbConfirmation, MB_YESNO) = IDYES then
     begin
-      // Remove app data (adjust path as needed for your app)
-      // DelTree(ExpandConstant('{localappdata}\MituGym\Scanner'), True, True, True);
+      DocumentsPath := ExpandConstant('{userdocs}');
+      AppDataPath := ExpandConstant('{userappdata}');
+      
+      // Remove Documents\MituGym Scanner folder
+      DelTree(DocumentsPath + '\MituGym Scanner', True, True, True);
+      
+      // Remove Documents\mitugym_logs folder
+      DelTree(DocumentsPath + '\mitugym_logs', True, True, True);
+      
+      // Remove Documents\mitugym_offline.db file
+      DeleteFile(DocumentsPath + '\mitugym_offline.db');
+      
+      // Remove AppData\Roaming\com.mitugym folder
+      DelTree(AppDataPath + '\com.mitugym', True, True, True);
     end;
   end;
 end;

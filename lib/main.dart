@@ -6,6 +6,7 @@ import 'package:window_manager/window_manager.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:path_provider/path_provider.dart';
 import 'l10n/app_localizations.dart';
 import 'config/theme.dart';
 import 'constants/app_constants.dart';
@@ -17,6 +18,20 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Ensure application directories exist (especially important on clean Windows installations)
+  try {
+    if (Platform.isWindows) {
+      final appDocDir = await getApplicationDocumentsDirectory();
+      final appDir = Directory('${appDocDir.path}\\MituGym Scanner');
+      if (!await appDir.exists()) {
+        await appDir.create(recursive: true);
+        debugPrint('✅ Created application directory: ${appDir.path}');
+      }
+    }
+  } catch (e) {
+    debugPrint('❌ Error initializing storage: $e');
+  }
 
   // Initialize date formatting for all locales
   await initializeDateFormatting();

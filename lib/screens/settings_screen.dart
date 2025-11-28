@@ -401,41 +401,52 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   Future<void> _saveSettings() async {
     if (!_formKey.currentState!.validate()) return;
 
-    // Update ALL settings individually
-    await ref.read(configProvider.notifier).updateApiUrl(_apiUrlController.text);
-    await ref.read(configProvider.notifier).updateApiKey(_apiKeyController.text);
-    await ref.read(configProvider.notifier).updateCameraIndex(_cameraIndex);
-    await ref.read(configProvider.notifier).updateDebounceDuration(_debounceDuration);
-    await ref.read(configProvider.notifier).updateAudioEnabled(_audioEnabled);
-    await ref.read(configProvider.notifier).updateHistoryRetentionDays(_historyRetentionDays);
-    
-    // Save settings from Display tab
-    await ref.read(configProvider.notifier).updateCameraVisible(_cameraVisible);
-    await ref.read(configProvider.notifier).updateAutoStartScanning(_autoStartScanning);
-    
-    // Save settings from General tab
-    await ref.read(configProvider.notifier).updateStartWithWindows(_startWithWindows);
-    
-    // Save settings from Audio tab
-    await ref.read(configProvider.notifier).updateSoundVolume(_soundVolume);
-    
-    // Save settings from Advanced tab
-    await ref.read(configProvider.notifier).updateCameraFrameRate(_cameraFrameRate);
-    await ref.read(configProvider.notifier).updateLogRetentionDays(_logRetentionDays);
-    await ref.read(configProvider.notifier).updateExportPath(_exportPath);
-    await ref.read(configProvider.notifier).updateVerboseLogging(_verboseLogging);
-    
-    // Update scanner service with new settings
-    ref.read(windowsScannerControllerProvider.notifier).updateDebounceDuration(_debounceDuration);
-    ref.read(windowsScannerControllerProvider.notifier).updateFrameRate(_cameraFrameRate);
+    try {
+      // Update ALL settings individually
+      await ref.read(configProvider.notifier).updateApiUrl(_apiUrlController.text);
+      await ref.read(configProvider.notifier).updateApiKey(_apiKeyController.text);
+      await ref.read(configProvider.notifier).updateCameraIndex(_cameraIndex);
+      await ref.read(configProvider.notifier).updateDebounceDuration(_debounceDuration);
+      await ref.read(configProvider.notifier).updateAudioEnabled(_audioEnabled);
+      await ref.read(configProvider.notifier).updateHistoryRetentionDays(_historyRetentionDays);
+      
+      // Save settings from Display tab
+      await ref.read(configProvider.notifier).updateCameraVisible(_cameraVisible);
+      await ref.read(configProvider.notifier).updateAutoStartScanning(_autoStartScanning);
+      
+      // Save settings from General tab
+      await ref.read(configProvider.notifier).updateStartWithWindows(_startWithWindows);
+      
+      // Save settings from Audio tab
+      await ref.read(configProvider.notifier).updateSoundVolume(_soundVolume);
+      
+      // Save settings from Advanced tab
+      await ref.read(configProvider.notifier).updateCameraFrameRate(_cameraFrameRate);
+      await ref.read(configProvider.notifier).updateLogRetentionDays(_logRetentionDays);
+      await ref.read(configProvider.notifier).updateExportPath(_exportPath);
+      await ref.read(configProvider.notifier).updateVerboseLogging(_verboseLogging);
+      
+      // Update scanner service with new settings
+      ref.read(windowsScannerControllerProvider.notifier).updateDebounceDuration(_debounceDuration);
+      ref.read(windowsScannerControllerProvider.notifier).updateFrameRate(_cameraFrameRate);
 
-    if (mounted) {
-      _showPremiumToast(
-        context: context,
-        message: AppLocalizations.of(context)!.settingsSavedSuccessfully,
-        icon: LucideIcons.checkCircle,
-        type: ToastType.success,
-      );
+      if (mounted) {
+        _showPremiumToast(
+          context: context,
+          message: AppLocalizations.of(context)!.settingsSavedSuccessfully,
+          icon: LucideIcons.checkCircle,
+          type: ToastType.success,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        _showPremiumToast(
+          context: context,
+          message: 'Failed to save settings: $e',
+          icon: LucideIcons.alertCircle,
+          type: ToastType.error,
+        );
+      }
     }
   }
 

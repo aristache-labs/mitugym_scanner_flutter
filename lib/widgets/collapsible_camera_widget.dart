@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../services/windows_qr_scanner_service.dart';
 import 'windows_camera_preview_widget.dart';
 import '../l10n/app_localizations.dart';
+import '../utils/safe_preferences.dart';
 
 /// Collapsible camera widget with toggle button
 /// Allows hiding/showing the camera preview to save space
@@ -60,8 +60,7 @@ class _CollapsibleCameraWidgetState extends State<CollapsibleCameraWidget>
 
   /// Load camera visibility state from preferences
   Future<void> _loadVisibilityState() async {
-    final prefs = await SharedPreferences.getInstance();
-    final visible = prefs.getBool('cameraVisible') ?? true;
+    final visible = await SafePreferences.getBool('cameraVisible') ?? true;
     if (mounted && visible != _isVisible) {
       setState(() {
         _isVisible = visible;
@@ -86,8 +85,7 @@ class _CollapsibleCameraWidgetState extends State<CollapsibleCameraWidget>
     });
     
     // Save state to preferences
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('cameraVisible', _isVisible);
+    await SafePreferences.setBool('cameraVisible', _isVisible);
   }
 
   @override

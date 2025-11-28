@@ -1,4 +1,8 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
 
 /// Application configuration class
 /// Manages app settings with persistence via SharedPreferences
@@ -79,65 +83,137 @@ class AppConfig {
     );
   }
 
-  /// Load configuration from SharedPreferences
-  static Future<AppConfig> loadFromPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    
-    // Load last history sync timestamp
-    final lastSyncMillis = prefs.getInt('last_history_sync');
-    final lastHistorySync = lastSyncMillis != null 
-        ? DateTime.fromMillisecondsSinceEpoch(lastSyncMillis)
-        : null;
-    
-    return AppConfig(
-      apiUrl: prefs.getString('apiUrl') ?? 'https://mitugym-app-webpanel.vercel.app',
-      apiKey: prefs.getString('apiKey') ?? '847a6e2605d0674043fd8c6fef6e4f2ffb34fcfe8d5cd772636da8fc4b42bb78',
-      cameraIndex: prefs.getInt('cameraIndex') ?? 0,
-      debounceDuration: prefs.getInt('debounceDuration') ?? 5,
-      audioEnabled: prefs.getBool('audioEnabled') ?? true,
-      fontSize: prefs.getDouble('fontSize') ?? 14.0,
-      animationSpeed: prefs.getDouble('animationSpeed') ?? 1.0,
-      soundVolume: prefs.getDouble('soundVolume') ?? 1.0,
-      logRetentionDays: prefs.getInt('logRetentionDays') ?? 30,
-      exportFormat: prefs.getString('exportFormat') ?? 'csv',
-      exportPath: prefs.getString('exportPath') ?? '',
-      autoStartScanning: prefs.getBool('autoStartScanning') ?? false,
-      minimizeToTray: prefs.getBool('minimizeToTray') ?? false,
-      cameraVisible: prefs.getBool('cameraVisible') ?? true,
-      startWithWindows: prefs.getBool('startWithWindows') ?? false,
-      theme: prefs.getString('theme') ?? 'cyan',
-      cameraFrameRate: prefs.getInt('cameraFrameRate') ?? 10,
-      verboseLogging: prefs.getBool('verboseLogging') ?? false,
-      historyRetentionDays: prefs.getInt('history_retention_days') ?? 90,
-      lastHistorySync: lastHistorySync,
-    );
+  /// Get config file path
+  static Future<String> _getConfigFilePath() async {
+    try {
+      debugPrint('🔍 [CONFIG] Getting application documents directory...');
+      final appDir = await getApplicationDocumentsDirectory();
+      debugPrint('✅ [CONFIG] App documents dir: ${appDir.path}');
+      
+      final configDir = path.join(appDir.path, 'MituGym Scanner');
+      debugPrint('🔍 [CONFIG] Config directory will be: $configDir');
+      
+      // Ensure directory exists
+      final dir = Directory(configDir);
+      final exists = await dir.exists();
+      debugPrint('🔍 [CONFIG] Config directory exists: $exists');
+      
+      if (!exists) {
+        debugPrint('📁 [CONFIG] Creating config directory...');
+        await dir.create(recursive: true);
+        debugPrint('✅ [CONFIG] Created config directory: $configDir');
+      }
+      
+      final filePath = path.join(configDir, 'config.json');
+      debugPrint('✅ [CONFIG] Final config file path: $filePath');
+      return filePath;
+    } catch (e, stackTrace) {
+      debugPrint('❌ [CONFIG] Error in _getConfigFilePath: $e');
+      debugPrint('Stack trace: $stackTrace');
+      rethrow;
+    }
   }
 
-  /// Save configuration to SharedPreferences
+  /// Load configuration from JSON file
+  static Future<AppConfig> loadFromPreferences() async {
+    try {
+      debugPrint('📖 [CONFIG] Loading configuration...');
+      final filePath = await _getConfigFilePath();
+      final file = File(filePath);
+      
+      final fileExists = await file.exists();
+      debugPrint('🔍 [CONFIG] Config file exists: $fileExists');
+      
+      if (!fileExists) {
+        debugPrint('ℹ️ [CONFIG] Config file not found, using defaults');
+        return AppConfig.defaults();
+      }
+      
+      debugPrint('📖 [CONFIG] Reading config file...');
+      final jsonString = await file.readAsString();
+      debugPrint('✅ [CONFIG] File read successfully (${jsonString.length} bytes)');
+      
+      final jsonData = json.decode(jsonString) as Map<String, dynamic>;
+      debugPrint('✅ [CONFIG] JSON parsed successfully');
+      
+      // Load last history sync timestamp
+      final lastSyncMillis = jsonData['last_history_sync'] as int?;
+      final lastHistorySync = lastSyncMillis != null 
+          ? DateTime.fromMillisecondsSinceEpoch(lastSyncMillis)
+          : null;
+      
+      debugPrint('✅ [CONFIG] Configuration loaded successfully from: $filePath');
+      
+      return AppConfig(
+        apiUrl: jsonData['apiUrl'] as String? ?? 'https://mitugym-app-webpanel.vercel.app',
+        apiKey: jsonData['apiKey'] as String? ?? '847a6e2605d0674043fd8c6fef6e4f2ffb34fcfe8d5cd772636da8fc4b42bb78',
+        cameraIndex: jsonData['cameraIndex'] as int? ?? 0,
+        debounceDuration: jsonData['debounceDuration'] as int? ?? 5,
+        audioEnabled: jsonData['audioEnabled'] as bool? ?? true,
+        fontSize: (jsonData['fontSize'] as num?)?.toDouble() ?? 14.0,
+        animationSpeed: (jsonData['animationSpeed'] as num?)?.toDouble() ?? 1.0,
+        soundVolume: (jsonData['soundVolume'] as num?)?.toDouble() ?? 1.0,
+        logRetentionDays: jsonData['logRetentionDays'] as int? ?? 30,
+        exportFormat: jsonData['exportFormat'] as String? ?? 'csv',
+        exportPath: jsonData['exportPath'] as String? ?? '',
+        autoStartScanning: jsonData['autoStartScanning'] as bool? ?? false,
+        minimizeToTray: jsonData['minimizeToTray'] as bool? ?? false,
+        cameraVisible: jsonData['cameraVisible'] as bool? ?? true,
+        startWithWindows: jsonData['startWithWindows'] as bool? ?? false,
+        theme: jsonData['theme'] as String? ?? 'cyan',
+        cameraFrameRate: jsonData['cameraFrameRate'] as int? ?? 10,
+        verboseLogging: jsonData['verboseLogging'] as bool? ?? false,
+        historyRetentionDays: jsonData['history_retention_days'] as int? ?? 90,
+        lastHistorySync: lastHistorySync,
+      );
+    } catch (e, stackTrace) {
+      debugPrint('❌ [CONFIG] Error loading config: $e');
+      debugPrint('Stack trace: $stackTrace');
+      debugPrint('ℹ️ [CONFIG] Using default configuration');
+      return AppConfig.defaults();
+    }
+  }
+
+  /// Save configuration to JSON file
   Future<void> saveToPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    
-    await prefs.setString('apiUrl', apiUrl);
-    await prefs.setString('apiKey', apiKey);
-    await prefs.setInt('cameraIndex', cameraIndex);
-    await prefs.setInt('debounceDuration', debounceDuration);
-    await prefs.setBool('audioEnabled', audioEnabled);
-    await prefs.setDouble('fontSize', fontSize);
-    await prefs.setDouble('animationSpeed', animationSpeed);
-    await prefs.setDouble('soundVolume', soundVolume);
-    await prefs.setInt('logRetentionDays', logRetentionDays);
-    await prefs.setString('exportFormat', exportFormat);
-    await prefs.setString('exportPath', exportPath);
-    await prefs.setBool('autoStartScanning', autoStartScanning);
-    await prefs.setBool('minimizeToTray', minimizeToTray);
-    await prefs.setBool('cameraVisible', cameraVisible);
-    await prefs.setBool('startWithWindows', startWithWindows);
-    await prefs.setString('theme', theme);
-    await prefs.setInt('cameraFrameRate', cameraFrameRate);
-    await prefs.setBool('verboseLogging', verboseLogging);
-    await prefs.setInt('history_retention_days', historyRetentionDays);
-    if (lastHistorySync != null) {
-      await prefs.setInt('last_history_sync', lastHistorySync!.millisecondsSinceEpoch);
+    try {
+      final filePath = await _getConfigFilePath();
+      final file = File(filePath);
+      
+      // Create JSON object with all settings
+      final jsonData = {
+        'apiUrl': apiUrl,
+        'apiKey': apiKey,
+        'cameraIndex': cameraIndex,
+        'debounceDuration': debounceDuration,
+        'audioEnabled': audioEnabled,
+        'fontSize': fontSize,
+        'animationSpeed': animationSpeed,
+        'soundVolume': soundVolume,
+        'logRetentionDays': logRetentionDays,
+        'exportFormat': exportFormat,
+        'exportPath': exportPath,
+        'autoStartScanning': autoStartScanning,
+        'minimizeToTray': minimizeToTray,
+        'cameraVisible': cameraVisible,
+        'startWithWindows': startWithWindows,
+        'theme': theme,
+        'cameraFrameRate': cameraFrameRate,
+        'verboseLogging': verboseLogging,
+        'history_retention_days': historyRetentionDays,
+        if (lastHistorySync != null)
+          'last_history_sync': lastHistorySync!.millisecondsSinceEpoch,
+      };
+      
+      // Write JSON to file with pretty print
+      final jsonString = const JsonEncoder.withIndent('  ').convert(jsonData);
+      await file.writeAsString(jsonString);
+      
+      debugPrint('✅ Settings saved successfully to: $filePath');
+    } catch (e, stackTrace) {
+      debugPrint('❌ Error saving settings: $e');
+      debugPrint('Stack trace: $stackTrace');
+      // Don't rethrow - we don't want to show error to user
     }
   }
 

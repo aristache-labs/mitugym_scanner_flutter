@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
 import '../config/app_config.dart';
@@ -88,10 +89,17 @@ class ConfigNotifier extends Notifier<AppConfig> {
     await state.saveToPreferences();
     
     // Enable or disable launch at startup
-    if (startWithWindows) {
-      await launchAtStartup.enable();
-    } else {
-      await launchAtStartup.disable();
+    // Wrap in try-catch because registry keys might not exist on clean Windows installations
+    try {
+      if (startWithWindows) {
+        await launchAtStartup.enable();
+      } else {
+        await launchAtStartup.disable();
+      }
+    } catch (e) {
+      debugPrint('⚠️ Failed to update launch at startup setting: $e');
+      debugPrint('ℹ️ This is normal on clean Windows installations. Setting saved to config.');
+      // Don't rethrow - the setting is saved in config.json, just the registry update failed
     }
   }
 
