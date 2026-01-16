@@ -443,7 +443,7 @@ class _NotificationDropdownState extends ConsumerState<_NotificationDropdown> {
 }
 
 /// Individual notification item
-class _NotificationItem extends StatelessWidget {
+class _NotificationItem extends StatefulWidget {
   final AdminNotification notification;
   final VoidCallback onMarkAsRead;
   final VoidCallback onDelete;
@@ -453,6 +453,13 @@ class _NotificationItem extends StatelessWidget {
     required this.onMarkAsRead,
     required this.onDelete,
   });
+
+  @override
+  State<_NotificationItem> createState() => _NotificationItemState();
+}
+
+class _NotificationItemState extends State<_NotificationItem> {
+  bool _isHovered = false;
 
   String _formatTimeAgo(DateTime dateTime) {
     final now = DateTime.now();
@@ -471,149 +478,238 @@ class _NotificationItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: notification.isRead
-            ? const Color(0xFF0f1414) // Dark background for read
-            : const Color(0xFF4DD4D4).withValues(alpha: 0.08), // Cyan tint for unread
-        border: Border(
-          left: BorderSide(
-            color: notification.isRead
-                ? AppColors.textMuted.withValues(alpha: 0.5)
-                : const Color(0xFF4DD4D4).withValues(alpha: 0.5), // Cyan border
-            width: 3,
-          ),
-          bottom: BorderSide(
-            color: AppColors.border.withValues(alpha: 0.1),
-            width: 1,
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: Container(
+        decoration: BoxDecoration(
+          color: widget.notification.isRead
+              ? const Color(0xFF0f1414) // Dark background for read
+              : const Color(0xFF4DD4D4).withValues(alpha: 0.08), // Cyan tint for unread
+          border: Border(
+            left: BorderSide(
+              color: widget.notification.isRead
+                  ? AppColors.textMuted.withValues(alpha: 0.5)
+                  : const Color(0xFF4DD4D4).withValues(alpha: 0.5), // Cyan border
+              width: 3,
+            ),
+            bottom: BorderSide(
+              color: AppColors.border.withValues(alpha: 0.1),
+              width: 1,
+            ),
           ),
         ),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: notification.isRead ? null : onMarkAsRead,
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Icon
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    gradient: notification.isRead
-                        ? LinearGradient(
-                            colors: [
-                              const Color(0xFF0f1414),
-                              const Color(0xFF141a1a),
-                            ],
-                          )
-                        : LinearGradient(
-                            colors: [
-                              const Color(0xFF4DD4D4).withValues(alpha: 0.3), // Cyan
-                              const Color(0xFF4DD4D4).withValues(alpha: 0.15),
-                            ],
-                          ),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: notification.isRead
-                          ? const Color(0xFF4DD4D4).withValues(alpha: 0.2)
-                          : const Color(0xFF4DD4D4).withValues(alpha: 0.3), // Cyan border
-                      width: 1,
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      notification.type.icon,
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-
-                // Content
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: widget.notification.isRead ? null : widget.onMarkAsRead,
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Stack(
+                children: [
+                  // Main content row
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Row(
+                      // Icon with NEW badge
+                      Stack(
+                        clipBehavior: Clip.none,
                         children: [
-                          Expanded(
-                            child: Text(
-                              notification.title,
-                              style: GoogleFonts.inter(
-                                color: AppColors.textPrimary,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        gradient: widget.notification.isRead
+                            ? LinearGradient(
+                                colors: [
+                                  const Color(0xFF0f1414),
+                                  const Color(0xFF141a1a),
+                                ],
+                              )
+                            : LinearGradient(
+                                colors: [
+                                  const Color(0xFF4DD4D4).withValues(alpha: 0.3), // Cyan
+                                  const Color(0xFF4DD4D4).withValues(alpha: 0.15),
+                                ],
                               ),
-                            ),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: widget.notification.isRead
+                              ? const Color(0xFF4DD4D4).withValues(alpha: 0.2)
+                              : const Color(0xFF4DD4D4).withValues(alpha: 0.3), // Cyan border
+                          width: 1,
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          widget.notification.type.icon,
+                          style: const TextStyle(fontSize: 20),
+                        ),
+                      ),
+                    ),
+                    // NEW badge for unread notifications
+                    if (!widget.notification.isRead)
+                      Positioned(
+                        top: -2,
+                        left: 4,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 2,
                           ),
-                          Text(
-                            '•',
-                            style: GoogleFonts.inter(
-                              color: AppColors.textMuted.withValues(alpha: 0.5),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [
+                                Color(0xFF4DD4D4),
+                                Color(0xFF3FBABA),
+                              ],
                             ),
+                            borderRadius: BorderRadius.circular(4),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF4DD4D4).withValues(alpha: 0.4),
+                                blurRadius: 4,
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 4),
-                          Text(
-                            _formatTimeAgo(notification.createdAt),
+                          child: Text(
+                            'NEW',
                             style: GoogleFonts.inter(
-                              color: AppColors.textMuted.withValues(alpha: 0.7),
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF0A0F0F),
+                              fontSize: 7,
+                              fontWeight: FontWeight.w900,
                               letterSpacing: 0.5,
+                              height: 1.0,
                             ),
                           ),
+                        ),
+                      ),
                         ],
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        notification.message,
-                        style: GoogleFonts.inter(
-                          color: AppColors.textSecondary,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                          height: 1.4,
+                      const SizedBox(width: 12),
+
+                      // Content - Takes maximum available space
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.only(right: _isHovered ? 92 : 4),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Title and time on same line
+                              Row(
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      widget.notification.title,
+                                      style: GoogleFonts.inter(
+                                        color: AppColors.textPrimary,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                                    child: Text(
+                                      '•',
+                                      style: GoogleFonts.inter(
+                                        color: AppColors.textMuted.withValues(alpha: 0.5),
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    _formatTimeAgo(widget.notification.createdAt),
+                                    style: GoogleFonts.inter(
+                                      color: AppColors.textMuted.withValues(alpha: 0.7),
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              LayoutBuilder(
+                                builder: (context, constraints) {
+                                  return SizedBox(
+                                    width: constraints.maxWidth,
+                                    child: Text(
+                                      widget.notification.message,
+                                      style: GoogleFonts.inter(
+                                        color: AppColors.textSecondary,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w400,
+                                        height: 1.4,
+                                      ),
+                                      softWrap: true,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
                   ),
-                ),
 
-                // Actions
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (!notification.isRead)
-                      IconButton(
-                        onPressed: onMarkAsRead,
-                        icon: const Icon(LucideIcons.check, size: 16),
-                        color: const Color(0xFF4DD4D4), // Cyan
-                        splashRadius: 20,
-                        tooltip: 'Mark as read',
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(
-                          minWidth: 32,
-                          minHeight: 32,
+                  // Actions - Positioned absolutely on the right, show on hover
+                  if (_isHovered)
+                    Positioned(
+                      right: 12,
+                      top: 0,
+                      bottom: 0,
+                      child: Center(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (!widget.notification.isRead)
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF4DD4D4).withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: IconButton(
+                                  onPressed: widget.onMarkAsRead,
+                                  icon: const Icon(LucideIcons.check, size: 16),
+                                  color: const Color(0xFF4DD4D4), // Cyan
+                                  splashRadius: 20,
+                                  tooltip: 'Mark as read',
+                                  padding: const EdgeInsets.all(8),
+                                  constraints: const BoxConstraints(
+                                    minWidth: 36,
+                                    minHeight: 36,
+                                  ),
+                                ),
+                              ),
+                            if (!widget.notification.isRead) const SizedBox(width: 4),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFef4444).withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: IconButton(
+                                onPressed: widget.onDelete,
+                                icon: const Icon(LucideIcons.trash2, size: 16),
+                                color: const Color(0xFFef4444), // Red
+                                splashRadius: 20,
+                                tooltip: 'Delete',
+                                padding: const EdgeInsets.all(8),
+                                constraints: const BoxConstraints(
+                                  minWidth: 36,
+                                  minHeight: 36,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    IconButton(
-                      onPressed: onDelete,
-                      icon: const Icon(LucideIcons.trash2, size: 16),
-                      color: const Color(0xFFef4444), // Red
-                      splashRadius: 20,
-                      tooltip: 'Delete',
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(
-                        minWidth: 32,
-                        minHeight: 32,
-                      ),
                     ),
-                  ],
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
