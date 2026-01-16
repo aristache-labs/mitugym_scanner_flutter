@@ -96,7 +96,7 @@ class _NotificationBellState extends ConsumerState<NotificationBell> {
           onTap: _toggleDropdown,
           borderRadius: BorderRadius.circular(12),
           child: Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               color: Colors.transparent,
@@ -106,48 +106,59 @@ class _NotificationBellState extends ConsumerState<NotificationBell> {
               children: [
                 Icon(
                   LucideIcons.bell,
-                  color: AppColors.textPrimary.withValues(alpha: 0.9),
-                  size: 20,
+                  color: AppColors.textPrimary.withValues(alpha: 0.95),
+                  size: 24,
                 ),
                 if (unreadCount > 0)
                   Positioned(
-                    right: -6,
-                    top: -6,
+                    right: -13,
+                    top: -13,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 5,
-                        vertical: 2,
+                        horizontal: 7,
+                        vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
+                        gradient: const LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: [
-                            const Color(0xFF4DD4D4), // Cyan/teal from web panel
-                            const Color(0xFF3FBABA),
+                            Color(0xFFFF4757), // Premium red gradient
+                            Color(0xFFE84118),
                           ],
                         ),
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: const Color(0xFF0A0F0F),
+                          width: 2,
+                        ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF4DD4D4).withValues(alpha: 0.4),
-                            blurRadius: 8,
+                            color: const Color(0xFFFF4757).withValues(alpha: 0.5),
+                            blurRadius: 12,
+                            offset: const Offset(0, 3),
+                            spreadRadius: 1,
+                          ),
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.3),
+                            blurRadius: 6,
                             offset: const Offset(0, 2),
                           ),
                         ],
                       ),
                       constraints: const BoxConstraints(
-                        minWidth: 18,
-                        minHeight: 18,
+                        minWidth: 22,
+                        minHeight: 22,
                       ),
                       child: Center(
                         child: Text(
                           unreadCount > 99 ? '99+' : unreadCount.toString(),
                           style: GoogleFonts.inter(
-                            color: const Color(0xFF0A0F0F), // Dark text on cyan badge
-                            fontSize: 9,
-                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w900,
                             height: 1.0,
+                            letterSpacing: -0.3,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -369,13 +380,18 @@ class _NotificationDropdownState extends ConsumerState<_NotificationDropdown> {
           // Footer
           if (notifications.isNotEmpty)
             Container(
-              padding: const EdgeInsets.all(12),
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
                   colors: [
-                    Colors.transparent,
-                    const Color(0xFF4DD4D4).withValues(alpha: 0.05), // Cyan
+                    const Color(0xFF4DD4D4).withValues(alpha: 0.03), // subtle cyan at edges
+                    const Color(0xFF4DD4D4).withValues(alpha: 0.12), // brighter center
+                    const Color(0xFF4DD4D4).withValues(alpha: 0.03),
                   ],
+                  stops: const [0.0, 0.5, 1.0],
                 ),
                 border: Border(
                   top: BorderSide(
