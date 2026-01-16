@@ -18,6 +18,8 @@ import '../providers/language_provider.dart';
 import '../providers/history_provider.dart';
 import '../widgets/modern_sidebar_widget.dart';
 import '../widgets/offline_banner_widget.dart';
+import '../widgets/notification_bell_widget.dart';
+import '../widgets/toast_notification_widget.dart';
 import '../services/export_service.dart';
 import '../services/history_sync_service.dart';
 import '../services/tray_service.dart';
@@ -179,9 +181,10 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
       config.theme.isEmpty ? 'cyan' : config.theme,
     );
 
-    return Scaffold(
-      appBar: _buildModernAppBar(context, themeColors),
-      body: Container(
+    return ToastContainer(
+      child: Scaffold(
+        appBar: _buildModernAppBar(context, themeColors),
+        body: Container(
         decoration: themeColors.getBackgroundDecoration(),
         child: Column(
           children: [
@@ -274,6 +277,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
             ),
           ],
         ),
+      ),
       ),
     );
   }
@@ -446,15 +450,8 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
         _buildStatusIndicator(offlineState),
         const SizedBox(width: 16),
         
-        // Notification icon
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(
-            LucideIcons.bell,
-            color: Colors.white70,
-            size: 22,
-          ),
-        ),
+        // Notification bell
+        const NotificationBell(),
         const SizedBox(width: 8),
         
         // User profile dropdown
