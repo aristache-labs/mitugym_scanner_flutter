@@ -459,6 +459,8 @@ class _NotificationItem extends StatefulWidget {
 }
 
 class _NotificationItemState extends State<_NotificationItem> {
+  bool _isHovered = false;
+
   String _formatTimeAgo(DateTime dateTime) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
@@ -476,25 +478,28 @@ class _NotificationItemState extends State<_NotificationItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: widget.notification.isRead
-            ? const Color(0xFF0f1414)
-            : const Color(0xFF4DD4D4).withValues(alpha: 0.08),
-        border: Border(
-          left: BorderSide(
-            color: widget.notification.isRead
-                ? AppColors.textMuted.withValues(alpha: 0.5)
-                : const Color(0xFF4DD4D4).withValues(alpha: 0.5),
-            width: 3,
-          ),
-          bottom: BorderSide(
-            color: AppColors.border.withValues(alpha: 0.1),
-            width: 1,
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: Container(
+        decoration: BoxDecoration(
+          color: widget.notification.isRead
+              ? const Color(0xFF0f1414)
+              : const Color(0xFF4DD4D4).withValues(alpha: 0.08),
+          border: Border(
+            left: BorderSide(
+              color: widget.notification.isRead
+                  ? AppColors.textMuted.withValues(alpha: 0.5)
+                  : const Color(0xFF4DD4D4).withValues(alpha: 0.5),
+              width: 3,
+            ),
+            bottom: BorderSide(
+              color: AppColors.border.withValues(alpha: 0.1),
+              width: 1,
+            ),
           ),
         ),
-      ),
-      child: Material(
+        child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: widget.notification.isRead ? null : widget.onMarkAsRead,
@@ -632,11 +637,54 @@ class _NotificationItemState extends State<_NotificationItem> {
                     ),
                   ),
                 ),
+                // Action buttons - show on hover
+                if (_isHovered) ...[
+                  const SizedBox(width: 8),
+                  if (!widget.notification.isRead)
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF4DD4D4).withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: IconButton(
+                        onPressed: widget.onMarkAsRead,
+                        icon: const Icon(LucideIcons.check, size: 16),
+                        color: const Color(0xFF4DD4D4),
+                        splashRadius: 20,
+                        tooltip: 'Mark as read',
+                        padding: const EdgeInsets.all(8),
+                        constraints: const BoxConstraints(
+                          minWidth: 36,
+                          minHeight: 36,
+                        ),
+                      ),
+                    ),
+                  const SizedBox(width: 4),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFef4444).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: IconButton(
+                      onPressed: widget.onDelete,
+                      icon: const Icon(LucideIcons.trash2, size: 16),
+                      color: const Color(0xFFef4444),
+                      splashRadius: 20,
+                      tooltip: 'Delete',
+                      padding: const EdgeInsets.all(8),
+                      constraints: const BoxConstraints(
+                        minWidth: 36,
+                        minHeight: 36,
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
         ),
       ),
+    ),
     );
   }
 }
