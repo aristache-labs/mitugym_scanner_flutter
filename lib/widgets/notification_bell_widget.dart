@@ -513,49 +513,80 @@ class _NotificationItemState extends State<_NotificationItem> {
                   clipBehavior: Clip.none,
                   children: [
                     Container(
-                      width: 44,
-                      height: 44,
+                      width: 48,
+                      height: 48,
                       decoration: BoxDecoration(
-                        gradient: widget.notification.isRead
-                            ? const LinearGradient(
-                                colors: [Color(0xFF0f1414), Color(0xFF141a1a)],
-                              )
-                            : LinearGradient(
-                                colors: [
-                                  const Color(0xFF4DD4D4).withValues(alpha: 0.3),
-                                  const Color(0xFF4DD4D4).withValues(alpha: 0.15),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: widget.notification.isRead
+                              ? [
+                                  const Color(0xFF0A0F0F),
+                                  const Color(0xFF0D1313),
+                                ]
+                              : [
+                                  const Color(0xFF4DD4D4).withValues(alpha: 0.12),
+                                  const Color(0xFF3FBABA).withValues(alpha: 0.08),
                                 ],
-                              ),
+                        ),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: widget.notification.isRead
-                              ? const Color(0xFF4DD4D4).withValues(alpha: 0.2)
-                              : const Color(0xFF4DD4D4).withValues(alpha: 0.3),
-                          width: 1,
+                              ? const Color(0xFF4DD4D4).withValues(alpha: 0.15)
+                              : const Color(0xFF4DD4D4).withValues(alpha: 0.35),
+                          width: 1.5,
                         ),
+                        boxShadow: widget.notification.isRead
+                            ? null
+                            : [
+                                BoxShadow(
+                                  color: const Color(0xFF4DD4D4).withValues(alpha: 0.1),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
                       ),
-                      child: Center(
-                        child: Text(
-                          widget.notification.type.icon,
-                          style: const TextStyle(fontSize: 20),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Transform.translate(
+                          offset: const Offset(0, -1),
+                          child: Text(
+                            widget.notification.type.icon,
+                            style: const TextStyle(
+                              fontSize: 26,
+                              height: 1.0,
+                              letterSpacing: 0,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ),
                     ),
                     if (!widget.notification.isRead)
                       Positioned(
-                        top: -2,
-                        left: 4,
+                        top: -5,
+                        left: -5,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
-                              colors: [Color(0xFF4DD4D4), Color(0xFF3FBABA)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Color(0xFF4DD4D4),
+                                Color(0xFF3FBABA),
+                              ],
                             ),
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color: const Color(0xFF0A0F0F),
+                              width: 1,
+                            ),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFF4DD4D4).withValues(alpha: 0.4),
-                                blurRadius: 4,
+                                color: const Color(0xFF4DD4D4).withValues(alpha: 0.6),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
                               ),
                             ],
                           ),
@@ -563,9 +594,9 @@ class _NotificationItemState extends State<_NotificationItem> {
                             'NEW',
                             style: GoogleFonts.inter(
                               color: const Color(0xFF0A0F0F),
-                              fontSize: 7,
+                              fontSize: 9,
                               fontWeight: FontWeight.w900,
-                              letterSpacing: 0.5,
+                              letterSpacing: 0.3,
                               height: 1.0,
                             ),
                           ),
