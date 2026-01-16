@@ -126,7 +126,7 @@ class NotificationService {
   /// Delete a specific notification
   Future<bool> deleteNotification(String notificationId) async {
     try {
-      // Make API request
+      // Make API request - No Content-Type header needed for query param deletion
       final response = await _dio.delete(
         '/api/notifications',
         queryParameters: {
@@ -135,7 +135,6 @@ class NotificationService {
         options: Options(
           headers: {
             'x-api-key': apiKey,
-            'Content-Type': 'application/json',
           },
         ),
       );
