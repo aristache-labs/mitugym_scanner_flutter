@@ -183,8 +183,8 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
 
     return ToastContainer(
       child: Scaffold(
-        appBar: _buildModernAppBar(context, themeColors),
-        body: Container(
+      appBar: _buildModernAppBar(context, themeColors),
+      body: Container(
         decoration: themeColors.getBackgroundDecoration(),
         child: Column(
           children: [
@@ -277,7 +277,7 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
             ),
           ],
         ),
-      ),
+        ),
       ),
     );
   }

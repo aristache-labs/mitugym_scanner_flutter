@@ -63,11 +63,11 @@ class _NotificationBellState extends ConsumerState<NotificationBell> {
           ),
           // Dropdown content
           Positioned(
-            width: 620,
+            width: 750,
             child: CompositedTransformFollower(
               link: _layerLink,
               showWhenUnlinked: false,
-              offset: const Offset(-570, 50), // Position below the bell icon
+              offset: const Offset(-700, 50), // Position below the bell icon
               child: Material(
                 elevation: 8,
                 borderRadius: BorderRadius.circular(16),
@@ -459,8 +459,6 @@ class _NotificationItem extends StatefulWidget {
 }
 
 class _NotificationItemState extends State<_NotificationItem> {
-  bool _isHovered = false;
-
   String _formatTimeAgo(DateTime dateTime) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
@@ -478,57 +476,48 @@ class _NotificationItemState extends State<_NotificationItem> {
 
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
-      child: Container(
-        decoration: BoxDecoration(
-          color: widget.notification.isRead
-              ? const Color(0xFF0f1414) // Dark background for read
-              : const Color(0xFF4DD4D4).withValues(alpha: 0.08), // Cyan tint for unread
-          border: Border(
-            left: BorderSide(
-              color: widget.notification.isRead
-                  ? AppColors.textMuted.withValues(alpha: 0.5)
-                  : const Color(0xFF4DD4D4).withValues(alpha: 0.5), // Cyan border
-              width: 3,
-            ),
-            bottom: BorderSide(
-              color: AppColors.border.withValues(alpha: 0.1),
-              width: 1,
-            ),
+    return Container(
+      decoration: BoxDecoration(
+        color: widget.notification.isRead
+            ? const Color(0xFF0f1414)
+            : const Color(0xFF4DD4D4).withValues(alpha: 0.08),
+        border: Border(
+          left: BorderSide(
+            color: widget.notification.isRead
+                ? AppColors.textMuted.withValues(alpha: 0.5)
+                : const Color(0xFF4DD4D4).withValues(alpha: 0.5),
+            width: 3,
+          ),
+          bottom: BorderSide(
+            color: AppColors.border.withValues(alpha: 0.1),
+            width: 1,
           ),
         ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: widget.notification.isRead ? null : widget.onMarkAsRead,
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Stack(
-                children: [
-                  // Main content row
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // Icon with NEW badge
-                      Stack(
-                        clipBehavior: Clip.none,
-                        children: [
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: widget.notification.isRead ? null : widget.onMarkAsRead,
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Icon with NEW badge
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
                     Container(
                       width: 44,
                       height: 44,
                       decoration: BoxDecoration(
                         gradient: widget.notification.isRead
-                            ? LinearGradient(
-                                colors: [
-                                  const Color(0xFF0f1414),
-                                  const Color(0xFF141a1a),
-                                ],
+                            ? const LinearGradient(
+                                colors: [Color(0xFF0f1414), Color(0xFF141a1a)],
                               )
                             : LinearGradient(
                                 colors: [
-                                  const Color(0xFF4DD4D4).withValues(alpha: 0.3), // Cyan
+                                  const Color(0xFF4DD4D4).withValues(alpha: 0.3),
                                   const Color(0xFF4DD4D4).withValues(alpha: 0.15),
                                 ],
                               ),
@@ -536,7 +525,7 @@ class _NotificationItemState extends State<_NotificationItem> {
                         border: Border.all(
                           color: widget.notification.isRead
                               ? const Color(0xFF4DD4D4).withValues(alpha: 0.2)
-                              : const Color(0xFF4DD4D4).withValues(alpha: 0.3), // Cyan border
+                              : const Color(0xFF4DD4D4).withValues(alpha: 0.3),
                           width: 1,
                         ),
                       ),
@@ -547,22 +536,15 @@ class _NotificationItemState extends State<_NotificationItem> {
                         ),
                       ),
                     ),
-                    // NEW badge for unread notifications
                     if (!widget.notification.isRead)
                       Positioned(
                         top: -2,
                         left: 4,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 4,
-                            vertical: 2,
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
-                              colors: [
-                                Color(0xFF4DD4D4),
-                                Color(0xFF3FBABA),
-                              ],
+                              colors: [Color(0xFF4DD4D4), Color(0xFF3FBABA)],
                             ),
                             borderRadius: BorderRadius.circular(4),
                             boxShadow: [
@@ -584,132 +566,73 @@ class _NotificationItemState extends State<_NotificationItem> {
                           ),
                         ),
                       ),
-                        ],
-                      ),
-                      const SizedBox(width: 12),
-
-                      // Content - Takes maximum available space
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.only(right: _isHovered ? 92 : 4),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              // Title and time on same line
-                              Row(
-                                children: [
-                                  Flexible(
-                                    child: Text(
-                                      widget.notification.title,
-                                      style: GoogleFonts.inter(
-                                        color: AppColors.textPrimary,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                                    child: Text(
-                                      '•',
-                                      style: GoogleFonts.inter(
-                                        color: AppColors.textMuted.withValues(alpha: 0.5),
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ),
-                                  Text(
-                                    _formatTimeAgo(widget.notification.createdAt),
-                                    style: GoogleFonts.inter(
-                                      color: AppColors.textMuted.withValues(alpha: 0.7),
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w600,
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 4),
-                              LayoutBuilder(
-                                builder: (context, constraints) {
-                                  return SizedBox(
-                                    width: constraints.maxWidth,
-                                    child: Text(
-                                      widget.notification.message,
-                                      style: GoogleFonts.inter(
-                                        color: AppColors.textSecondary,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w400,
-                                        height: 1.4,
-                                      ),
-                                      softWrap: true,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  // Actions - Positioned absolutely on the right, show on hover
-                  if (_isHovered)
-                    Positioned(
-                      right: 12,
-                      top: 0,
-                      bottom: 0,
-                      child: Center(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
+                  ],
+                ),
+                const SizedBox(width: 12),
+                // Content - Takes ALL remaining space
+                Expanded(
+                  child: Container(
+                    color: Colors.transparent, // Debug helper
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Title and time
+                        Row(
                           children: [
-                            if (!widget.notification.isRead)
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF4DD4D4).withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: IconButton(
-                                  onPressed: widget.onMarkAsRead,
-                                  icon: const Icon(LucideIcons.check, size: 16),
-                                  color: const Color(0xFF4DD4D4), // Cyan
-                                  splashRadius: 20,
-                                  tooltip: 'Mark as read',
-                                  padding: const EdgeInsets.all(8),
-                                  constraints: const BoxConstraints(
-                                    minWidth: 36,
-                                    minHeight: 36,
-                                  ),
+                            Flexible(
+                              fit: FlexFit.loose,
+                              child: Text(
+                                widget.notification.title,
+                                style: GoogleFonts.inter(
+                                  color: AppColors.textPrimary,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
-                            if (!widget.notification.isRead) const SizedBox(width: 4),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFef4444).withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: IconButton(
-                                onPressed: widget.onDelete,
-                                icon: const Icon(LucideIcons.trash2, size: 16),
-                                color: const Color(0xFFef4444), // Red
-                                splashRadius: 20,
-                                tooltip: 'Delete',
-                                padding: const EdgeInsets.all(8),
-                                constraints: const BoxConstraints(
-                                  minWidth: 36,
-                                  minHeight: 36,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              child: Text(
+                                '•',
+                                style: GoogleFonts.inter(
+                                  color: AppColors.textMuted.withValues(alpha: 0.5),
+                                  fontSize: 14,
                                 ),
+                              ),
+                            ),
+                            Text(
+                              _formatTimeAgo(widget.notification.createdAt),
+                              style: GoogleFonts.inter(
+                                color: AppColors.textMuted.withValues(alpha: 0.7),
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.5,
                               ),
                             ),
                           ],
                         ),
-                      ),
+                        const SizedBox(height: 4),
+                        // Message text - uses full width
+                        SizedBox(
+                          width: double.infinity,
+                          child: Text(
+                            widget.notification.message.replaceAll(RegExp(r'[\r\n]+'), ' '),
+                            style: GoogleFonts.inter(
+                              color: AppColors.textSecondary,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                              height: 1.4,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
-                ],
-              ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
